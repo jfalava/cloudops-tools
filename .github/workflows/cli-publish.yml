@@ -1,9 +1,12 @@
 name: Publish CLI to npm
 
 on:
-  release:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Release CLI
     types:
-      - published
+      - completed
 
 permissions:
   contents: read
@@ -12,13 +15,16 @@ permissions:
 jobs:
   publish:
     name: Publish npm package
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout release tag
+      - name: Checkout release commit
         uses: actions/checkout@v6
         with:
-          ref: refs/tags/${{ github.event.release.tag_name }}
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -32,7 +38,12 @@ jobs:
       - name: Validate tag matches package version
         shell: bash
         run: |
-          TAG="${{ github.event.release.tag_name }}"
+          TAG="$(git tag --points-at HEAD | head -n 1)"
+          if [[ -z "$TAG" ]]; then
+            echo "No git tag found for commit $(git rev-parse --short HEAD)."
+            exit 1
+          fi
+
           VERSION="$(node -p "require('./cli/package.json').version")"
 
           if [[ "$TAG" != "$VERSION" && "$TAG" != "v$VERSION" ]]; then
