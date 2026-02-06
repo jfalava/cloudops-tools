@@ -1,7 +1,6 @@
 {
   "name": "@cloudops-tools/cli",
   "version": "0.1.0",
-  "type": "module",
   "bin": {
     "cloudops-tools": "./bin/cloudops-tools.js"
   },
@@ -9,6 +8,7 @@
     "bin",
     "scripts"
   ],
+  "type": "module",
   "module": "./src/app.ts",
   "scripts": {
     "build:all": "bun run check && bun run build:windows-x64 && bun run build:linux-x64 && bun run build:macOS-arm",
@@ -21,26 +21,25 @@
     "postinstall": "node ./scripts/install-native.js",
     "typecheck": "tsgo --noEmit"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@cloudops-tools/sdk": "workspace:*",
     "@effect/cli": "catalog:effect",
     "@effect/platform": "catalog:effect",
     "@effect/platform-bun": "catalog:effect",
-    "effect": "catalog:effect",
-    "exceljs": "catalog:utilities",
-    "json2md": "catalog:utilities",
-    "otpauth": "catalog:utilities",
-    "picocolors": "1.1.1"
-  },
-  "devDependencies": {
     "@types/bun": "catalog:types",
     "@types/json2md": "catalog:types",
     "@types/node": "catalog:types",
     "@types/progress": "catalog:types",
     "@typescript/native-preview": "catalog:build",
+    "effect": "catalog:effect",
+    "exceljs": "catalog:utilities",
+    "json2md": "catalog:utilities",
+    "otpauth": "catalog:utilities",
     "oxfmt": "catalog:build",
     "oxlint": "catalog:build",
     "oxlint-tsgolint": "catalog:build",
+    "picocolors": "1.1.1",
     "typescript": "catalog:build"
   }
 }

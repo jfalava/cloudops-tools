@@ -13,176 +13,176 @@ Generated at: `2026-02-06T22:10:59.538Z`
 
 ## `@cloudops-tools/sdk`
 
-| Name | Kind | Description | Source |
-| ---- | ---- | ----------- | ------ |
-| `ProgressEventType` | Enum | Progress event types | `sdk/src/lib/progress-events.ts:13` |
-| `AnalyticsService` | Class | No summary available. | `sdk/src/services/analytics.ts:22` |
-| `AppIntegrationService` | Class | No summary available. | `sdk/src/services/application-integration.ts:10` |
-| `AwsError` | Class | Error type for AWS SDK errors with typed error classification. Supports compile-time error handling and retryable error detection. | `sdk/src/types/effect-errors.ts:9` |
-| `CredentialError` | Class | Error type for credential/authentication failures. | `sdk/src/types/effect-errors.ts:76` |
-| `DeveloperToolsService` | Class | No summary available. | `sdk/src/services/developer-tools.ts:10` |
-| `FileSystemError` | Class | Error type for file system operations. | `sdk/src/types/effect-errors.ts:67` |
-| `GovernanceService` | Class | No summary available. | `sdk/src/services/governance.ts:25` |
-| `ManagementService` | Class | No summary available. | `sdk/src/services/management.ts:97` |
-| `SecurityService` | Class | No summary available. | `sdk/src/services/security.ts:34` |
-| `StorageService` | Class | No summary available. | `sdk/src/services/storage.ts:39` |
-| `ValidationError` | Class | Error type for validation failures. | `sdk/src/types/effect-errors.ts:84` |
-| `APIGateway` | Interface | Represents an Amazon API Gateway REST or HTTP API. | `sdk/src/types/aws-cli.types.ts:545` |
-| `APIGatewayV2Api` | Interface | Represents an API Gateway v2 API. | `sdk/src/types/aws-cli.types.ts:833` |
-| `AppRunnerService` | Interface | Represents an App Runner service. | `sdk/src/types/aws-cli.types.ts:695` |
-| `AthenaWorkgroup` | Interface | Represents an Amazon Athena workgroup for SQL query execution. | `sdk/src/types/aws-cli.types.ts:671` |
-| `AutoScalingGroup` | Interface | Represents an EC2 Auto Scaling group for automatic capacity management. | `sdk/src/types/aws-cli.types.ts:505` |
-| `BackupGateway` | Interface | Represents a Backup Gateway gateway. | `sdk/src/types/aws-cli.types.ts:910` |
-| `BackupVault` | Interface | Represents an AWS Backup vault for storing backup recovery points. | `sdk/src/types/aws-cli.types.ts:608` |
-| `BaseProgressEvent` | Interface | Base progress event interface | `sdk/src/lib/progress-events.ts:39` |
-| `BatchComputeEnvironment` | Interface | Represents an AWS Batch compute environment. | `sdk/src/types/aws-cli.types.ts:705` |
-| `CloudFormationStack` | Interface | Represents an AWS CloudFormation infrastructure stack. | `sdk/src/types/aws-cli.types.ts:519` |
-| `CloudFrontDistribution` | Interface | Represents an Amazon CloudFront CDN distribution. | `sdk/src/types/aws-cli.types.ts:159` |
-| `CloudOpsConfig` | Interface | No summary available. | `sdk/src/lib/config.ts:6` |
-| `CloudTrail` | Interface | Represents an AWS CloudTrail audit log trail. | `sdk/src/types/aws-cli.types.ts:581` |
-| `CloudWatchAlarm` | Interface | Represents an Amazon CloudWatch alarm for monitoring metrics. | `sdk/src/types/aws-cli.types.ts:248` |
-| `CognitoUserPool` | Interface | Represents an Amazon Cognito user pool for authentication. | `sdk/src/types/aws-cli.types.ts:621` |
-| `CompletedEvent` | Interface | Completed event - fired when inventory generation completes successfully | `sdk/src/lib/progress-events.ts:132` |
-| `ComputeService` | Interface | No summary available. | `sdk/src/services/compute.ts:121` |
-| `ConfigRule` | Interface | Represents an AWS Config rule for compliance monitoring. Source can be AWS managed or custom. | `sdk/src/types/aws-cli.types.ts:442` |
-| `ConfigService` | Interface | No summary available. | `sdk/src/lib/config.ts:29` |
-| `ControlTowerGuardrail` | Interface | Represents an AWS Control Tower guardrail (control) for governance. Behavior can be DETECTIVE or PREVENTIVE. | `sdk/src/types/aws-cli.types.ts:418` |
-| `DatabaseService` | Interface | No summary available. | `sdk/src/services/database.ts:111` |
-| `DAXCluster` | Interface | Represents a DAX cluster. | `sdk/src/types/aws-cli.types.ts:787` |
-| `DirectConnectConnection` | Interface | Represents a Direct Connect connection. | `sdk/src/types/aws-cli.types.ts:852` |
-| `DocDBCluster` | Interface | Represents a DocumentDB cluster. | `sdk/src/types/aws-cli.types.ts:758` |
-| `DynamoDBTable` | Interface | Represents an Amazon DynamoDB table with item count and encryption status. | `sdk/src/types/aws-cli.types.ts:120` |
-| `EBSVolume` | Interface | Represents an Amazon EBS volume for block storage. | `sdk/src/types/aws-cli.types.ts:454` |
-| `EC2Instance` | Interface | Represents an Amazon EC2 instance with its configuration and metadata. | `sdk/src/types/aws-cli.types.ts:4` |
-| `ECRRepository` | Interface | Represents an Amazon ECR container image repository. | `sdk/src/types/aws-cli.types.ts:271` |
-| `ECSCluster` | Interface | Represents an Amazon ECS cluster with task and service counts. | `sdk/src/types/aws-cli.types.ts:133` |
-| `EFSFileSystem` | Interface | Represents an Amazon EFS elastic file system. | `sdk/src/types/aws-cli.types.ts:531` |
-| `EKSCluster` | Interface | Represents an Amazon EKS Kubernetes cluster with version and endpoint information. | `sdk/src/types/aws-cli.types.ts:146` |
-| `ElastiCacheCluster` | Interface | Represents an Amazon ElastiCache cluster (Redis or Memcached). | `sdk/src/types/aws-cli.types.ts:470` |
-| `ElasticBeanstalkEnvironment` | Interface | Represents an Elastic Beanstalk environment. | `sdk/src/types/aws-cli.types.ts:738` |
-| `ElasticIP` | Interface | Represents an Elastic IP address allocation. | `sdk/src/types/aws-cli.types.ts:305` |
-| `EMRCluster` | Interface | Represents an Amazon EMR big data processing cluster. | `sdk/src/types/aws-cli.types.ts:682` |
-| `EMRServerlessApplication` | Interface | Represents an Amazon EMR Serverless application. | `sdk/src/types/aws-cli.types.ts:716` |
-| `EventBridgeRule` | Interface | Represents an Amazon EventBridge rule for event-driven automation. | `sdk/src/types/aws-cli.types.ts:569` |
-| `FailedEvent` | Interface | Failed event - fired when inventory generation fails | `sdk/src/lib/progress-events.ts:147` |
-| `FileWrittenEvent` | Interface | File written event - fired when an output file is created | `sdk/src/lib/progress-events.ts:119` |
-| `FsxFileSystem` | Interface | Represents an FSx file system. | `sdk/src/types/aws-cli.types.ts:880` |
-| `GlacierVault` | Interface | Represents a Glacier vault. | `sdk/src/types/aws-cli.types.ts:890` |
-| `GlobalAccelerator` | Interface | Represents a Global Accelerator accelerator. | `sdk/src/types/aws-cli.types.ts:843` |
-| `GlueJob` | Interface | Represents an AWS Glue ETL job. | `sdk/src/types/aws-cli.types.ts:211` |
-| `GuardDutyDetector` | Interface | Represents an Amazon GuardDuty threat detection detector. | `sdk/src/types/aws-cli.types.ts:647` |
-| `IAMRole` | Interface | Represents an AWS IAM role for service or user permissions. | `sdk/src/types/aws-cli.types.ts:188` |
-| `IAMUser` | Interface | Represents an AWS IAM user account. | `sdk/src/types/aws-cli.types.ts:178` |
-| `InternetGateway` | Interface | Represents a VPC Internet Gateway for outbound internet access. | `sdk/src/types/aws-cli.types.ts:281` |
-| `InventoryMetadata` | Interface | Metadata about the inventory collection process | `sdk/src/lib/json-output.ts:50` |
-| `InventorySummary` | Interface | Summary statistics about the inventory | `sdk/src/lib/json-output.ts:66` |
-| `KeyspacesKeyspace` | Interface | Represents a Keyspaces keyspace. | `sdk/src/types/aws-cli.types.ts:807` |
-| `KinesisStream` | Interface | Represents an Amazon Kinesis data stream for real-time data processing. | `sdk/src/types/aws-cli.types.ts:658` |
-| `KMSKey` | Interface | Represents an AWS KMS encryption key. | `sdk/src/types/aws-cli.types.ts:236` |
-| `LambdaFunction` | Interface | Represents an AWS Lambda function with runtime and execution configuration. | `sdk/src/types/aws-cli.types.ts:106` |
-| `LightsailInstance` | Interface | Represents an Amazon Lightsail instance. | `sdk/src/types/aws-cli.types.ts:727` |
-| `LoadBalancer` | Interface | Represents an Elastic Load Balancer (Application, Network, or Gateway). | `sdk/src/types/aws-cli.types.ts:90` |
-| `LogEvent` | Interface | Log event - general log message | `sdk/src/lib/progress-events.ts:158` |
-| `LoginUrlEvent` | Interface | Login URL event - fired when AWS login URL is detected | `sdk/src/lib/progress-events.ts:169` |
-| `MemoryDBCluster` | Interface | Represents a MemoryDB cluster. | `sdk/src/types/aws-cli.types.ts:777` |
-| `NatGateway` | Interface | Represents a VPC NAT Gateway for private subnet internet access. | `sdk/src/types/aws-cli.types.ts:292` |
-| `NeptuneCluster` | Interface | Represents a Neptune cluster. | `sdk/src/types/aws-cli.types.ts:768` |
-| `NetworkAcl` | Interface | Represents a VPC Network Access Control List (NACL). | `sdk/src/types/aws-cli.types.ts:381` |
-| `NetworkingService` | Interface | No summary available. | `sdk/src/services/networking.ts:94` |
-| `NetworkInterface` | Interface | Represents an Elastic Network Interface (ENI). | `sdk/src/types/aws-cli.types.ts:403` |
-| `OpenSearchDomain` | Interface | Represents an Amazon OpenSearch Service domain. | `sdk/src/types/aws-cli.types.ts:223` |
-| `OpenSearchServerlessCollection` | Interface | Represents an OpenSearch Serverless collection. | `sdk/src/types/aws-cli.types.ts:824` |
-| `ProgressEvent` | Interface | Progress event - fired periodically with overall progress | `sdk/src/lib/progress-events.ts:104` |
-| `RbinRule` | Interface | Represents an Rbin retention rule. | `sdk/src/types/aws-cli.types.ts:919` |
-| `RDSInstance` | Interface | Represents an Amazon RDS database instance with engine and configuration details. | `sdk/src/types/aws-cli.types.ts:20` |
-| `RedshiftCluster` | Interface | Represents an Amazon Redshift data warehouse cluster. | `sdk/src/types/aws-cli.types.ts:198` |
-| `RedshiftServerlessNamespace` | Interface | Represents a Redshift Serverless namespace. | `sdk/src/types/aws-cli.types.ts:815` |
-| `ReportingService` | Interface | No summary available. | `sdk/src/services/reporting.ts:17` |
-| `Route53Domain` | Interface | Represents a Route53 domain. | `sdk/src/types/aws-cli.types.ts:871` |
-| `Route53HostedZone` | Interface | Represents an Amazon Route 53 DNS hosted zone. | `sdk/src/types/aws-cli.types.ts:169` |
-| `RouteTable` | Interface | Represents a VPC route table for network traffic routing. | `sdk/src/types/aws-cli.types.ts:392` |
-| `S3Bucket` | Interface | Represents an Amazon S3 bucket with security and versioning configuration. | `sdk/src/types/aws-cli.types.ts:38` |
-| `SageMakerDomain` | Interface | Represents a SageMaker domain. | `sdk/src/types/aws-cli.types.ts:749` |
-| `SecretsManagerSecret` | Interface | Represents an AWS Secrets Manager secret for storing sensitive data. | `sdk/src/types/aws-cli.types.ts:260` |
-| `SecurityGroup` | Interface | Represents a VPC security group with firewall rules. | `sdk/src/types/aws-cli.types.ts:77` |
-| `ServiceCompletedEvent` | Interface | Service completed event - fired when a service scan completes | `sdk/src/lib/progress-events.ts:76` |
-| `ServiceControlPolicy` | Interface | Represents an AWS Organizations Service Control Policy (SCP). | `sdk/src/types/aws-cli.types.ts:429` |
-| `ServiceFailedEvent` | Interface | Service failed event - fired when a service scan fails | `sdk/src/lib/progress-events.ts:91` |
-| `ServiceStartedEvent` | Interface | Service started event - fired when a service scan begins | `sdk/src/lib/progress-events.ts:65` |
-| `SNSTopic` | Interface | Represents an Amazon SNS notification topic. | `sdk/src/types/aws-cli.types.ts:495` |
-| `SQSQueue` | Interface | Represents an Amazon SQS message queue. | `sdk/src/types/aws-cli.types.ts:485` |
-| `SSMParameter` | Interface | Represents an AWS Systems Manager Parameter Store parameter. | `sdk/src/types/aws-cli.types.ts:595` |
-| `StartedEvent` | Interface | Started event - fired when inventory generation begins | `sdk/src/lib/progress-events.ts:51` |
-| `StepFunction` | Interface | Represents an AWS Step Functions state machine for workflow orchestration. | `sdk/src/types/aws-cli.types.ts:557` |
-| `StorageGateway` | Interface | Represents a Storage Gateway gateway. | `sdk/src/types/aws-cli.types.ts:900` |
-| `Subnet` | Interface | Represents a VPC subnet with IP address allocation and availability zone details. | `sdk/src/types/aws-cli.types.ts:62` |
-| `TimestreamDatabase` | Interface | Represents a Timestream database. | `sdk/src/types/aws-cli.types.ts:797` |
-| `TransitGateway` | Interface | Represents an AWS Transit Gateway for multi-VPC and on-premises connectivity. | `sdk/src/types/aws-cli.types.ts:344` |
-| `UtilService` | Interface | No summary available. | `sdk/src/services/utils.ts:8` |
-| `VPC` | Interface | Represents an Amazon Virtual Private Cloud (VPC) network. | `sdk/src/types/aws-cli.types.ts:51` |
-| `VpcEndpoint` | Interface | Represents a VPC endpoint for private AWS service access. | `sdk/src/types/aws-cli.types.ts:356` |
-| `VpcLatticeService` | Interface | Represents a VPC Lattice service. | `sdk/src/types/aws-cli.types.ts:861` |
-| `VpcPeeringConnection` | Interface | Represents a VPC peering connection between two VPCs. | `sdk/src/types/aws-cli.types.ts:369` |
-| `VpnConnection` | Interface | Represents a VPN connection between AWS and external network. | `sdk/src/types/aws-cli.types.ts:330` |
-| `VpnGateway` | Interface | Represents a Virtual Private Gateway for VPN connections. | `sdk/src/types/aws-cli.types.ts:318` |
-| `WAFWebACL` | Interface | Represents an AWS WAF web application firewall access control list. | `sdk/src/types/aws-cli.types.ts:634` |
-| `WebInventoryData` | Interface | Complete inventory data structure optimized for web consumption | `sdk/src/lib/json-output.ts:78` |
-| `GlobalService` | Type Alias | AWS inventory operations | `sdk/src/operations/init-inventory.ts:179` |
-| `InventoryMode` | Type Alias | AWS inventory operations | `sdk/src/operations/init-inventory.ts:37` |
-| `InventoryProgressEvent` | Type Alias | Union type of all progress events | `sdk/src/lib/progress-events.ts:182` |
-| `RegionalService` | Type Alias | AWS inventory operations | `sdk/src/operations/init-inventory.ts:178` |
-| `ServiceName` | Type Alias | AWS inventory operations | `sdk/src/operations/init-inventory.ts:180` |
-| `VersionStatus` | Type Alias | No summary available. | `sdk/src/lib/version-checker.ts:1` |
-| `WriteInventoryWithJsonInput` | Type Alias | Extends the existing writeInventoryFile functionality to support JSON output. This is a helper that integrates with the existing CSV/XLSX export logic. | `sdk/src/lib/json-output.ts:234` |
-| `ALL_GLOBAL_SERVICES` | Variable | AWS inventory operations | `sdk/src/operations/init-inventory.ts:166` |
-| `ALL_REGIONAL_SERVICES` | Variable | Orchestrates the comprehensive cross-region inventory scan. | `sdk/src/operations/init-inventory.ts:120` |
-| `AnalyticsServiceLive` | Variable | No summary available. | `sdk/src/services/analytics.ts:33` |
-| `AppIntegrationServiceLive` | Variable | No summary available. | `sdk/src/services/application-integration.ts:18` |
-| `AwsConfigLive` | Variable | Default configuration including HttpClient. | `sdk/src/lib/aws-config.ts:35` |
-| `ComputeService` | Variable | No summary available. | `sdk/src/services/compute.ts:121` |
-| `ComputeServiceLive` | Variable | No summary available. | `sdk/src/services/compute.ts:153` |
-| `ConfigService` | Variable | No summary available. | `sdk/src/lib/config.ts:29` |
-| `ConfigServiceLive` | Variable | No summary available. | `sdk/src/lib/config.ts:40` |
-| `CredentialsLive` | Variable | Provides AWS Credentials by wrapping the existing standard provider. This ensures 'letme' and profile support still work. | `sdk/src/lib/aws-config.ts:18` |
-| `DatabaseService` | Variable | No summary available. | `sdk/src/services/database.ts:111` |
-| `DatabaseServiceLive` | Variable | No summary available. | `sdk/src/services/database.ts:143` |
-| `DeveloperToolsServiceLive` | Variable | No summary available. | `sdk/src/services/developer-tools.ts:18` |
-| `GovernanceServiceLive` | Variable | No summary available. | `sdk/src/services/governance.ts:36` |
-| `ManagementServiceLive` | Variable | No summary available. | `sdk/src/services/management.ts:123` |
-| `NetworkingService` | Variable | No summary available. | `sdk/src/services/networking.ts:94` |
-| `NetworkingServiceLive` | Variable | No summary available. | `sdk/src/services/networking.ts:130` |
-| `progressEmitter` | Variable | Global singleton instance of the progress emitter | `sdk/src/lib/progress-events.ts:242` |
-| `ReportingService` | Variable | No summary available. | `sdk/src/services/reporting.ts:17` |
-| `ReportingServiceLive` | Variable | No summary available. | `sdk/src/services/reporting.ts:34` |
-| `SdkLive` | Variable | No summary available. | `sdk/src/lib/layers.ts:35` |
-| `SecurityServiceLive` | Variable | No summary available. | `sdk/src/services/security.ts:53` |
-| `StorageServiceLive` | Variable | No summary available. | `sdk/src/services/storage.ts:54` |
-| `UtilService` | Variable | No summary available. | `sdk/src/services/utils.ts:8` |
-| `UtilServiceLive` | Variable | No summary available. | `sdk/src/services/utils.ts:15` |
-| `createProgressEvent` | Function | No summary available. | `sdk/src/lib/progress-events.ts:247` |
-| `createWebInventoryJson` | Function | No summary available. | `sdk/src/lib/json-output.ts:149` |
-| `csvToXlsx` | Function | No summary available. | `sdk/src/lib/spreadsheet.ts:39` |
-| `findAwsCliPath` | Function | No summary available. | `sdk/src/lib/aws-cli-check.ts:7` |
-| `findAwsProfile` | Function | No summary available. | `sdk/src/lib/aws-profile.ts:9` |
-| `generateInitInventoryEffect` | Function | No summary available. | `sdk/src/operations/init-inventory.ts:182` |
-| `generateTOTPToken` | Function | No summary available. | `sdk/src/lib/totp.ts:48` |
-| `getAwsCliVersion` | Function | No summary available. | `sdk/src/lib/aws-cli-check.ts:30` |
-| `getConfigWithDefaults` | Function | No summary available. | `sdk/src/lib/config.ts:146` |
-| `getEKSVersionStatus` | Function | No summary available. | `sdk/src/lib/version-checker.ts:270` |
-| `getElastiCacheVersionStatus` | Function | No summary available. | `sdk/src/lib/version-checker.ts:292` |
-| `getLambdaRuntimeStatus` | Function | No summary available. | `sdk/src/lib/version-checker.ts:276` |
-| `getRDSEngineVersionStatus` | Function | No summary available. | `sdk/src/lib/version-checker.ts:282` |
-| `getTOTPSecret` | Function | No summary available. | `sdk/src/lib/totp.ts:33` |
-| `getVersion` | Function | No summary available. | `sdk/src/lib/version.ts:6` |
-| `isAwsCliAvailable` | Function | No summary available. | `sdk/src/lib/aws-cli-check.ts:26` |
-| `makeRegionConfig` | Function | No summary available. | `sdk/src/lib/aws-config.ts:12` |
-| `setupTOTP` | Function | No summary available. | `sdk/src/lib/totp.ts:134` |
-| `storeTOTPSecret` | Function | No summary available. | `sdk/src/lib/totp.ts:21` |
-| `validateAwsProfile` | Function | No summary available. | `sdk/src/lib/aws-profile.ts:49` |
-| `writeInventoryFile` | Function | No summary available. | `sdk/src/lib/spreadsheet.ts:68` |
-| `writeInventoryWithJson` | Function | No summary available. | `sdk/src/lib/json-output.ts:243` |
-| `writeJsonInventory` | Function | No summary available. | `sdk/src/lib/spreadsheet.ts:93` |
-| `writeJsonInventoryFile` | Function | No summary available. | `sdk/src/lib/json-output.ts:199` |
+| Name                             | Kind       | Description                                                                                                                                             | Source                                           |
+| -------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `ProgressEventType`              | Enum       | Progress event types                                                                                                                                    | `sdk/src/lib/progress-events.ts:13`              |
+| `AnalyticsService`               | Class      | No summary available.                                                                                                                                   | `sdk/src/services/analytics.ts:22`               |
+| `AppIntegrationService`          | Class      | No summary available.                                                                                                                                   | `sdk/src/services/application-integration.ts:10` |
+| `AwsError`                       | Class      | Error type for AWS SDK errors with typed error classification. Supports compile-time error handling and retryable error detection.                      | `sdk/src/types/effect-errors.ts:9`               |
+| `CredentialError`                | Class      | Error type for credential/authentication failures.                                                                                                      | `sdk/src/types/effect-errors.ts:76`              |
+| `DeveloperToolsService`          | Class      | No summary available.                                                                                                                                   | `sdk/src/services/developer-tools.ts:10`         |
+| `FileSystemError`                | Class      | Error type for file system operations.                                                                                                                  | `sdk/src/types/effect-errors.ts:67`              |
+| `GovernanceService`              | Class      | No summary available.                                                                                                                                   | `sdk/src/services/governance.ts:25`              |
+| `ManagementService`              | Class      | No summary available.                                                                                                                                   | `sdk/src/services/management.ts:97`              |
+| `SecurityService`                | Class      | No summary available.                                                                                                                                   | `sdk/src/services/security.ts:34`                |
+| `StorageService`                 | Class      | No summary available.                                                                                                                                   | `sdk/src/services/storage.ts:39`                 |
+| `ValidationError`                | Class      | Error type for validation failures.                                                                                                                     | `sdk/src/types/effect-errors.ts:84`              |
+| `APIGateway`                     | Interface  | Represents an Amazon API Gateway REST or HTTP API.                                                                                                      | `sdk/src/types/aws-cli.types.ts:545`             |
+| `APIGatewayV2Api`                | Interface  | Represents an API Gateway v2 API.                                                                                                                       | `sdk/src/types/aws-cli.types.ts:833`             |
+| `AppRunnerService`               | Interface  | Represents an App Runner service.                                                                                                                       | `sdk/src/types/aws-cli.types.ts:695`             |
+| `AthenaWorkgroup`                | Interface  | Represents an Amazon Athena workgroup for SQL query execution.                                                                                          | `sdk/src/types/aws-cli.types.ts:671`             |
+| `AutoScalingGroup`               | Interface  | Represents an EC2 Auto Scaling group for automatic capacity management.                                                                                 | `sdk/src/types/aws-cli.types.ts:505`             |
+| `BackupGateway`                  | Interface  | Represents a Backup Gateway gateway.                                                                                                                    | `sdk/src/types/aws-cli.types.ts:910`             |
+| `BackupVault`                    | Interface  | Represents an AWS Backup vault for storing backup recovery points.                                                                                      | `sdk/src/types/aws-cli.types.ts:608`             |
+| `BaseProgressEvent`              | Interface  | Base progress event interface                                                                                                                           | `sdk/src/lib/progress-events.ts:39`              |
+| `BatchComputeEnvironment`        | Interface  | Represents an AWS Batch compute environment.                                                                                                            | `sdk/src/types/aws-cli.types.ts:705`             |
+| `CloudFormationStack`            | Interface  | Represents an AWS CloudFormation infrastructure stack.                                                                                                  | `sdk/src/types/aws-cli.types.ts:519`             |
+| `CloudFrontDistribution`         | Interface  | Represents an Amazon CloudFront CDN distribution.                                                                                                       | `sdk/src/types/aws-cli.types.ts:159`             |
+| `CloudOpsConfig`                 | Interface  | No summary available.                                                                                                                                   | `sdk/src/lib/config.ts:6`                        |
+| `CloudTrail`                     | Interface  | Represents an AWS CloudTrail audit log trail.                                                                                                           | `sdk/src/types/aws-cli.types.ts:581`             |
+| `CloudWatchAlarm`                | Interface  | Represents an Amazon CloudWatch alarm for monitoring metrics.                                                                                           | `sdk/src/types/aws-cli.types.ts:248`             |
+| `CognitoUserPool`                | Interface  | Represents an Amazon Cognito user pool for authentication.                                                                                              | `sdk/src/types/aws-cli.types.ts:621`             |
+| `CompletedEvent`                 | Interface  | Completed event - fired when inventory generation completes successfully                                                                                | `sdk/src/lib/progress-events.ts:132`             |
+| `ComputeService`                 | Interface  | No summary available.                                                                                                                                   | `sdk/src/services/compute.ts:121`                |
+| `ConfigRule`                     | Interface  | Represents an AWS Config rule for compliance monitoring. Source can be AWS managed or custom.                                                           | `sdk/src/types/aws-cli.types.ts:442`             |
+| `ConfigService`                  | Interface  | No summary available.                                                                                                                                   | `sdk/src/lib/config.ts:29`                       |
+| `ControlTowerGuardrail`          | Interface  | Represents an AWS Control Tower guardrail (control) for governance. Behavior can be DETECTIVE or PREVENTIVE.                                            | `sdk/src/types/aws-cli.types.ts:418`             |
+| `DatabaseService`                | Interface  | No summary available.                                                                                                                                   | `sdk/src/services/database.ts:111`               |
+| `DAXCluster`                     | Interface  | Represents a DAX cluster.                                                                                                                               | `sdk/src/types/aws-cli.types.ts:787`             |
+| `DirectConnectConnection`        | Interface  | Represents a Direct Connect connection.                                                                                                                 | `sdk/src/types/aws-cli.types.ts:852`             |
+| `DocDBCluster`                   | Interface  | Represents a DocumentDB cluster.                                                                                                                        | `sdk/src/types/aws-cli.types.ts:758`             |
+| `DynamoDBTable`                  | Interface  | Represents an Amazon DynamoDB table with item count and encryption status.                                                                              | `sdk/src/types/aws-cli.types.ts:120`             |
+| `EBSVolume`                      | Interface  | Represents an Amazon EBS volume for block storage.                                                                                                      | `sdk/src/types/aws-cli.types.ts:454`             |
+| `EC2Instance`                    | Interface  | Represents an Amazon EC2 instance with its configuration and metadata.                                                                                  | `sdk/src/types/aws-cli.types.ts:4`               |
+| `ECRRepository`                  | Interface  | Represents an Amazon ECR container image repository.                                                                                                    | `sdk/src/types/aws-cli.types.ts:271`             |
+| `ECSCluster`                     | Interface  | Represents an Amazon ECS cluster with task and service counts.                                                                                          | `sdk/src/types/aws-cli.types.ts:133`             |
+| `EFSFileSystem`                  | Interface  | Represents an Amazon EFS elastic file system.                                                                                                           | `sdk/src/types/aws-cli.types.ts:531`             |
+| `EKSCluster`                     | Interface  | Represents an Amazon EKS Kubernetes cluster with version and endpoint information.                                                                      | `sdk/src/types/aws-cli.types.ts:146`             |
+| `ElastiCacheCluster`             | Interface  | Represents an Amazon ElastiCache cluster (Redis or Memcached).                                                                                          | `sdk/src/types/aws-cli.types.ts:470`             |
+| `ElasticBeanstalkEnvironment`    | Interface  | Represents an Elastic Beanstalk environment.                                                                                                            | `sdk/src/types/aws-cli.types.ts:738`             |
+| `ElasticIP`                      | Interface  | Represents an Elastic IP address allocation.                                                                                                            | `sdk/src/types/aws-cli.types.ts:305`             |
+| `EMRCluster`                     | Interface  | Represents an Amazon EMR big data processing cluster.                                                                                                   | `sdk/src/types/aws-cli.types.ts:682`             |
+| `EMRServerlessApplication`       | Interface  | Represents an Amazon EMR Serverless application.                                                                                                        | `sdk/src/types/aws-cli.types.ts:716`             |
+| `EventBridgeRule`                | Interface  | Represents an Amazon EventBridge rule for event-driven automation.                                                                                      | `sdk/src/types/aws-cli.types.ts:569`             |
+| `FailedEvent`                    | Interface  | Failed event - fired when inventory generation fails                                                                                                    | `sdk/src/lib/progress-events.ts:147`             |
+| `FileWrittenEvent`               | Interface  | File written event - fired when an output file is created                                                                                               | `sdk/src/lib/progress-events.ts:119`             |
+| `FsxFileSystem`                  | Interface  | Represents an FSx file system.                                                                                                                          | `sdk/src/types/aws-cli.types.ts:880`             |
+| `GlacierVault`                   | Interface  | Represents a Glacier vault.                                                                                                                             | `sdk/src/types/aws-cli.types.ts:890`             |
+| `GlobalAccelerator`              | Interface  | Represents a Global Accelerator accelerator.                                                                                                            | `sdk/src/types/aws-cli.types.ts:843`             |
+| `GlueJob`                        | Interface  | Represents an AWS Glue ETL job.                                                                                                                         | `sdk/src/types/aws-cli.types.ts:211`             |
+| `GuardDutyDetector`              | Interface  | Represents an Amazon GuardDuty threat detection detector.                                                                                               | `sdk/src/types/aws-cli.types.ts:647`             |
+| `IAMRole`                        | Interface  | Represents an AWS IAM role for service or user permissions.                                                                                             | `sdk/src/types/aws-cli.types.ts:188`             |
+| `IAMUser`                        | Interface  | Represents an AWS IAM user account.                                                                                                                     | `sdk/src/types/aws-cli.types.ts:178`             |
+| `InternetGateway`                | Interface  | Represents a VPC Internet Gateway for outbound internet access.                                                                                         | `sdk/src/types/aws-cli.types.ts:281`             |
+| `InventoryMetadata`              | Interface  | Metadata about the inventory collection process                                                                                                         | `sdk/src/lib/json-output.ts:50`                  |
+| `InventorySummary`               | Interface  | Summary statistics about the inventory                                                                                                                  | `sdk/src/lib/json-output.ts:66`                  |
+| `KeyspacesKeyspace`              | Interface  | Represents a Keyspaces keyspace.                                                                                                                        | `sdk/src/types/aws-cli.types.ts:807`             |
+| `KinesisStream`                  | Interface  | Represents an Amazon Kinesis data stream for real-time data processing.                                                                                 | `sdk/src/types/aws-cli.types.ts:658`             |
+| `KMSKey`                         | Interface  | Represents an AWS KMS encryption key.                                                                                                                   | `sdk/src/types/aws-cli.types.ts:236`             |
+| `LambdaFunction`                 | Interface  | Represents an AWS Lambda function with runtime and execution configuration.                                                                             | `sdk/src/types/aws-cli.types.ts:106`             |
+| `LightsailInstance`              | Interface  | Represents an Amazon Lightsail instance.                                                                                                                | `sdk/src/types/aws-cli.types.ts:727`             |
+| `LoadBalancer`                   | Interface  | Represents an Elastic Load Balancer (Application, Network, or Gateway).                                                                                 | `sdk/src/types/aws-cli.types.ts:90`              |
+| `LogEvent`                       | Interface  | Log event - general log message                                                                                                                         | `sdk/src/lib/progress-events.ts:158`             |
+| `LoginUrlEvent`                  | Interface  | Login URL event - fired when AWS login URL is detected                                                                                                  | `sdk/src/lib/progress-events.ts:169`             |
+| `MemoryDBCluster`                | Interface  | Represents a MemoryDB cluster.                                                                                                                          | `sdk/src/types/aws-cli.types.ts:777`             |
+| `NatGateway`                     | Interface  | Represents a VPC NAT Gateway for private subnet internet access.                                                                                        | `sdk/src/types/aws-cli.types.ts:292`             |
+| `NeptuneCluster`                 | Interface  | Represents a Neptune cluster.                                                                                                                           | `sdk/src/types/aws-cli.types.ts:768`             |
+| `NetworkAcl`                     | Interface  | Represents a VPC Network Access Control List (NACL).                                                                                                    | `sdk/src/types/aws-cli.types.ts:381`             |
+| `NetworkingService`              | Interface  | No summary available.                                                                                                                                   | `sdk/src/services/networking.ts:94`              |
+| `NetworkInterface`               | Interface  | Represents an Elastic Network Interface (ENI).                                                                                                          | `sdk/src/types/aws-cli.types.ts:403`             |
+| `OpenSearchDomain`               | Interface  | Represents an Amazon OpenSearch Service domain.                                                                                                         | `sdk/src/types/aws-cli.types.ts:223`             |
+| `OpenSearchServerlessCollection` | Interface  | Represents an OpenSearch Serverless collection.                                                                                                         | `sdk/src/types/aws-cli.types.ts:824`             |
+| `ProgressEvent`                  | Interface  | Progress event - fired periodically with overall progress                                                                                               | `sdk/src/lib/progress-events.ts:104`             |
+| `RbinRule`                       | Interface  | Represents an Rbin retention rule.                                                                                                                      | `sdk/src/types/aws-cli.types.ts:919`             |
+| `RDSInstance`                    | Interface  | Represents an Amazon RDS database instance with engine and configuration details.                                                                       | `sdk/src/types/aws-cli.types.ts:20`              |
+| `RedshiftCluster`                | Interface  | Represents an Amazon Redshift data warehouse cluster.                                                                                                   | `sdk/src/types/aws-cli.types.ts:198`             |
+| `RedshiftServerlessNamespace`    | Interface  | Represents a Redshift Serverless namespace.                                                                                                             | `sdk/src/types/aws-cli.types.ts:815`             |
+| `ReportingService`               | Interface  | No summary available.                                                                                                                                   | `sdk/src/services/reporting.ts:17`               |
+| `Route53Domain`                  | Interface  | Represents a Route53 domain.                                                                                                                            | `sdk/src/types/aws-cli.types.ts:871`             |
+| `Route53HostedZone`              | Interface  | Represents an Amazon Route 53 DNS hosted zone.                                                                                                          | `sdk/src/types/aws-cli.types.ts:169`             |
+| `RouteTable`                     | Interface  | Represents a VPC route table for network traffic routing.                                                                                               | `sdk/src/types/aws-cli.types.ts:392`             |
+| `S3Bucket`                       | Interface  | Represents an Amazon S3 bucket with security and versioning configuration.                                                                              | `sdk/src/types/aws-cli.types.ts:38`              |
+| `SageMakerDomain`                | Interface  | Represents a SageMaker domain.                                                                                                                          | `sdk/src/types/aws-cli.types.ts:749`             |
+| `SecretsManagerSecret`           | Interface  | Represents an AWS Secrets Manager secret for storing sensitive data.                                                                                    | `sdk/src/types/aws-cli.types.ts:260`             |
+| `SecurityGroup`                  | Interface  | Represents a VPC security group with firewall rules.                                                                                                    | `sdk/src/types/aws-cli.types.ts:77`              |
+| `ServiceCompletedEvent`          | Interface  | Service completed event - fired when a service scan completes                                                                                           | `sdk/src/lib/progress-events.ts:76`              |
+| `ServiceControlPolicy`           | Interface  | Represents an AWS Organizations Service Control Policy (SCP).                                                                                           | `sdk/src/types/aws-cli.types.ts:429`             |
+| `ServiceFailedEvent`             | Interface  | Service failed event - fired when a service scan fails                                                                                                  | `sdk/src/lib/progress-events.ts:91`              |
+| `ServiceStartedEvent`            | Interface  | Service started event - fired when a service scan begins                                                                                                | `sdk/src/lib/progress-events.ts:65`              |
+| `SNSTopic`                       | Interface  | Represents an Amazon SNS notification topic.                                                                                                            | `sdk/src/types/aws-cli.types.ts:495`             |
+| `SQSQueue`                       | Interface  | Represents an Amazon SQS message queue.                                                                                                                 | `sdk/src/types/aws-cli.types.ts:485`             |
+| `SSMParameter`                   | Interface  | Represents an AWS Systems Manager Parameter Store parameter.                                                                                            | `sdk/src/types/aws-cli.types.ts:595`             |
+| `StartedEvent`                   | Interface  | Started event - fired when inventory generation begins                                                                                                  | `sdk/src/lib/progress-events.ts:51`              |
+| `StepFunction`                   | Interface  | Represents an AWS Step Functions state machine for workflow orchestration.                                                                              | `sdk/src/types/aws-cli.types.ts:557`             |
+| `StorageGateway`                 | Interface  | Represents a Storage Gateway gateway.                                                                                                                   | `sdk/src/types/aws-cli.types.ts:900`             |
+| `Subnet`                         | Interface  | Represents a VPC subnet with IP address allocation and availability zone details.                                                                       | `sdk/src/types/aws-cli.types.ts:62`              |
+| `TimestreamDatabase`             | Interface  | Represents a Timestream database.                                                                                                                       | `sdk/src/types/aws-cli.types.ts:797`             |
+| `TransitGateway`                 | Interface  | Represents an AWS Transit Gateway for multi-VPC and on-premises connectivity.                                                                           | `sdk/src/types/aws-cli.types.ts:344`             |
+| `UtilService`                    | Interface  | No summary available.                                                                                                                                   | `sdk/src/services/utils.ts:8`                    |
+| `VPC`                            | Interface  | Represents an Amazon Virtual Private Cloud (VPC) network.                                                                                               | `sdk/src/types/aws-cli.types.ts:51`              |
+| `VpcEndpoint`                    | Interface  | Represents a VPC endpoint for private AWS service access.                                                                                               | `sdk/src/types/aws-cli.types.ts:356`             |
+| `VpcLatticeService`              | Interface  | Represents a VPC Lattice service.                                                                                                                       | `sdk/src/types/aws-cli.types.ts:861`             |
+| `VpcPeeringConnection`           | Interface  | Represents a VPC peering connection between two VPCs.                                                                                                   | `sdk/src/types/aws-cli.types.ts:369`             |
+| `VpnConnection`                  | Interface  | Represents a VPN connection between AWS and external network.                                                                                           | `sdk/src/types/aws-cli.types.ts:330`             |
+| `VpnGateway`                     | Interface  | Represents a Virtual Private Gateway for VPN connections.                                                                                               | `sdk/src/types/aws-cli.types.ts:318`             |
+| `WAFWebACL`                      | Interface  | Represents an AWS WAF web application firewall access control list.                                                                                     | `sdk/src/types/aws-cli.types.ts:634`             |
+| `WebInventoryData`               | Interface  | Complete inventory data structure optimized for web consumption                                                                                         | `sdk/src/lib/json-output.ts:78`                  |
+| `GlobalService`                  | Type Alias | AWS inventory operations                                                                                                                                | `sdk/src/operations/init-inventory.ts:179`       |
+| `InventoryMode`                  | Type Alias | AWS inventory operations                                                                                                                                | `sdk/src/operations/init-inventory.ts:37`        |
+| `InventoryProgressEvent`         | Type Alias | Union type of all progress events                                                                                                                       | `sdk/src/lib/progress-events.ts:182`             |
+| `RegionalService`                | Type Alias | AWS inventory operations                                                                                                                                | `sdk/src/operations/init-inventory.ts:178`       |
+| `ServiceName`                    | Type Alias | AWS inventory operations                                                                                                                                | `sdk/src/operations/init-inventory.ts:180`       |
+| `VersionStatus`                  | Type Alias | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:1`               |
+| `WriteInventoryWithJsonInput`    | Type Alias | Extends the existing writeInventoryFile functionality to support JSON output. This is a helper that integrates with the existing CSV/XLSX export logic. | `sdk/src/lib/json-output.ts:234`                 |
+| `ALL_GLOBAL_SERVICES`            | Variable   | AWS inventory operations                                                                                                                                | `sdk/src/operations/init-inventory.ts:166`       |
+| `ALL_REGIONAL_SERVICES`          | Variable   | Orchestrates the comprehensive cross-region inventory scan.                                                                                             | `sdk/src/operations/init-inventory.ts:120`       |
+| `AnalyticsServiceLive`           | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/analytics.ts:33`               |
+| `AppIntegrationServiceLive`      | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/application-integration.ts:18` |
+| `AwsConfigLive`                  | Variable   | Default configuration including HttpClient.                                                                                                             | `sdk/src/lib/aws-config.ts:35`                   |
+| `ComputeService`                 | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/compute.ts:121`                |
+| `ComputeServiceLive`             | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/compute.ts:153`                |
+| `ConfigService`                  | Variable   | No summary available.                                                                                                                                   | `sdk/src/lib/config.ts:29`                       |
+| `ConfigServiceLive`              | Variable   | No summary available.                                                                                                                                   | `sdk/src/lib/config.ts:40`                       |
+| `CredentialsLive`                | Variable   | Provides AWS Credentials by wrapping the existing standard provider. This ensures 'letme' and profile support still work.                               | `sdk/src/lib/aws-config.ts:18`                   |
+| `DatabaseService`                | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/database.ts:111`               |
+| `DatabaseServiceLive`            | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/database.ts:143`               |
+| `DeveloperToolsServiceLive`      | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/developer-tools.ts:18`         |
+| `GovernanceServiceLive`          | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/governance.ts:36`              |
+| `ManagementServiceLive`          | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/management.ts:123`             |
+| `NetworkingService`              | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/networking.ts:94`              |
+| `NetworkingServiceLive`          | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/networking.ts:130`             |
+| `progressEmitter`                | Variable   | Global singleton instance of the progress emitter                                                                                                       | `sdk/src/lib/progress-events.ts:242`             |
+| `ReportingService`               | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/reporting.ts:17`               |
+| `ReportingServiceLive`           | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/reporting.ts:34`               |
+| `SdkLive`                        | Variable   | No summary available.                                                                                                                                   | `sdk/src/lib/layers.ts:35`                       |
+| `SecurityServiceLive`            | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/security.ts:53`                |
+| `StorageServiceLive`             | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/storage.ts:54`                 |
+| `UtilService`                    | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/utils.ts:8`                    |
+| `UtilServiceLive`                | Variable   | No summary available.                                                                                                                                   | `sdk/src/services/utils.ts:15`                   |
+| `createProgressEvent`            | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/progress-events.ts:247`             |
+| `createWebInventoryJson`         | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/json-output.ts:149`                 |
+| `csvToXlsx`                      | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/spreadsheet.ts:39`                  |
+| `findAwsCliPath`                 | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-cli-check.ts:7`                 |
+| `findAwsProfile`                 | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-profile.ts:9`                   |
+| `generateInitInventoryEffect`    | Function   | No summary available.                                                                                                                                   | `sdk/src/operations/init-inventory.ts:182`       |
+| `generateTOTPToken`              | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/totp.ts:48`                         |
+| `getAwsCliVersion`               | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-cli-check.ts:30`                |
+| `getConfigWithDefaults`          | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/config.ts:146`                      |
+| `getEKSVersionStatus`            | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:270`             |
+| `getElastiCacheVersionStatus`    | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:292`             |
+| `getLambdaRuntimeStatus`         | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:276`             |
+| `getRDSEngineVersionStatus`      | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:282`             |
+| `getTOTPSecret`                  | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/totp.ts:33`                         |
+| `getVersion`                     | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version.ts:6`                       |
+| `isAwsCliAvailable`              | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-cli-check.ts:26`                |
+| `makeRegionConfig`               | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-config.ts:12`                   |
+| `setupTOTP`                      | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/totp.ts:134`                        |
+| `storeTOTPSecret`                | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/totp.ts:21`                         |
+| `validateAwsProfile`             | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-profile.ts:49`                  |
+| `writeInventoryFile`             | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/spreadsheet.ts:68`                  |
+| `writeInventoryWithJson`         | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/json-output.ts:243`                 |
+| `writeJsonInventory`             | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/spreadsheet.ts:93`                  |
+| `writeJsonInventoryFile`         | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/json-output.ts:199`                 |
 
 ### Signatures
 

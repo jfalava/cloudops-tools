@@ -2,11 +2,11 @@
 /* eslint-disable no-console */
 
 import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, chmodSync } from "node:fs";
+import { get } from "node:https";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 import process from "node:process";
 import { pipeline } from "node:stream/promises";
-import { get } from "node:https";
+import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const cliDir = resolve(here, "..");
@@ -20,7 +20,10 @@ const shouldSkipInstall = () => {
   }
 
   // Do not auto-download when working from the monorepo checkout.
-  if (existsSync(resolve(repoRoot, ".git")) && process.env.CLOUDOPS_TOOLS_FORCE_NATIVE_INSTALL !== "1") {
+  if (
+    existsSync(resolve(repoRoot, ".git")) &&
+    process.env.CLOUDOPS_TOOLS_FORCE_NATIVE_INSTALL !== "1"
+  ) {
     return true;
   }
 

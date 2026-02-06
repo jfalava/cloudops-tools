@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
+import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { spawnSync } from "node:child_process";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const binaryName = process.platform === "win32" ? "cloudops-tools.exe" : "cloudops-tools";
