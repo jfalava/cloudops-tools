@@ -9,9 +9,29 @@ permissions:
   contents: read
 
 jobs:
+  validate-tag:
+    name: Validate tag matches CLI version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate tag and cli/package.json version match
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="$(node -p "require('./cli/package.json').version")"
+
+          if [[ "$TAG" != "$VERSION" && "$TAG" != "v$VERSION" ]]; then
+            echo "Tag '$TAG' does not match cli/package.json version '$VERSION'."
+            echo "Use '$VERSION' or 'v$VERSION'."
+            exit 1
+          fi
+
   build:
     name: Build (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
+    needs: validate-tag
     strategy:
       fail-fast: false
       matrix:
