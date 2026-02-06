@@ -1,0 +1,120 @@
+---
+title: Getting Started
+description: How to run SDK Effects with SdkLive and choose the right module
+---
+
+# Getting Started
+
+## Core Runtime Model
+
+The SDK is Effect-based.
+
+- Most APIs return `Effect.Effect<Success, Error, Requirements>`
+- `SdkLive` provides credentials, region defaults, and service implementations
+- Run your program via `Effect.runPromise(...)`
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, UtilService } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const util = yield* _(UtilService);
+  return yield* _(util.getAccountId());
+});
+
+const accountId = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+## Quickstart: 3 Common Tasks
+
+### 1) Run a full inventory workflow
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+await Effect.runPromise(
+  generateInitInventoryEffect("123456789012", "security", "all", ["us-east-1", "eu-west-1"]).pipe(
+    Effect.provide(SdkLive),
+  ),
+);
+```
+
+### 2) Query one service directly
+
+```ts
+import { Effect } from "effect";
+import { ComputeService, SdkLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const compute = yield* _(ComputeService);
+  return yield* _(compute.describeEC2("us-east-1"));
+});
+
+const instances = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+### 3) Generate a markdown report
+
+```ts
+import { Effect } from "effect";
+import { ReportingService, SecurityService, SdkLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const security = yield* _(SecurityService);
+  const reporting = yield* _(ReportingService);
+
+  const roles = yield* _(security.describeIAMRoles());
+  return yield* _(reporting.generateMarkdownReport("IAM Roles", roles));
+});
+
+const markdown = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+## Credentials and Region Defaults
+
+- Region defaults to `AWS_REGION` or `us-east-1`
+- If `AWS_PROFILE` is set, profile credentials are used
+- Otherwise the default AWS credential chain is used
+
+## Error Handling with Effect
+
+The SDK exports typed error classes like `AwsError`, `CredentialError`, `ValidationError`, and
+`FileSystemError`.
+
+```ts
+import { Duration, Effect, Schedule } from "effect";
+import { AwsError, ComputeService, SdkLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const compute = yield* _(ComputeService);
+  return yield* _(compute.describeEC2("us-east-1"));
+}).pipe(
+  Effect.retry(
+    Schedule.recurs(3).pipe(
+      Schedule.whileInput((error) => error instanceof AwsError && error.isRetryable),
+    ),
+  ),
+  Effect.timeout(Duration.seconds(30)),
+  Effect.catchTag("TimeoutException", () => Effect.succeed([])),
+);
+
+await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+## How To Choose Modules
+
+| Need                            | Use           |
+| ------------------------------- | ------------- |
+| Full inventory workflow         | `operations`  |
+| Direct service data access      | `services`    |
+| JSON/CSV/XLSX output helpers    | `lib`         |
+| Shared resource typings         | `types`       |
+| Credential provider integration | `credentials` |
+
+## Next Reading
+
+1. [Error Model](/docs/sdk/error-model)
+2. [Layers and Runtime](/docs/sdk/layers-and-runtime)
+3. [Examples](/docs/sdk/examples)
+4. [Reference Map](/docs/sdk/reference-map)

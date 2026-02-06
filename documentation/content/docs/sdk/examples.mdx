@@ -1,0 +1,70 @@
+---
+title: Examples
+description: Copy-paste recipes for common CloudOps SDK integration tasks
+---
+
+# Examples
+
+## Collect EC2 and RDS, then build JSON payload
+
+```ts
+import { Effect } from "effect";
+import {
+  ComputeService,
+  DatabaseService,
+  SdkLive,
+  createWebInventoryJson,
+} from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const compute = yield* _(ComputeService);
+  const database = yield* _(DatabaseService);
+
+  const [ec2, rds] = yield* _(
+    Effect.all([compute.describeEC2("us-east-1"), database.describeRDS("us-east-1")]),
+  );
+
+  return createWebInventoryJson("123456789012", "us-east-1", "20260206", { EC2: ec2, RDS: rds });
+});
+
+const payload = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+## Run inventory for selected regions and services only
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+await Effect.runPromise(
+  generateInitInventoryEffect(
+    "123456789012",
+    "detailed",
+    "json",
+    ["us-east-1", "us-west-2"],
+    false,
+    {
+      skipGlobal: false,
+      onlyGlobal: false,
+      services: ["EC2", "RDS", "S3", "IAMRole"],
+    },
+  ).pipe(Effect.provide(SdkLive)),
+);
+```
+
+## Stream progress events to your logger
+
+```ts
+import { Effect } from "effect";
+import { progressEmitter, SdkLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+progressEmitter.onProgress((event) => {
+  if (event.type === "progress") {
+    console.error(`[progress] ${event.percentage}% ${event.message}`);
+  }
+});
+
+await Effect.runPromise(
+  generateInitInventoryEffect("123456789012", "basic", "csv").pipe(Effect.provide(SdkLive)),
+);
+```

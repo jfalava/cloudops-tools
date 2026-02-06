@@ -1,0 +1,36 @@
+---
+title: Reference Map
+description: Public SDK entry points mapped to their responsibilities
+---
+
+# Reference Map
+
+Use this page as a quick map before jumping to generated API references or source.
+
+Generated API page: [API Reference](/docs/sdk/api).
+
+## Entry Point Map
+
+| Import path                       | Primary exports                                                                                                                                                                                                                                  | Use for                                              |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |
+| `@cloudops-tools/sdk`             | Core re-exports (`SdkLive`, services, operations, utils, types)                                                                                                                                                                                  | Default import for most integrations                 |
+| `@cloudops-tools/sdk/operations`  | `generateInitInventoryEffect`, inventory mode/service types                                                                                                                                                                                      | High-level orchestration                             |
+| `@cloudops-tools/sdk/services`    | `ComputeService`, `StorageService`, `DatabaseService`, `NetworkingService`, `SecurityService`, `ManagementService`, `GovernanceService`, `DeveloperToolsService`, `AnalyticsService`, `AppIntegrationService`, `ReportingService`, `UtilService` | Targeted service collection and custom orchestration |
+| `@cloudops-tools/sdk/lib`         | Config helpers, output helpers, progress events, version checks                                                                                                                                                                                  | Shared utility helpers                               |
+| `@cloudops-tools/sdk/types`       | Shared AWS resource types and error types                                                                                                                                                                                                        | Shared app/domain typing                             |
+| `@cloudops-tools/sdk/credentials` | Credential provider helper                                                                                                                                                                                                                       | Explicit credential-provider integration             |
+
+## Practical Selection Rules
+
+- Choose `operations` when you need end-to-end inventory generation with output handling.
+- Choose `services` when you need custom orchestration and selective calls.
+- Choose `lib` when integrating progress/output/config helpers into your own runtime.
+
+## Source Cross-Reference
+
+| Concern                 | Source path                            |
+| ----------------------- | -------------------------------------- |
+| Layer wiring            | `sdk/src/lib/layers.ts`                |
+| Inventory orchestration | `sdk/src/operations/init-inventory.ts` |
+| Service implementations | `sdk/src/services/*.ts`                |
+| Error types             | `sdk/src/types/effect-errors.ts`       |

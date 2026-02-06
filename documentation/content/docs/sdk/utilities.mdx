@@ -1,0 +1,57 @@
+---
+title: Utilities
+description: Utility modules for progress events, output formatting, config, version checks, and TOTP
+---
+
+# Utilities
+
+SDK utility helpers live under `@cloudops-tools/sdk/lib`.
+
+## Progress Events
+
+`progressEmitter` emits lifecycle events during inventory runs.
+
+Event families include:
+
+- `started`
+- `service_started`
+- `service_completed`
+- `service_failed`
+- `progress`
+- `file_written`
+- `completed`
+- `failed`
+
+```ts
+import { progressEmitter, type InventoryProgressEvent } from "@cloudops-tools/sdk";
+
+progressEmitter.onProgress((event: InventoryProgressEvent) => {
+  if (event.type === "progress") {
+    console.log(`${event.percentage}% - ${event.message}`);
+  }
+});
+```
+
+## Output Helpers
+
+| Helper                   | Purpose                       |
+| ------------------------ | ----------------------------- |
+| `writeInventoryFile`     | Write inventory as CSV/XLSX   |
+| `csvToXlsx`              | Convert existing CSV to XLSX  |
+| `createWebInventoryJson` | Build web-friendly JSON shape |
+| `writeJsonInventoryFile` | Write JSON inventory output   |
+
+## Configuration Helpers
+
+| Helper                  | Purpose                                   |
+| ----------------------- | ----------------------------------------- |
+| `ConfigService`         | Load/save persisted CloudOps config       |
+| `getConfigWithDefaults` | Merge defaults with runtime option values |
+
+## Runtime and Validation Helpers
+
+| Helper                                                                                                      | Purpose                                   |
+| ----------------------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| `findAwsCliPath`, `isAwsCliAvailable`, `getAwsCliVersion`                                                   | AWS CLI environment checks                |
+| `getEKSVersionStatus`, `getLambdaRuntimeStatus`, `getRDSEngineVersionStatus`, `getElastiCacheVersionStatus` | Version lifecycle classification          |
+| `storeTOTPSecret`, `getTOTPSecret`, `generateTOTPToken`, `setupTOTP`                                        | TOTP secret handling and token generation |

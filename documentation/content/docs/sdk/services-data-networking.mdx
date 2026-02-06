@@ -1,0 +1,57 @@
+---
+title: "Services: Data & Networking"
+description: Database, analytics, integration, and networking services in the CloudOps SDK
+---
+
+# Services: Data & Networking
+
+## Choose This Page When
+
+- You need targeted data-store inventory (RDS, DynamoDB, Redshift, OpenSearch, and related systems)
+- You need messaging or integration primitives such as SQS/SNS
+- You need network topology inventory (VPC, subnets, gateways, endpoints, and edge services)
+
+## DatabaseService
+
+Use for database and data-store inventory.
+
+Examples: RDS, DynamoDB, Redshift, OpenSearch, ElastiCache, DAX, DocDB, Neptune, MemoryDB,
+Timestream, Keyspaces, Redshift Serverless, OpenSearch Serverless.
+
+## AnalyticsService
+
+Use for analytics-oriented workloads.
+
+Examples: Kinesis, Athena workgroups, EMR analytics inventory.
+
+## AppIntegrationService
+
+Use for messaging/integration primitives.
+
+Examples: SQS, SNS.
+
+## NetworkingService
+
+Use for network topology and edge connectivity.
+
+Examples: VPC, subnets, security groups, load balancers, gateways, endpoints,
+Direct Connect, Global Accelerator, VPC Lattice.
+
+## Example
+
+```ts
+import { Effect } from "effect";
+import { DatabaseService, NetworkingService, SdkLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const db = yield* _(DatabaseService);
+  const net = yield* _(NetworkingService);
+
+  const rds = yield* _(db.describeRDS("us-east-1"));
+  const vpcs = yield* _(net.describeVPCs("us-east-1"));
+
+  return { rds, vpcs };
+});
+
+await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```

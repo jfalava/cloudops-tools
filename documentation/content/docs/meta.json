@@ -1,0 +1,13 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "installation",
+    "build-cli",
+    "configuration",
+    "---Commands---",
+    "commands",
+    "---SDK---",
+    "sdk"
+  ]
+}

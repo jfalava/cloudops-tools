@@ -1,0 +1,65 @@
+---
+title: Error Model
+description: Error taxonomy and handling patterns for CloudOps SDK Effects
+---
+
+# Error Model
+
+SDK operations and services are `Effect` values, so errors are values you can classify and handle.
+
+## Exported Error Types
+
+| Error type        | Typical source                    | Notes                                                                              |
+| ----------------- | --------------------------------- | ---------------------------------------------------------------------------------- |
+| `AwsError`        | AWS SDK/service responses         | Includes `service`, `region`, `code`, `statusCode`, and helpers like `isRetryable` |
+| `CredentialError` | Credential loading/auth failures  | Usually recover by fixing auth environment/profile                                 |
+| `ValidationError` | Invalid inputs/options            | Caller should correct data before retry                                            |
+| `FileSystemError` | File read/write/delete operations | Common in report/output workflows                                                  |
+
+## Common Failure Scenarios
+
+| Scenario                               | Typical signal                                    | Recommended handling                      |
+| -------------------------------------- | ------------------------------------------------- | ----------------------------------------- |
+| API throttling/transient service issue | `AwsError` with retryable code/status             | Retry with backoff and cap attempts       |
+| Invalid/expired credentials            | `CredentialError` or `AwsError.isCredentialError` | Refresh profile/session and retry         |
+| Invalid region/service/filter values   | `ValidationError`                                 | Fail fast and surface actionable message  |
+| Output write failure                   | `FileSystemError`                                 | Log destination path and halt output step |
+
+## Retry Pattern for AWS Errors
+
+```ts
+import { Duration, Effect, Schedule } from "effect";
+import { AwsError, ComputeService, SdkLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const compute = yield* _(ComputeService);
+  return yield* _(compute.describeEC2("us-east-1"));
+}).pipe(
+  Effect.retry(
+    Schedule.exponential(Duration.millis(250)).pipe(
+      Schedule.intersect(Schedule.recurs(4)),
+      Schedule.whileInput((error) => error instanceof AwsError && error.isRetryable),
+    ),
+  ),
+);
+
+await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+## Match Specific Error Tags
+
+```ts
+import { Effect } from "effect";
+import { CredentialError, UtilService, SdkLive } from "@cloudops-tools/sdk";
+
+const accountIdProgram = Effect.gen(function* (_) {
+  const util = yield* _(UtilService);
+  return yield* _(util.getAccountId());
+}).pipe(
+  Effect.catchTag("CredentialError", (error: CredentialError) =>
+    Effect.fail(new Error(`Credentials issue: ${error.message}`)),
+  ),
+);
+
+await Effect.runPromise(accountIdProgram.pipe(Effect.provide(SdkLive)));
+```

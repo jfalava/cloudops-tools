@@ -1,0 +1,42 @@
+---
+title: Configuration
+description: Configure CloudOps Tools for your environment
+---
+
+# Configuration
+
+## Default Region
+
+The default AWS region is `us-east-1`. Override it with:
+
+```bash
+cloudops --region eu-west-1 inventory
+```
+
+Or set the environment variable:
+
+```bash
+export AWS_REGION=eu-west-1
+```
+
+## Output Formats
+
+CloudOps Tools supports multiple output formats:
+
+| Format  | Description                    |
+| ------- | ------------------------------ |
+| `table` | Human-readable table (default) |
+| `json`  | JSON output for scripting      |
+| `csv`   | CSV for spreadsheet import     |
+
+```bash
+cloudops inventory --format json
+```
+
+## Profiles
+
+Use AWS profiles for different accounts:
+
+```bash
+cloudops --profile production inventory
+```

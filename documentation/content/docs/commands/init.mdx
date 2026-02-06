@@ -1,0 +1,90 @@
+---
+title: init
+description: Generate cross-region inventory scan with advanced options
+---
+
+# init
+
+Generate a comprehensive cross-region AWS inventory scan with advanced configuration options.
+
+## Usage
+
+```bash
+cloudops-tools init [options]
+```
+
+## Description
+
+The `init` command performs a full inventory scan across multiple AWS regions. Unlike the basic scan, it supports different scanning modes optimized for various use cases like security auditing or cost analysis.
+
+## Options
+
+| Option            | Alias | Description                                          | Default       |
+| ----------------- | ----- | ---------------------------------------------------- | ------------- |
+| `--account`       | `-a`  | AWS account or profile name                          | Auto-detected |
+| `--region`        | `-r`  | AWS region(s), comma-separated                       | All regions   |
+| `--limit-regions` |       | Limit scan to specific regions                       | -             |
+| `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`) | `csv`         |
+| `--mode`          |       | Scan mode (`basic`, `detailed`, `security`, `cost`)  | `basic`       |
+| `--services`      | `-s`  | Comma-separated list of services                     | All services  |
+| `--skip-global`   |       | Skip global services                                 | `false`       |
+| `--only-global`   |       | Scan only global services                            | `false`       |
+| `--debug`         |       | Show raw error output                                | `false`       |
+
+## Scan Modes
+
+### basic
+
+Standard inventory scan with essential resource information.
+
+### detailed
+
+Extended scan with additional metadata and relationships.
+
+### security
+
+Security-focused scan emphasizing:
+
+- Security groups and NACLs
+- IAM policies and roles
+- Encryption settings
+- Public accessibility
+
+### cost
+
+Cost-optimization focused scan including:
+
+- Resource utilization metrics
+- Reserved instance coverage
+- Savings opportunities
+
+## Examples
+
+```bash
+# Full cross-region scan (all regions)
+cloudops-tools init
+
+# Security-focused scan with Excel export
+cloudops-tools init --mode security --export-format xlsx
+
+# Scan only specific services across regions
+cloudops-tools init --services Lambda,DynamoDB,SQS
+
+# Limit to specific regions
+cloudops-tools init --limit-regions us-east-1,us-west-2,eu-west-1
+
+# Cost analysis mode
+cloudops-tools init --mode cost --export-format xlsx
+
+# Skip global services for faster regional scan
+cloudops-tools init --skip-global --region us-east-1
+
+# Scan only global services
+cloudops-tools init --only-global
+```
+
+## Output
+
+The command generates inventory files in the `inventory-output/{account-id}/` directory with the format:
+
+- `inventory-{date}-{time}.csv` (or `.xlsx`, `.json`)

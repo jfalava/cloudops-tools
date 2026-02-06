@@ -1,0 +1,45 @@
+---
+title: Operations
+description: High-level inventory orchestration APIs in the SDK
+---
+
+# Operations
+
+Operations provide high-level workflows that compose many services.
+
+## Main Operation
+
+`generateInitInventoryEffect` runs cross-region inventory generation with support for:
+
+- Modes: `basic`, `detailed`, `security`, `cost`
+- Output formats: `csv`, `xlsx`, `json`, `both`, `all`
+- Region limiting and global-service toggles
+- Service filtering
+- Progress event emission
+
+## Example
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+await Effect.runPromise(
+  generateInitInventoryEffect(
+    "123456789012",
+    "security",
+    "all",
+    ["us-east-1", "eu-west-1"],
+    false,
+    {
+      skipGlobal: false,
+      onlyGlobal: false,
+      services: ["EC2", "RDS", "S3"],
+    },
+  ).pipe(Effect.provide(SdkLive)),
+);
+```
+
+## When To Use Operations vs Services
+
+- Use `operations` when you want SDK-managed orchestration and output handling.
+- Use `services` when you want custom orchestration or targeted data collection.

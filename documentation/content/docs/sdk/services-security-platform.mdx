@@ -1,0 +1,70 @@
+---
+title: "Services: Security & Platform"
+description: Security, governance, management, and reporting services in the CloudOps SDK
+---
+
+# Services: Security & Platform
+
+## Choose This Page When
+
+- You need identity/security inventory and posture reporting inputs
+- You need organizational/governance controls (SCP, Config, Control Tower)
+- You need management-plane services (CloudWatch, CloudTrail, API Gateway, SSM, Route53, CloudFront)
+- You need markdown/report generation from collected resources
+
+## SecurityService
+
+Use for security posture inventory.
+
+Examples: IAM users/roles, KMS keys, Secrets Manager, WAF, GuardDuty, Cognito.
+
+## GovernanceService
+
+Use for organizational controls and compliance.
+
+Examples: Control Tower guardrails, service control policies (SCP), AWS Config rules.
+
+## ManagementService
+
+Use for control-plane management resources.
+
+Examples: CloudWatch alarms, CloudFormation, API Gateway, Step Functions, EventBridge,
+CloudTrail, SSM, Route53, CloudFront.
+
+## DeveloperToolsService
+
+Use for developer/platform tooling resources.
+
+Examples: ECR repositories, Glue jobs.
+
+## UtilService
+
+Use for shared operational context.
+
+Examples: account ID lookup and all-region discovery.
+
+## ReportingService
+
+Use for human-readable outputs.
+
+- `generateMarkdownReport(...)`
+- `describeResourceHarder(type, region, id)`
+
+## Example
+
+```ts
+import { Effect } from "effect";
+import { ReportingService, SecurityService, SdkLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const security = yield* _(SecurityService);
+  const reporting = yield* _(ReportingService);
+
+  const roles = yield* _(security.describeIAMRoles());
+  const markdown = yield* _(reporting.generateMarkdownReport("IAM Roles", roles));
+
+  return markdown;
+});
+
+const markdown = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```

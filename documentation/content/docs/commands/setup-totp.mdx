@@ -1,0 +1,59 @@
+---
+title: setup-totp
+description: Configure TOTP secret for MFA authentication
+---
+
+# setup-totp
+
+Configure a TOTP (Time-based One-Time Password) secret for MFA authentication with AWS.
+
+## Usage
+
+```bash
+cloudops-tools setup-totp
+```
+
+## Description
+
+The `setup-totp` command helps you configure TOTP-based multi-factor authentication. This is useful when working with AWS accounts that require MFA for API access, particularly with tools like `letme` for temporary credential management.
+
+## Interactive Setup
+
+The command runs an interactive prompt to:
+
+1. Accept your TOTP secret key
+2. Store it securely for future use
+3. Validate the configuration
+
+## Example
+
+```bash
+cloudops-tools setup-totp
+```
+
+When prompted, enter your TOTP secret key (the base32-encoded secret from your MFA device setup).
+
+## Use Cases
+
+### AWS MFA with letme
+
+If you use `letme` for AWS credential management, this command configures the TOTP secret so that MFA codes can be automatically generated:
+
+```bash
+# Configure TOTP once
+cloudops-tools setup-totp
+
+# Then use letme with automatic MFA
+letme in my-account
+```
+
+### Programmatic MFA Access
+
+For scripts that need to authenticate with MFA-protected AWS accounts, the stored TOTP secret enables automatic code generation.
+
+## Security Considerations
+
+- The TOTP secret is stored locally via Bun secrets (OS-backed secret storage), not in `config.json`
+- Ensure your workstation has appropriate security controls
+- Do not share your TOTP secret
+- Consider using AWS IAM Identity Center (SSO) for team environments

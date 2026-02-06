@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": false,
+  "trailingComma": "all",
+  "insertFinalNewline": true,
+  "experimentalSortPackageJson": {
+    "sortScripts": true
+  },
+  "experimentalSortImports": {
+    "order": "asc",
+    "newlinesBetween": true,
+    "internalPattern": ["@/"]
+  },
+  "experimentalTailwindcss": {
+    "stylesheet": "./src/styles.css",
+    "attributes": ["class", "className"],
+    "functions": ["clsx", "cn"],
+    "preserveDuplicates": false,
+    "preserveWhitespace": false
+  },
+  "ignorePatterns": [
+    "cloudflare-env.d.ts",
+    "worker-configuration.d.ts",
+    "src/routeTree.gen.ts",
+    ".source/**",
+    ".wrangler/**",
+    "node_modules/**"
+  ]
+}

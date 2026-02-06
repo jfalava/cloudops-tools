@@ -1,0 +1,67 @@
+---
+title: Build CLI Binary
+description: Build native CloudOps Tools CLI binaries from source
+---
+
+# Build CLI Binary
+
+Use this guide if you want to build binaries yourself instead of installing from npm.
+
+## Prerequisites
+
+- [Bun](https://bun.sh) 1.3.8+
+- Git
+
+## Clone and Install
+
+```bash
+git clone https://github.com/jfalava/cloudops-tools-draft.git
+cd cloudops-tools-draft
+bun install
+```
+
+## Build Commands
+
+Run from repository root.
+
+### Native build for current host target
+
+```bash
+bun run cli:build:linux
+bun run cli:build:windows
+bun run cli:build:macos
+```
+
+### Build all configured targets
+
+```bash
+bun run cli:build:all
+```
+
+## Build Version
+
+You can inject a custom build version:
+
+```bash
+BUILD_VERSION=v0.1.1 bun run cli:build:linux
+```
+
+If not provided, scripts fall back to `0.5`.
+
+## Output Artifacts
+
+Artifacts are written to `cli/dist/`.
+
+Examples:
+
+- `cloudops-tools-linux-x64.zip`
+- `cloudops-tools-windows-x64.zip`
+- `cloudops-tools-macos-arm.zip`
+
+## Run Local CLI Without Packaging
+
+For development, run directly from source:
+
+```bash
+bun run cli -- --help
+```

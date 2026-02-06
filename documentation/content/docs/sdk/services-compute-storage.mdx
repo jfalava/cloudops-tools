@@ -1,0 +1,52 @@
+---
+title: "Services: Compute & Storage"
+description: Compute and storage inventory services in the CloudOps SDK
+---
+
+# Services: Compute & Storage
+
+## Choose This Page When
+
+- You need infrastructure inventory for EC2, Lambda, ECS, EKS, and related compute services
+- You need storage inventory for S3, EBS, EFS, FSx, backup, or archival resources
+- You want service-level control instead of full orchestration from `operations`
+
+## ComputeService
+
+Use for compute and container workloads.
+
+| Area             | Examples                                                                        |
+| ---------------- | ------------------------------------------------------------------------------- |
+| Core compute     | EC2, Auto Scaling                                                               |
+| Serverless       | Lambda                                                                          |
+| Containers       | ECS, EKS                                                                        |
+| Platform compute | App Runner, Batch, EMR, EMR Serverless, Lightsail, Elastic Beanstalk, SageMaker |
+
+## StorageService
+
+Use for storage and backup resources.
+
+| Area               | Examples                        |
+| ------------------ | ------------------------------- |
+| Object/block/file  | S3, EBS, EFS, FSx               |
+| Backup/archival    | Backup Vault, Glacier, Rbin     |
+| Storage appliances | Storage Gateway, Backup Gateway |
+
+## Example
+
+```ts
+import { Effect } from "effect";
+import { ComputeService, StorageService, SdkLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const compute = yield* _(ComputeService);
+  const storage = yield* _(StorageService);
+
+  const ec2 = yield* _(compute.describeEC2("us-east-1"));
+  const s3 = yield* _(storage.describeS3());
+
+  return { ec2Count: ec2.length, s3Count: s3.length };
+});
+
+const result = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```

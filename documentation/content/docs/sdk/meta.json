@@ -1,0 +1,18 @@
+{
+  "title": "SDK",
+  "pages": [
+    "index",
+    "getting-started",
+    "error-model",
+    "layers-and-runtime",
+    "operations",
+    "examples",
+    "services-compute-storage",
+    "services-data-networking",
+    "services-security-platform",
+    "utilities",
+    "reference-map",
+    "---API---",
+    "api"
+  ]
+}

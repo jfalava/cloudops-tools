@@ -1,0 +1,78 @@
+---
+title: Getting Started
+description: CloudOps Tools - AWS cloud operations and inventory management CLI
+---
+
+# Getting Started
+
+Welcome to CloudOps Tools, a powerful CLI for AWS cloud operations and inventory management.
+
+## What is CloudOps Tools?
+
+CloudOps Tools is a command-line utility that helps you:
+
+- **Inventory AWS resources** across multiple regions and services
+- **Generate reports** in CSV, Excel, or JSON format
+- **Describe resources** in detail with Markdown output
+- **Audit security** configurations across your infrastructure
+
+## Quick Start
+
+```bash
+# Install
+bun install -g cloudops-tools
+
+# Run a basic inventory scan
+cloudops-tools --region us-east-1
+
+# Generate a cross-region security audit
+cloudops-tools init --mode security --export-format xlsx
+```
+
+## Core Commands
+
+| Command                                   | Description                                  |
+| ----------------------------------------- | -------------------------------------------- |
+| [`cloudops-tools`](/docs/commands)        | Run a basic inventory scan                   |
+| [`init`](/docs/commands/init)             | Cross-region inventory with advanced options |
+| [`describe`](/docs/commands/describe)     | Get detailed resource information            |
+| [`config`](/docs/commands/config)         | Manage persistent settings                   |
+| [`setup-totp`](/docs/commands/setup-totp) | Configure MFA authentication                 |
+
+## Common Use Cases
+
+### Basic Inventory
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+### Multi-Region Scan
+
+```bash
+cloudops-tools init --limit-regions us-east-1,eu-west-1,ap-southeast-1
+```
+
+### Security Audit
+
+```bash
+cloudops-tools init --mode security --export-format xlsx
+```
+
+### Specific Services Only
+
+```bash
+cloudops-tools --services EC2,RDS,Lambda --region us-east-1
+```
+
+### Describe a Specific Resource
+
+```bash
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
+```
+
+## Next Steps
+
+- [Installation Guide](/docs/installation) - Detailed setup instructions
+- [Configuration](/docs/configuration) - Configure defaults and options
+- [Commands Reference](/docs/commands) - Full command documentation

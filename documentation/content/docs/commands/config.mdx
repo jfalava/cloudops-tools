@@ -1,0 +1,167 @@
+---
+title: config
+description: Manage persistent configuration for CloudOps Tools
+---
+
+# config
+
+Manage persistent configuration settings for CloudOps Tools.
+
+## Usage
+
+```bash
+cloudops-tools config [subcommand] [options]
+```
+
+## Subcommands
+
+| Subcommand | Description                      |
+| ---------- | -------------------------------- |
+| `set`      | Set a configuration value        |
+| `get`      | Get configuration value(s)       |
+| `unset`    | Remove a configuration value     |
+| `path`     | Show the configuration file path |
+
+## Configuration Keys
+
+| Key               | Type     | Description                                                  |
+| ----------------- | -------- | ------------------------------------------------------------ |
+| `defaultRegion`   | string   | Default AWS region for scans                                 |
+| `defaultAccount`  | string   | Default AWS account or profile                               |
+| `defaultFormat`   | string   | Default export format (`csv`, `xlsx`, `json`, `both`, `all`) |
+| `defaultMode`     | string   | Default scan mode (`basic`, `detailed`, `security`, `cost`)  |
+| `defaultServices` | string[] | Default services to scan                                     |
+| `skipGlobal`      | boolean  | Skip global services by default                              |
+| `onlyGlobal`      | boolean  | Scan only global services by default                         |
+
+---
+
+## config set
+
+Set a configuration value.
+
+### Usage
+
+```bash
+cloudops-tools config set <key> <value>
+```
+
+### Examples
+
+```bash
+# Set default region
+cloudops-tools config set defaultRegion eu-west-1
+
+# Set default export format
+cloudops-tools config set defaultFormat xlsx
+
+# Set default scan mode
+cloudops-tools config set defaultMode security
+
+# Set default services (comma-separated)
+cloudops-tools config set defaultServices EC2,RDS,Lambda
+
+# Enable skip global by default
+cloudops-tools config set skipGlobal true
+
+# Set default account/profile
+cloudops-tools config set defaultAccount production
+```
+
+---
+
+## config get
+
+Get one or all configuration values.
+
+### Usage
+
+```bash
+# Get all configuration
+cloudops-tools config get
+
+# Get a specific key
+cloudops-tools config get <key>
+```
+
+### Examples
+
+```bash
+# Show all configuration
+cloudops-tools config get
+
+# Get specific value
+cloudops-tools config get defaultRegion
+cloudops-tools config get defaultFormat
+```
+
+---
+
+## config unset
+
+Remove a configuration value.
+
+### Usage
+
+```bash
+cloudops-tools config unset <key>
+```
+
+### Examples
+
+```bash
+# Remove default region setting
+cloudops-tools config unset defaultRegion
+
+# Remove default services
+cloudops-tools config unset defaultServices
+```
+
+---
+
+## config path
+
+Show the path to the configuration file.
+
+### Usage
+
+```bash
+cloudops-tools config path
+```
+
+### Example
+
+```bash
+cloudops-tools config path
+# Output: /Users/username/.config/cloudops-tools/config.json
+```
+
+---
+
+## Configuration File
+
+Configuration is stored as JSON. Example configuration:
+
+```json
+{
+  "defaultRegion": "eu-west-1",
+  "defaultFormat": "xlsx",
+  "defaultMode": "security",
+  "defaultServices": ["EC2", "RDS", "Lambda", "S3"],
+  "skipGlobal": false,
+  "onlyGlobal": false
+}
+```
+
+## Precedence
+
+Current CLI behavior: `config` stores and retrieves values, but scan commands do not yet auto-apply
+those values as runtime defaults. Pass scan flags explicitly on `cloudops-tools` or
+`cloudops-tools init`.
+
+For example:
+
+```bash
+# Explicitly choose format at runtime
+cloudops-tools init --export-format json
+```

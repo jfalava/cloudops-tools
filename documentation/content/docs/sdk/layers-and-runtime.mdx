@@ -1,0 +1,61 @@
+---
+title: Layers and Runtime
+description: How SdkLive composes services and how to run or override layers
+---
+
+# Layers and Runtime
+
+The SDK uses Effect layers for dependency injection. Most apps can use `SdkLive` directly.
+
+## What `SdkLive` Provides
+
+`SdkLive` composes:
+
+- AWS config layer (`AwsConfigLive`)
+- Core utility layer (`UtilServiceLive`)
+- All service layers (compute, storage, database, networking, security, platform, reporting)
+- Config service layer (`ConfigServiceLive`)
+
+## Standard Runtime Pattern
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, UtilService } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const util = yield* _(UtilService);
+  return yield* _(util.getAllRegions());
+});
+
+const regions = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+## Providing a Test Service Override
+
+For focused tests, provide only the service your program needs.
+
+```ts
+import { Effect, Layer } from "effect";
+import { SdkLive, UtilService, type UtilService as UtilServiceType } from "@cloudops-tools/sdk";
+
+const UtilServiceTest = Layer.succeed(
+  UtilService,
+  UtilService.of({
+    getAccountId: () => Effect.succeed("000000000000"),
+    getAllRegions: () => Effect.succeed(["us-east-1"]),
+  }) satisfies UtilServiceType,
+);
+
+const program = Effect.gen(function* (_) {
+  const util = yield* _(UtilService);
+  return yield* _(util.getAccountId());
+});
+
+const accountId = await Effect.runPromise(program.pipe(Effect.provide(UtilServiceTest)));
+```
+
+## Guidance
+
+- Use `SdkLive` for production runs unless you need special wiring.
+- Override narrowly (one service at a time) with test layers for deterministic tests.
+- Keep layer construction near app startup, not inside business logic.
