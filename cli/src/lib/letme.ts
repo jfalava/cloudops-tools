@@ -1,7 +1,8 @@
 import { generateTOTPToken, getTOTPSecret } from "@cloudops-tools/sdk";
 import { Effect } from "effect";
-import { spawn } from "node:child_process";
 import process from "node:process";
+
+import { spawn } from "@/lib/spawn";
 
 async function ensureLetmeAvailable(): Promise<void> {
   await new Promise<void>((resolve, reject) => {
