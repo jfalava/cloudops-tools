@@ -42,7 +42,7 @@ jobs:
       - name: Validate tag matches package version
         shell: bash
         run: |
-          TAG="$(git tag --points-at HEAD | head -n 1)"
+          TAG="$(git tag --points-at HEAD | grep '^sdk-v' | head -n 1)"
           if [[ -z "$TAG" ]]; then
             echo "No git tag found for commit $(git rev-parse --short HEAD)."
             exit 1
