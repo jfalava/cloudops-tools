@@ -3,9 +3,12 @@ import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { argv } from "bun";
 import { Effect } from "effect";
+import { readFile } from "node:fs/promises";
 import process from "node:process";
 
 import { HELP_EXAMPLES, mainCommand } from "@/commands";
+
+declare const BUILD_VERSION: string | undefined;
 
 const cli = Command.run(mainCommand, {
   name: "CloudOps Tools",
@@ -23,11 +26,11 @@ if (wantsVersion) {
   const version =
     typeof BUILD_VERSION !== "undefined"
       ? BUILD_VERSION
-      : await Bun.file(new URL("../package.json", import.meta.url))
-          .json()
-          .then((data) => (data as { version: string }).version)
+      : await readFile(new URL("../package.json", import.meta.url), "utf8")
+          .then((json) => JSON.parse(json) as { version: string })
+          .then((data) => data.version)
           .catch(() => "unknown");
-  process.stdout.write(`${version}\n`);
+  process.stdout.write(String(version) + "\n");
   process.exit(0);
 }
 
@@ -38,7 +41,7 @@ if (wantsHelp && !forceInit) {
 }
 
 if (wantsHelpExamples && !forceInit) {
-  process.stdout.write(`${HELP_EXAMPLES.trim()}\n`);
+  process.stdout.write(String(HELP_EXAMPLES.trim()) + "\n");
   process.exit(0);
 }
 

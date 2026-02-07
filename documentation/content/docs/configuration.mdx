@@ -1,42 +1,75 @@
 ---
 title: Configuration
-description: Configure CloudOps Tools for your environment
+description: Configure persistent defaults and runtime behavior for CloudOps Tools
 ---
 
 # Configuration
 
-## Default Region
+Use `cloudops-tools config` to store persistent defaults such as region, mode, format, and service
+filters.
 
-The default AWS region is `us-east-1`. Override it with:
+## Command Summary
 
 ```bash
-cloudops --region eu-west-1 inventory
+cloudops-tools config [subcommand]
 ```
 
-Or set the environment variable:
+Available subcommands:
+
+- `set <key> <value>`
+- `get [key]`
+- `unset <key>`
+- `path`
+
+## Supported Keys
+
+| Key               | Type     | Example Value    |
+| ----------------- | -------- | ---------------- |
+| `defaultRegion`   | string   | `eu-west-1`      |
+| `defaultAccount`  | string   | `production`     |
+| `defaultFormat`   | string   | `xlsx`           |
+| `defaultMode`     | string   | `security`       |
+| `defaultServices` | string[] | `EC2,RDS,Lambda` |
+| `skipGlobal`      | boolean  | `true`           |
+| `onlyGlobal`      | boolean  | `false`          |
+
+## Common Operations
+
+### Set Values
 
 ```bash
-export AWS_REGION=eu-west-1
+cloudops-tools config set defaultRegion eu-west-1
+cloudops-tools config set defaultFormat xlsx
+cloudops-tools config set defaultMode security
+cloudops-tools config set defaultServices EC2,RDS,Lambda
+cloudops-tools config set skipGlobal true
 ```
 
-## Output Formats
-
-CloudOps Tools supports multiple output formats:
-
-| Format  | Description                    |
-| ------- | ------------------------------ |
-| `table` | Human-readable table (default) |
-| `json`  | JSON output for scripting      |
-| `csv`   | CSV for spreadsheet import     |
+### Read Values
 
 ```bash
-cloudops inventory --format json
+cloudops-tools config get
+cloudops-tools config get defaultRegion
 ```
 
-## Profiles
-
-Use AWS profiles for different accounts:
+### Remove Values
 
 ```bash
-cloudops --profile production inventory
+cloudops-tools config unset defaultServices
+```
+
+### Show Config File Path
+
+```bash
+cloudops-tools config path
+```
+
+## Notes
+
+- Current CLI behavior: config values are stored and retrievable, but scan commands do not yet
+  auto-apply them as runtime defaults.
+- Pass scan flags explicitly on `cloudops-tools` or `cloudops-tools init` for now.
+
+```bash
+cloudops-tools init --mode security --export-format xlsx --region us-east-1
 ```

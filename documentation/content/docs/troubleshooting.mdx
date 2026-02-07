@@ -1,0 +1,85 @@
+---
+title: Troubleshooting
+description: Resolve common CloudOps Tools CLI failures quickly
+---
+
+# Troubleshooting
+
+## Missing AWS Credentials
+
+Symptom:
+
+- Errors similar to credential provider failures.
+
+Checks:
+
+```bash
+aws sts get-caller-identity
+```
+
+If this fails, configure credentials first:
+
+```bash
+export AWS_ACCESS_KEY_ID=...
+export AWS_SECRET_ACCESS_KEY=...
+export AWS_REGION=us-east-1
+```
+
+You can also use shared credentials in `~/.aws/credentials`.
+
+## Access Denied / Unauthorized
+
+Symptom:
+
+- `AccessDenied` errors for specific services or actions.
+
+Actions:
+
+- Confirm the active identity can call read APIs for the targeted services.
+- Reduce scope to isolate failing services:
+
+```bash
+cloudops-tools init --services EC2 --region us-east-1 --debug
+```
+
+## Region Errors
+
+Symptom:
+
+- Invalid region names or service/region mismatch behavior.
+
+Actions:
+
+- Validate region list formatting (comma-separated, no spaces in names).
+- Start with one known-good region:
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+## Long or Noisy Runs
+
+Actions:
+
+- Limit services and regions for targeted debugging:
+
+```bash
+cloudops-tools init --services EC2,RDS --limit-regions us-east-1
+```
+
+- Use `--skip-global` to reduce global-service scan time.
+- Use `--only-global` when you only need global services.
+
+## Help and Diagnostics Flags
+
+```bash
+cloudops-tools --help
+cloudops-tools --help-examples
+cloudops-tools --version
+```
+
+Use `--debug` on scan or describe commands for full stack traces:
+
+```bash
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug
+```

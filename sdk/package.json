@@ -21,7 +21,7 @@
     "check": "tsgo --noEmit && oxlint --fix --type-aware",
     "format": "oxfmt",
     "lint": "oxlint --type-aware",
-    "test": "bun test",
+    "test": "bun test ./test/unit/lib",
     "test:coverage": "bun test --coverage",
     "test:watch": "bun test --watch",
     "typecheck": "tsgo --noEmit"

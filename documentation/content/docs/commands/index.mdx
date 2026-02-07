@@ -1,19 +1,18 @@
 ---
 title: Commands Overview
-description: Overview of all CloudOps Tools CLI commands
+description: Complete command and global flag reference for CloudOps Tools
 ---
 
 # Commands Overview
 
-CloudOps Tools provides several commands for AWS resource inventory and management.
+This page is the command reference for CloudOps Tools.
 
-## Main Command
+## Entrypoint
 
 `cloudops-tools` is the CLI entrypoint.
 
-- Running with no arguments prints help
-- Running with scan options (for example `--region`) runs a basic inventory scan
-- Use `cloudops-tools init ...` for explicit cross-region scan mode selection
+- Run inventory scans with root options
+- Use subcommands for advanced workflows
 
 ```bash
 cloudops-tools [options]
@@ -28,26 +27,45 @@ cloudops-tools [options]
 | [`setup-totp`](/docs/commands/setup-totp) | Configure TOTP secret for MFA authentication               |
 | [`config`](/docs/commands/config)         | Manage persistent configuration                            |
 
-## Global Options
+## Root Scan Options
 
-These options are available on the main command:
+These options control the default root scan behavior:
 
-| Option            | Alias | Description                                          | Default       |
-| ----------------- | ----- | ---------------------------------------------------- | ------------- |
-| `--account`       | `-a`  | AWS account or profile name                          | Auto-detected |
-| `--region`        | `-r`  | AWS region(s), comma-separated                       | `us-east-1`   |
-| `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`) | `csv`         |
-| `--services`      | `-s`  | Comma-separated list of services to scan             | All services  |
-| `--describe`      |       | Describe all resources of a type                     | -             |
-| `--skip-global`   |       | Skip global services (S3, IAM, CloudFront, etc.)     | `false`       |
-| `--only-global`   |       | Scan only global services                            | `false`       |
-| `--debug`         |       | Show raw error output with stack traces              | `false`       |
+| Option            | Alias | Description                                                | Default       |
+| ----------------- | ----- | ---------------------------------------------------------- | ------------- |
+| `--account`       | `-a`  | AWS account or profile name                                | Auto-detected |
+| `--region`        | `-r`  | AWS region(s), comma-separated                             | `us-east-1`   |
+| `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`)       | `csv`         |
+| `--services`      | `-s`  | Comma-separated list of services to scan (`all` supported) | All services  |
+| `--describe`      |       | Describe all resources of a type                           | -             |
+| `--skip-global`   |       | Skip global services (S3, IAM, CloudFront, Route53, etc.)  | `false`       |
+| `--only-global`   |       | Scan only global services                                  | `false`       |
+| `--debug`         |       | Show raw error output with stack traces                    | `false`       |
+| `--help-examples` |       | Print CLI examples and exit                                | `false`       |
+
+## Framework Global Flags
+
+These are provided by `@effect/cli` and appear in help output:
+
+| Option          | Description                                                          |
+| --------------- | -------------------------------------------------------------------- |
+| `--help`, `-h`  | Show command help                                                    |
+| `--version`     | Show application version                                             |
+| `--wizard`      | Start wizard mode for command input                                  |
+| `--completions` | Generate shell completion script (`sh`, `bash`, `fish`, `zsh`)       |
+| `--log-level`   | Set runtime logging threshold (`all`, `trace`, `debug`, `info`, ...) |
 
 ## Quick Examples
 
 ```bash
 # Show help
-cloudops-tools
+cloudops-tools --help
+
+# Show examples
+cloudops-tools --help-examples
+
+# Show version
+cloudops-tools --version
 
 # Basic inventory for us-east-1
 cloudops-tools --region us-east-1
@@ -64,3 +82,16 @@ cloudops-tools --export-format xlsx
 # Describe all RDS instances in a region
 cloudops-tools --describe rds --region eu-south-2
 ```
+
+## Behavior Notes
+
+- `--help-examples` prints curated examples and exits.
+- `--version` prints the installed CLI version and exits.
+- `--wizard` is provided by `@effect/cli`; it helps with command input but does not bypass AWS
+  credential requirements.
+
+## Related Guides
+
+- [Choose the Right Command](/docs/choose-command)
+- [Scan Profiles](/docs/scan-profiles)
+- [Troubleshooting](/docs/troubleshooting)

@@ -1,32 +1,25 @@
 ---
 title: Getting Started
-description: CloudOps Tools - AWS cloud operations and inventory management CLI
+description: Install CloudOps Tools and run your first inventory scan
 ---
 
 # Getting Started
 
-Welcome to CloudOps Tools, a powerful CLI for AWS cloud operations and inventory management.
+Use this guide to install CloudOps Tools and run your first scan in a few minutes.
 
-## What is CloudOps Tools?
+## What You'll Do
 
-CloudOps Tools is a command-line utility that helps you:
+CloudOps Tools helps you:
 
-- **Inventory AWS resources** across multiple regions and services
-- **Generate reports** in CSV, Excel, or JSON format
-- **Describe resources** in detail with Markdown output
-- **Audit security** configurations across your infrastructure
+- Inventory AWS resources across regions and services
+- Export reports in CSV, Excel, or JSON
+- Describe resources in detail
+- Run security-focused scans
 
-## Quick Start
+## 1. Install
 
 ```bash
-# Install
 npm install -g @cloudops-tools/cli
-
-# Run a basic inventory scan
-cloudops-tools --region us-east-1
-
-# Generate a cross-region security audit
-cloudops-tools init --mode security --export-format xlsx
 ```
 
 If you prefer Bun:
@@ -35,50 +28,48 @@ If you prefer Bun:
 bun add -g @cloudops-tools/cli
 ```
 
-## Core Commands
+## 2. Verify Installation
 
-| Command                                   | Description                                  |
-| ----------------------------------------- | -------------------------------------------- |
-| [`cloudops-tools`](/docs/commands)        | Run a basic inventory scan                   |
-| [`init`](/docs/commands/init)             | Cross-region inventory with advanced options |
-| [`describe`](/docs/commands/describe)     | Get detailed resource information            |
-| [`config`](/docs/commands/config)         | Manage persistent settings                   |
-| [`setup-totp`](/docs/commands/setup-totp) | Configure MFA authentication                 |
+```bash
+cloudops-tools --version
+```
 
-## Common Use Cases
-
-### Basic Inventory
+## 3. Run Your First Scan
 
 ```bash
 cloudops-tools --region us-east-1
 ```
 
-### Multi-Region Scan
-
-```bash
-cloudops-tools init --limit-regions us-east-1,eu-west-1,ap-southeast-1
-```
-
-### Security Audit
+## 4. Try a Security Audit
 
 ```bash
 cloudops-tools init --mode security --export-format xlsx
 ```
 
-### Specific Services Only
+## 5. Need More Examples?
 
 ```bash
-cloudops-tools --services EC2,RDS,Lambda --region us-east-1
+cloudops-tools --help-examples
 ```
 
-### Describe a Specific Resource
+## Core Commands
 
-```bash
-cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
-```
+See command details in the command reference:
+
+- [Commands Overview](/docs/commands)
+- [init](/docs/commands/init)
+- [describe](/docs/commands/describe)
+- [config](/docs/commands/config)
+- [setup-totp](/docs/commands/setup-totp)
+
+## Practical Guides
+
+- [Choose the Right Command](/docs/choose-command)
+- [Scan Profiles](/docs/scan-profiles)
+- [Troubleshooting](/docs/troubleshooting)
 
 ## Next Steps
 
 - [Installation Guide](/docs/installation) - Detailed setup instructions
 - [Configuration](/docs/configuration) - Configure defaults and options
-- [Commands Reference](/docs/commands) - Full command documentation
+- [Commands Overview](/docs/commands) - Full command and option reference
