@@ -41,16 +41,22 @@ jobs:
             target: bun-linux-x64-modern
             binary: cloudops-tools-linux-x64
             archive: cloudops-tools-linux-x64.zip
+            npm_dir: linux-x64
+            npm_binary: cloudops-tools
           - name: windows-x64
             os: windows-latest
             target: bun-windows-x64-modern
             binary: cloudops-tools-windows-x64.exe
             archive: cloudops-tools-windows-x64.zip
+            npm_dir: win32-x64
+            npm_binary: cloudops-tools.exe
           - name: macos-arm
             os: macos-latest
             target: bun-darwin-arm64
             binary: cloudops-tools-macos-arm64
             archive: cloudops-tools-macos-arm64.zip
+            npm_dir: darwin-arm64
+            npm_binary: cloudops-tools
 
     steps:
       - name: Checkout
@@ -75,6 +81,10 @@ jobs:
             --define BUILD_VERSION="'\"'${BUILD_VERSION}'\"'" \
             ./cli/src/app.ts \
             --outfile "./cli/dist/${{ matrix.binary }}"
+
+      - name: Stage binary for npm platform package
+        shell: bash
+        run: cp "cli/dist/${{ matrix.binary }}" "cli/npm/${{ matrix.npm_dir }}/${{ matrix.npm_binary }}"
 
       - name: Package artifact (Linux/macOS)
         if: runner.os != 'Windows'
@@ -101,6 +111,13 @@ jobs:
         with:
           name: ${{ matrix.binary }}
           path: cli/dist/${{ matrix.binary }}
+          if-no-files-found: error
+
+      - name: Upload npm platform package
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-${{ matrix.npm_dir }}
+          path: cli/npm/${{ matrix.npm_dir }}/
           if-no-files-found: error
 
   release:

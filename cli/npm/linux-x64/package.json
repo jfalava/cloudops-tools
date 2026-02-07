@@ -1,0 +1,24 @@
+{
+  "name": "@cloudops-tools/cli-linux-x64",
+  "version": "0.1.2",
+  "description": "cloudops-tools native binary for Linux x64",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jfalava/cloudops-tools",
+    "directory": "cli/npm/linux-x64"
+  },
+  "files": [
+    "cloudops-tools"
+  ],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "main": "cloudops-tools",
+  "publishConfig": {
+    "access": "public"
+  }
+}
