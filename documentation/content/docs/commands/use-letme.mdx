@@ -5,7 +5,7 @@ description: Use letme MFA flow with profile from --account before running scans
 
 # use-letme
 
-Use `--use-letme` to obtain temporary AWS credentials through LetMe before running scan commands.
+Use `--use-letme` to obtain temporary AWS credentials through `letme` before running scan commands.
 
 ## Usage
 
@@ -31,7 +31,7 @@ When `--use-letme` is enabled, CloudOps Tools:
 - `letme` source code: [github.com/lockedinspace/letme](https://github.com/lockedinspace/letme)
 - `letme` must be installed and available on your `PATH`
 - You must run [`setup-totp`](/docs/commands/setup-totp) at least once
-- The profile name passed to `--account` must be a valid LetMe profile (for example one listed by
+- The profile name passed to `--account` must be a valid `letme` profile (for example one listed by
   `letme list`)
 
 ## Examples
