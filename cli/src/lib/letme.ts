@@ -31,9 +31,7 @@ async function ensureLetmeAvailable(): Promise<void> {
       const details = stderr.trim();
       reject(
         new Error(
-          details
-            ? `letme preflight check failed: ${details}`
-            : "letme preflight check failed.",
+          details ? `letme preflight check failed: ${details}` : "letme preflight check failed.",
         ),
       );
     });

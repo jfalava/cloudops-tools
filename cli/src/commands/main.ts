@@ -1,5 +1,6 @@
 import {
   generateInitInventoryEffect,
+  SdkLive,
   DatabaseService,
   ComputeService,
   NetworkingService,
@@ -16,6 +17,7 @@ import { describeCommand } from "@/commands/describe";
 import { getDescribeHandler } from "@/commands/describe-handlers";
 import { initCommand } from "@/commands/init";
 import { setupTotpCommand } from "@/commands/setup-totp";
+import { activateLetmeProfile } from "@/lib/letme";
 import {
   account,
   region,
@@ -30,7 +32,6 @@ import {
 } from "@/options";
 import { startProgressRenderer } from "@/progress";
 import { ui } from "@/ui";
-import { activateLetmeProfile } from "@/lib/letme";
 
 const HELP_DESCRIPTION = "CloudOps Tools - AWS inventory CLI";
 
@@ -115,64 +116,68 @@ export const mainCommand = Command.make(
         yield* _(activateLetmeProfile(letmeProfile));
       }
 
-      const util = yield* _(UtilService);
-      const id = yield* _(
-        Option.match(account, {
-          onNone: () => util.getAccountId(),
-          onSome: (value) => Effect.succeed(value),
-        }),
-      );
-      const regions = region.split(",").map((r) => r.trim());
-
-      const describeType = Option.getOrUndefined(describe);
-      if (describeType) {
-        const database = yield* _(DatabaseService);
-        const compute = yield* _(ComputeService);
-        const networking = yield* _(NetworkingService);
-        const reporting = yield* _(ReportingService);
-
-        const handler = getDescribeHandler(describeType, database, compute, networking);
-        if (!handler) {
-          yield* _(Console.log(ui.error(`Unsupported --describe type: ${describeType}`)));
-          return;
-        }
-
-        const itemsByRegion = yield* _(Effect.forEach(regions, handler.fetchByRegion));
-        const items = itemsByRegion.flat();
-
-        if (items.length === 0) {
-          yield* _(Console.log(ui.info(`No ${handler.title} found in ${regions.join(", ")}`)));
-          return;
-        }
-
-        const report = yield* _(
-          reporting.generateMarkdownReport(handler.title, items as unknown[]),
+      const runWithSdk = Effect.gen(function* (_) {
+        const util = yield* _(UtilService);
+        const id = yield* _(
+          Option.match(account, {
+            onNone: () => util.getAccountId(),
+            onSome: (value) => Effect.succeed(value),
+          }),
         );
-        const now = new Date().toISOString();
-        const date = now.slice(0, 10).replace(/-/g, "");
-        const time = now.slice(11, 19).replace(/:/g, "");
-        const safeRegions = regions.join("-").replace(/[^a-zA-Z0-9-]/g, "-");
-        const outputDir = `inventory-output/${id}`;
-        const outputPath = `${outputDir}/describe-${describeType.toLowerCase()}-${safeRegions}-${date}-${time}.md`;
+        const regions = region.split(",").map((r) => r.trim());
 
-        yield* _(Effect.promise(() => mkdir(outputDir, { recursive: true })));
-        yield* _(Effect.promise(() => write(outputPath, report)));
-        yield* _(Console.log(ui.success(`Wrote ${outputPath}`)));
-        return;
-      }
+        const describeType = Option.getOrUndefined(describe);
+        if (describeType) {
+          const database = yield* _(DatabaseService);
+          const compute = yield* _(ComputeService);
+          const networking = yield* _(NetworkingService);
+          const reporting = yield* _(ReportingService);
 
-      const serviceList = Option.match(services, {
-        onNone: () => undefined,
-        onSome: (s: string) =>
-          s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
+          const handler = getDescribeHandler(describeType, database, compute, networking);
+          if (!handler) {
+            yield* _(Console.log(ui.error(`Unsupported --describe type: ${describeType}`)));
+            return;
+          }
+
+          const itemsByRegion = yield* _(Effect.forEach(regions, handler.fetchByRegion));
+          const items = itemsByRegion.flat();
+
+          if (items.length === 0) {
+            yield* _(Console.log(ui.info(`No ${handler.title} found in ${regions.join(", ")}`)));
+            return;
+          }
+
+          const report = yield* _(
+            reporting.generateMarkdownReport(handler.title, items as unknown[]),
+          );
+          const now = new Date().toISOString();
+          const date = now.slice(0, 10).replace(/-/g, "");
+          const time = now.slice(11, 19).replace(/:/g, "");
+          const safeRegions = regions.join("-").replace(/[^a-zA-Z0-9-]/g, "-");
+          const outputDir = `inventory-output/${id}`;
+          const outputPath = `${outputDir}/describe-${describeType.toLowerCase()}-${safeRegions}-${date}-${time}.md`;
+
+          yield* _(Effect.promise(() => mkdir(outputDir, { recursive: true })));
+          yield* _(Effect.promise(() => write(outputPath, report)));
+          yield* _(Console.log(ui.success(`Wrote ${outputPath}`)));
+          return;
+        }
+
+        const serviceList = Option.match(services, {
+          onNone: () => undefined,
+          onSome: (s: string) =>
+            s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
+        });
+
+        const progress = yield* Effect.sync(() => startProgressRenderer({ debug }));
+        yield* generateInitInventoryEffect(id, "basic", format, regions, debug, {
+          skipGlobal,
+          onlyGlobal,
+          services: serviceList,
+        }).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
       });
 
-      const progress = yield* Effect.sync(() => startProgressRenderer({ debug }));
-      yield* generateInitInventoryEffect(id, "basic", format, regions, debug, {
-        skipGlobal,
-        onlyGlobal,
-        services: serviceList,
-      }).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
+      yield* _(runWithSdk.pipe(Effect.provide(SdkLive)));
     }),
 ).pipe(
   Command.withSubcommands([setupTotpCommand, initCommand, describeCommand, configCommand]),

@@ -1,4 +1,4 @@
-import { ReportingService } from "@cloudops-tools/sdk";
+import { ReportingService, SdkLive } from "@cloudops-tools/sdk";
 import { Command, Args } from "@effect/cli";
 import { Effect, Console } from "effect";
 
@@ -15,16 +15,20 @@ export const describeCommand = Command.make(
   },
   ({ type, region, id, debug }) =>
     Effect.gen(function* (_) {
-      const reporting = yield* _(ReportingService);
-      const report = yield* _(reporting.describeResourceHarder(type, region, id, debug));
-      if (report.startsWith("Unsupported resource type")) {
-        yield* _(Console.log(ui.error(report)));
-        return;
-      }
-      if (report.startsWith("Resource not found")) {
-        yield* _(Console.log(ui.warn(report)));
-        return;
-      }
-      yield* _(Console.log(report));
+      const runWithSdk = Effect.gen(function* (_) {
+        const reporting = yield* _(ReportingService);
+        const report = yield* _(reporting.describeResourceHarder(type, region, id, debug));
+        if (report.startsWith("Unsupported resource type")) {
+          yield* _(Console.log(ui.error(report)));
+          return;
+        }
+        if (report.startsWith("Resource not found")) {
+          yield* _(Console.log(ui.warn(report)));
+          return;
+        }
+        yield* _(Console.log(report));
+      });
+
+      yield* _(runWithSdk.pipe(Effect.provide(SdkLive)));
     }),
 ).pipe(Command.withDescription("Deeply describe a specific resource (Outputs Markdown)"));
