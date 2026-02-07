@@ -12,8 +12,10 @@ import {
   onlyGlobalOption,
   modeOption,
   servicesOption,
+  useLetmeOption,
 } from "@/options";
 import { startProgressRenderer } from "@/progress";
+import { activateLetmeProfile } from "@/lib/letme";
 
 export const initCommand = Command.make(
   "init",
@@ -27,9 +29,36 @@ export const initCommand = Command.make(
     onlyGlobal: onlyGlobalOption,
     mode: modeOption,
     services: servicesOption,
+    useLetme: useLetmeOption,
   },
-  ({ account, region, limitRegions, format, mode, debug, skipGlobal, onlyGlobal, services }) =>
+  ({
+    account,
+    region,
+    limitRegions,
+    format,
+    mode,
+    debug,
+    skipGlobal,
+    onlyGlobal,
+    services,
+    useLetme,
+  }) =>
     Effect.gen(function* (_) {
+      if (useLetme) {
+        const letmeProfile = Option.getOrUndefined(account);
+        if (!letmeProfile) {
+          return yield* _(
+            Effect.fail(
+              new Error(
+                "Missing required --account <profile> with --use-letme. Example: cloudops-tools init --use-letme --account engineering-prod",
+              ),
+            ),
+          );
+        }
+
+        yield* _(activateLetmeProfile(letmeProfile));
+      }
+
       const progress = yield* Effect.sync(() => startProgressRenderer({ debug }));
       const util = yield* _(UtilService);
       const id = yield* _(

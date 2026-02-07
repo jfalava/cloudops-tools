@@ -5,6 +5,10 @@ export const account = Options.optional(Options.text("account")).pipe(
   Options.withDescription("AWS account or profile name"),
 );
 
+export const useLetmeOption = Options.boolean("use-letme").pipe(
+  Options.withDescription("Use LetMe with profile name from --account to obtain MFA credentials"),
+);
+
 export const region = Options.withDefault(Options.text("region"), "us-east-1").pipe(
   Options.withAlias("r"),
   Options.withDescription("AWS region(s), comma-separated"),

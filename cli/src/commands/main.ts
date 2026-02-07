@@ -26,9 +26,11 @@ import {
   describeOption,
   servicesOption,
   helpExamplesOption,
+  useLetmeOption,
 } from "@/options";
 import { startProgressRenderer } from "@/progress";
 import { ui } from "@/ui";
+import { activateLetmeProfile } from "@/lib/letme";
 
 const HELP_DESCRIPTION = "CloudOps Tools - AWS inventory CLI";
 
@@ -61,6 +63,9 @@ Examples:
 
   # Setup TOTP for 'letme' MFA
   cloudops-tools setup-totp
+
+  # Use letme to obtain credentials and run scan (profile from --account)
+  cloudops-tools --use-letme --account engineering-prod --region us-east-1
 `;
 
 export const mainCommand = Command.make(
@@ -75,12 +80,39 @@ export const mainCommand = Command.make(
     describe: describeOption,
     services: servicesOption,
     helpExamples: helpExamplesOption,
+    useLetme: useLetmeOption,
   },
-  ({ account, region, format, debug, skipGlobal, onlyGlobal, describe, services, helpExamples }) =>
+  ({
+    account,
+    region,
+    format,
+    debug,
+    skipGlobal,
+    onlyGlobal,
+    describe,
+    services,
+    helpExamples,
+    useLetme,
+  }) =>
     Effect.gen(function* (_) {
       if (helpExamples) {
         yield* _(Console.log(HELP_EXAMPLES.trim()));
         return;
+      }
+
+      if (useLetme) {
+        const letmeProfile = Option.getOrUndefined(account);
+        if (!letmeProfile) {
+          return yield* _(
+            Effect.fail(
+              new Error(
+                "Missing required --account <profile> with --use-letme. Example: cloudops-tools --use-letme --account engineering-prod",
+              ),
+            ),
+          );
+        }
+
+        yield* _(activateLetmeProfile(letmeProfile));
       }
 
       const util = yield* _(UtilService);
