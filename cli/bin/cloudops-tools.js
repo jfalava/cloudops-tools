@@ -1,24 +1,42 @@
 #!/usr/bin/env node
 
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
 
-const here = dirname(fileURLToPath(import.meta.url));
-const binaryName = process.platform === "win32" ? "cloudops-tools.exe" : "cloudops-tools";
-const binaryPath = resolve(here, "..", "dist-native", binaryName);
+const PLATFORMS = {
+  "darwin-arm64": { pkg: "@cloudops-tools/cli-darwin-arm64", bin: "cloudops-tools" },
+  "linux-x64": { pkg: "@cloudops-tools/cli-linux-x64", bin: "cloudops-tools" },
+  "win32-x64": { pkg: "@cloudops-tools/cli-win32-x64", bin: "cloudops-tools.exe" },
+};
 
-if (!existsSync(binaryPath)) {
-  console.error("cloudops-tools native binary not found.");
-  console.error("Reinstall the package or set CLOUDOPS_TOOLS_SKIP_NATIVE_INSTALL=0 and retry.");
+const platformKey = `${process.platform}-${process.arch}`;
+
+if (!(platformKey in PLATFORMS)) {
+  console.error(
+    `cloudops-tools: unsupported platform ${process.platform}/${process.arch}.\n` +
+      `Supported: ${Object.keys(PLATFORMS).join(", ")}`,
+  );
   process.exit(1);
 }
 
-const result = spawnSync(binaryPath, process.argv.slice(2), {
-  stdio: "inherit",
-});
+const platform = PLATFORMS[/** @type {keyof typeof PLATFORMS} */ (platformKey)];
+
+let binaryPath;
+try {
+  const require = createRequire(import.meta.url);
+  const pkgDir = dirname(require.resolve(`${platform.pkg}/package.json`));
+  binaryPath = resolve(pkgDir, platform.bin);
+} catch {
+  console.error(
+    `cloudops-tools: could not find package "${platform.pkg}".\n` +
+      "Make sure optional dependencies are installed (do not use --no-optional).",
+  );
+  process.exit(1);
+}
+
+const result = spawnSync(binaryPath, process.argv.slice(2), { stdio: "inherit" });
 
 if (result.error) {
   console.error(result.error.message);

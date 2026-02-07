@@ -1,0 +1,24 @@
+{
+  "name": "@cloudops-tools/cli-darwin-arm64",
+  "version": "0.1.2",
+  "description": "cloudops-tools native binary for macOS ARM64",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jfalava/cloudops-tools",
+    "directory": "cli/npm/darwin-arm64"
+  },
+  "files": [
+    "cloudops-tools"
+  ],
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "main": "cloudops-tools",
+  "publishConfig": {
+    "access": "public"
+  }
+}

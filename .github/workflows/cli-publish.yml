@@ -2,6 +2,15 @@ name: Publish CLI to npm
 
 on:
   workflow_dispatch:
+    inputs:
+      release_run_id:
+        description: "Run ID of the Release CLI workflow (required for artifact download)"
+        required: true
+        type: string
+      release_sha:
+        description: "Git SHA of the release commit"
+        required: true
+        type: string
   workflow_run:
     workflows:
       - Release CLI
@@ -13,27 +22,86 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
-    name: Publish npm package
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  publish-platform-packages:
+    name: Publish ${{ matrix.pkg }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - npm_dir: darwin-arm64
+            pkg: "@cloudops-tools/cli-darwin-arm64"
+          - npm_dir: linux-x64
+            pkg: "@cloudops-tools/cli-linux-x64"
+          - npm_dir: win32-x64
+            pkg: "@cloudops-tools/cli-win32-x64"
 
     steps:
       - name: Checkout release commit
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event.workflow_run.head_sha || inputs.release_sha }}
           fetch-depth: 0
           fetch-tags: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "latest"
+          node-version: "22"
           registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
-        run: npm install -g npm@latest
+        run: npm install -g npm@10
+
+      - name: Download npm platform artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-${{ matrix.npm_dir }}
+          path: cli/npm/${{ matrix.npm_dir }}/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id || inputs.release_run_id }}
+
+      - name: List package contents
+        run: ls -la cli/npm/${{ matrix.npm_dir }}/
+
+      - name: Check if version already published
+        id: check
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./cli/npm/${{ matrix.npm_dir }}/package.json').version")"
+          if npm view "${{ matrix.pkg }}@${VERSION}" version 2>/dev/null; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish ${{ matrix.pkg }}
+        if: steps.check.outputs.skip != 'true'
+        working-directory: cli/npm/${{ matrix.npm_dir }}
+        run: npm publish --access public --provenance
+
+  publish-main:
+    name: Publish main CLI package
+    needs: publish-platform-packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || inputs.release_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          registry-url: https://registry.npmjs.org
+
+      - name: Ensure npm CLI supports trusted publishing
+        run: npm install -g npm@10
 
       - name: Validate tag matches package version
         shell: bash

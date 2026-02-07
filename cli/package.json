@@ -1,12 +1,11 @@
 {
   "name": "@cloudops-tools/cli",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "bin": {
     "cloudops-tools": "./bin/cloudops-tools.js"
   },
   "files": [
-    "bin",
-    "scripts"
+    "bin"
   ],
   "type": "module",
   "module": "./src/app.ts",
@@ -18,10 +17,8 @@
     "check": "tsgo --noEmit && oxlint --fix --type-aware",
     "format": "oxfmt",
     "lint": "oxlint --type-aware",
-    "postinstall": "node ./scripts/install-native.js",
     "typecheck": "tsgo --noEmit"
   },
-  "dependencies": {},
   "devDependencies": {
     "@cloudops-tools/sdk": "workspace:*",
     "@effect/cli": "catalog:effect",
@@ -41,5 +38,10 @@
     "oxlint-tsgolint": "catalog:build",
     "picocolors": "1.1.1",
     "typescript": "catalog:build"
+  },
+  "optionalDependencies": {
+    "@cloudops-tools/cli-darwin-arm64": "0.1.2",
+    "@cloudops-tools/cli-linux-x64": "0.1.2",
+    "@cloudops-tools/cli-win32-x64": "0.1.2"
   }
 }
