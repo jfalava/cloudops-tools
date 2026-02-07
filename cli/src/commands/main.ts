@@ -25,9 +25,43 @@ import {
   onlyGlobalOption,
   describeOption,
   servicesOption,
+  helpExamplesOption,
 } from "@/options";
 import { startProgressRenderer } from "@/progress";
 import { ui } from "@/ui";
+
+const HELP_DESCRIPTION = "CloudOps Tools - AWS inventory CLI";
+
+export const HELP_EXAMPLES = `
+Examples:
+  # Basic inventory for a specific region
+  cloudops-tools --region us-east-1
+
+  # Cross-region security-focused inventory (Excel)
+  cloudops-tools init --mode security --export-format xlsx
+
+  # Scan only specific services
+  cloudops-tools --services EC2,RDS,S3 --region us-east-1
+  cloudops-tools init --services Lambda,DynamoDB,SQS
+
+  # Deeply describe an EC2 instance
+  cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
+
+  # Describe all resources of a type in a region (writes Markdown file)
+  cloudops-tools --describe rds --region eu-south-2
+  cloudops-tools --describe ec2 --region eu-south-2
+  cloudops-tools --describe lambda --region eu-south-2
+  cloudops-tools --describe vpc --region eu-south-2
+  cloudops-tools --describe dynamodb --region eu-south-2
+
+  # Manage persistent configuration
+  cloudops-tools config set defaultRegion eu-west-1
+  cloudops-tools config set defaultFormat xlsx
+  cloudops-tools config get
+
+  # Setup TOTP for 'letme' MFA
+  cloudops-tools setup-totp
+`;
 
 export const mainCommand = Command.make(
   "cloudops-tools",
@@ -40,9 +74,15 @@ export const mainCommand = Command.make(
     onlyGlobal: onlyGlobalOption,
     describe: describeOption,
     services: servicesOption,
+    helpExamples: helpExamplesOption,
   },
-  ({ account, region, format, debug, skipGlobal, onlyGlobal, describe, services }) =>
+  ({ account, region, format, debug, skipGlobal, onlyGlobal, describe, services, helpExamples }) =>
     Effect.gen(function* (_) {
+      if (helpExamples) {
+        yield* _(Console.log(HELP_EXAMPLES.trim()));
+        return;
+      }
+
       const util = yield* _(UtilService);
       const id = yield* _(
         Option.match(account, {
@@ -104,36 +144,5 @@ export const mainCommand = Command.make(
     }),
 ).pipe(
   Command.withSubcommands([setupTotpCommand, initCommand, describeCommand, configCommand]),
-  Command.withDescription(`
-AWS Resource Inventory & Reporting Tool
-
-Examples:
-  # Basic inventory for a specific region
-  cloudops-tools --region us-east-1
-
-  # Cross-region security-focused inventory (Excel)
-  cloudops-tools init --mode security --export-format xlsx
-
-  # Scan only specific services
-  cloudops-tools --services EC2,RDS,S3 --region us-east-1
-  cloudops-tools init --services Lambda,DynamoDB,SQS
-
-  # Deeply describe an EC2 instance
-  cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
-
-  # Describe all resources of a type in a region (writes Markdown file)
-  cloudops-tools --describe rds --region eu-south-2
-  cloudops-tools --describe ec2 --region eu-south-2
-  cloudops-tools --describe lambda --region eu-south-2
-  cloudops-tools --describe vpc --region eu-south-2
-  cloudops-tools --describe dynamodb --region eu-south-2
-
-  # Manage persistent configuration
-  cloudops-tools config set defaultRegion eu-west-1
-  cloudops-tools config set defaultFormat xlsx
-  cloudops-tools config get
-
-  # Setup TOTP for 'letme' MFA
-  cloudops-tools setup-totp
-  `),
+  Command.withDescription(HELP_DESCRIPTION),
 );

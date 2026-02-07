@@ -5,7 +5,7 @@ import { argv } from "bun";
 import { Effect } from "effect";
 import process from "node:process";
 
-import { mainCommand } from "@/commands";
+import { HELP_EXAMPLES, mainCommand } from "@/commands";
 
 const cli = Command.run(mainCommand, {
   name: "CloudOps Tools",
@@ -16,10 +16,29 @@ const args = argv.slice(2);
 const forceInit = args.includes("--init");
 const debug = args.includes("--debug");
 const wantsHelp = args.length === 0 || args.includes("--help") || args.includes("-h");
+const wantsVersion = args.includes("--version");
+const wantsHelpExamples = args.includes("--help-examples");
+
+if (wantsVersion) {
+  const version =
+    typeof BUILD_VERSION !== "undefined"
+      ? BUILD_VERSION
+      : await Bun.file(new URL("../package.json", import.meta.url))
+          .json()
+          .then((data) => (data as { version: string }).version)
+          .catch(() => "unknown");
+  process.stdout.write(`${version}\n`);
+  process.exit(0);
+}
 
 if (wantsHelp && !forceInit) {
   const help = Command.getHelp(mainCommand, CliConfig.defaultConfig);
   process.stdout.write(HelpDoc.toAnsiText(help) + "\n");
+  process.exit(0);
+}
+
+if (wantsHelpExamples && !forceInit) {
+  process.stdout.write(`${HELP_EXAMPLES.trim()}\n`);
   process.exit(0);
 }
 

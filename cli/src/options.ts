@@ -51,3 +51,7 @@ export const servicesOption = Options.optional(Options.text("services")).pipe(
     "Comma-separated list of services to scan (e.g. EC2,RDS,S3). Use 'all' for all services.",
   ),
 );
+
+export const helpExamplesOption = Options.boolean("help-examples").pipe(
+  Options.withDescription("Show CLI usage examples."),
+);
