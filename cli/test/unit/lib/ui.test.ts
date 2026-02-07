@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { spawnSync } from "bun";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
