@@ -100,21 +100,21 @@ jobs:
           Compress-Archive -Path "cli/dist/${{ matrix.binary }}" -DestinationPath "cli/dist/${{ matrix.archive }}" -Force
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.archive }}
           path: cli/dist/${{ matrix.archive }}
           if-no-files-found: error
 
       - name: Upload raw binary artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ matrix.binary }}
           path: cli/dist/${{ matrix.binary }}
           if-no-files-found: error
 
       - name: Upload npm platform package
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v6
         with:
           name: npm-${{ matrix.npm_dir }}
           path: cli/npm/${{ matrix.npm_dir }}/
