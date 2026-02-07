@@ -132,6 +132,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: cloudops-tools-*
 
       - name: Publish release
         uses: softprops/action-gh-release@v2
