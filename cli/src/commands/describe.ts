@@ -1,4 +1,4 @@
-import { ReportingService } from "@cloudops-tools/sdk";
+import { ReportingService, SdkLive } from "@cloudops-tools/sdk";
 import { Command, Args } from "@effect/cli";
 import { Effect, Console } from "effect";
 
@@ -26,5 +26,5 @@ export const describeCommand = Command.make(
         return;
       }
       yield* _(Console.log(report));
-    }),
+    }).pipe(Effect.provide(SdkLive)),
 ).pipe(Command.withDescription("Deeply describe a specific resource (Outputs Markdown)"));

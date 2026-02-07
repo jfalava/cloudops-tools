@@ -1,0 +1,54 @@
+---
+title: use-letme
+description: Use letme MFA flow with profile from --account before running scans
+---
+
+# use-letme
+
+Use `--use-letme` to obtain temporary AWS credentials through `letme` before running scan commands.
+
+## Usage
+
+```bash
+cloudops-tools --use-letme --account <profile-name> [options]
+cloudops-tools init --use-letme --account <profile-name> [options]
+```
+
+## Description
+
+When `--use-letme` is enabled, CloudOps Tools:
+
+1. Requires `--account <profile-name>`
+2. Loads the TOTP secret configured by [`setup-totp`](/docs/commands/setup-totp)
+3. Generates an OTP code
+4. Runs `letme obtain <profile-name>` and pipes the OTP
+5. Sets `AWS_PROFILE=<profile-name>` for the current process
+6. Continues normal command execution using that profile
+
+## Requirements
+
+- `letme` official docs: [getletme.com](https://getletme.com/)
+- `letme` source code: [github.com/lockedinspace/letme](https://github.com/lockedinspace/letme)
+- `letme` must be installed and available on your `PATH`
+- You must run [`setup-totp`](/docs/commands/setup-totp) at least once
+- The profile name passed to `--account` must be a valid `letme` profile (for example one listed by
+  `letme list`)
+
+## Examples
+
+```bash
+# Root scan with LetMe
+cloudops-tools --use-letme --account engineering-prod --region us-east-1
+
+# init scan with LetMe
+cloudops-tools init --use-letme --account engineering-prod --mode security --export-format xlsx
+```
+
+## Error Cases
+
+- Missing `--account` with `--use-letme`:
+  `Missing required --account <profile> with --use-letme`
+- `letme` not installed:
+  `letme binary not found in PATH. Install letme and try again.`
+- TOTP secret not configured:
+  run [`setup-totp`](/docs/commands/setup-totp) first

@@ -1,6 +1,6 @@
 import type { AwsCredentialIdentityProvider } from "@aws-sdk/types";
 
-import { fromIni, fromEnv } from "@aws-sdk/credential-providers";
+import { fromIni, fromNodeProviderChain } from "@aws-sdk/credential-providers";
 
 /**
  * Credential management for AWS SDK clients
@@ -31,5 +31,5 @@ export function getCredentialsProvider(): AwsCredentialIdentityProvider {
 
   // No profile specified, use default credential chain
   // This will check environment variables, ~/.aws/credentials, EC2 metadata, etc.
-  return fromEnv();
+  return fromNodeProviderChain();
 }

@@ -31,11 +31,30 @@ export const docsTree: Root = {
         },
         {
           type: "separator",
+          name: "Guides",
+        },
+        {
+          type: "page",
+          name: "Choose Command",
+          url: "/docs/choose-command",
+        },
+        {
+          type: "page",
+          name: "Scan Profiles",
+          url: "/docs/scan-profiles",
+        },
+        {
+          type: "page",
+          name: "Troubleshooting",
+          url: "/docs/troubleshooting",
+        },
+        {
+          type: "separator",
           name: "Commands",
         },
         {
           type: "page",
-          name: "cloudops-tools",
+          name: "Overview",
           url: "/docs/commands",
         },
         {
@@ -52,6 +71,11 @@ export const docsTree: Root = {
           type: "page",
           name: "setup-totp",
           url: "/docs/commands/setup-totp",
+        },
+        {
+          type: "page",
+          name: "use-letme",
+          url: "/docs/commands/use-letme",
         },
         {
           type: "page",
