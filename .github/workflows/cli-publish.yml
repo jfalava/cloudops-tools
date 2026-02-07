@@ -27,7 +27,7 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - npm_dir: darwin-arm64
@@ -48,11 +48,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "latest"
+          node-version: "22"
           registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
-        run: npm install -g npm@latest
+        run: npm install -g npm@10
 
       - name: Download npm platform artifact
         uses: actions/download-artifact@v4
@@ -97,11 +97,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "latest"
+          node-version: "22"
           registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
-        run: npm install -g npm@latest
+        run: npm install -g npm@10
 
       - name: Validate tag matches package version
         shell: bash
