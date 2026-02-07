@@ -1,5 +1,10 @@
-import { describe, expect, test, beforeEach, afterEach } from "bun:test";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { spawnSync } from "bun";
+import { resolve } from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
+
+const cliRoot = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
 
 describe("ui", () => {
   let originalForceColor: string | undefined;
@@ -49,8 +54,6 @@ describe("ui", () => {
 
   describe("info", () => {
     test("returns a string", async () => {
-      delete process.env.FORCE_COLOR;
-      delete process.env.NO_COLOR;
       const { ui } = await import("../../../src/ui");
       const result = ui.info("test message");
       expect(typeof result).toBe("string");
@@ -60,8 +63,6 @@ describe("ui", () => {
 
   describe("warn", () => {
     test("returns a string", async () => {
-      delete process.env.FORCE_COLOR;
-      delete process.env.NO_COLOR;
       const { ui } = await import("../../../src/ui");
       const result = ui.warn("warning");
       expect(typeof result).toBe("string");
@@ -71,8 +72,6 @@ describe("ui", () => {
 
   describe("error", () => {
     test("returns a string", async () => {
-      delete process.env.FORCE_COLOR;
-      delete process.env.NO_COLOR;
       const { ui } = await import("../../../src/ui");
       const result = ui.error("error");
       expect(typeof result).toBe("string");
@@ -82,8 +81,6 @@ describe("ui", () => {
 
   describe("success", () => {
     test("returns a string", async () => {
-      delete process.env.FORCE_COLOR;
-      delete process.env.NO_COLOR;
       const { ui } = await import("../../../src/ui");
       const result = ui.success("success");
       expect(typeof result).toBe("string");
@@ -93,8 +90,6 @@ describe("ui", () => {
 
   describe("dim", () => {
     test("returns a string", async () => {
-      delete process.env.FORCE_COLOR;
-      delete process.env.NO_COLOR;
       const { ui } = await import("../../../src/ui");
       const result = ui.dim("dimmed");
       expect(typeof result).toBe("string");
@@ -104,8 +99,6 @@ describe("ui", () => {
 
   describe("bold", () => {
     test("returns a string", async () => {
-      delete process.env.FORCE_COLOR;
-      delete process.env.NO_COLOR;
       const { ui } = await import("../../../src/ui");
       const result = ui.bold("bold");
       expect(typeof result).toBe("string");
@@ -115,8 +108,6 @@ describe("ui", () => {
 
   describe("plain", () => {
     test("always returns the exact text", async () => {
-      delete process.env.FORCE_COLOR;
-      delete process.env.NO_COLOR;
       const { ui } = await import("../../../src/ui");
       const result = ui.plain("plain text");
       expect(result).toBe("plain text");
@@ -129,17 +120,21 @@ describe("ui", () => {
   });
 
   describe("color environment handling", () => {
-    test("NO_COLOR disables colors at import time", async () => {
-      // Must be set BEFORE import
-      process.env.NO_COLOR = "1";
+    test("NO_COLOR disables colors at import time", () => {
+      const env = { ...process.env, NO_COLOR: "1" };
 
-      // Use dynamic import with cache bypass
-      const module = await import("../../../src/ui");
-      const ui = module.ui;
+      const result = spawnSync({
+        cmd: [
+          "bun",
+          "-e",
+          'delete process.env.FORCE_COLOR; const { ui } = await import("./src/ui"); process.stdout.write(ui.info("test"));',
+        ],
+        cwd: cliRoot,
+        env,
+      });
 
-      const result = ui.info("test");
-      // When NO_COLOR is set, output should be plain
-      expect(result).toBe("test");
+      expect(result.exitCode).toBe(0);
+      expect(new TextDecoder().decode(result.stdout)).toBe("test");
     });
   });
 });

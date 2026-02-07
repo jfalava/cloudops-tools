@@ -67,6 +67,14 @@ const prettifyError = (raw: string): string => {
   return formatParsedError(parsed, raw) ?? raw;
 };
 
+export const __internal = {
+  formatDuration,
+  makeBar,
+  parseErrorPayload,
+  formatParsedError,
+  prettifyError,
+};
+
 export const startProgressRenderer = (options?: { debug?: boolean }) => {
   const debug = options?.debug === true;
   let frame = 0;
