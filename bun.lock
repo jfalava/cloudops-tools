@@ -32,9 +32,9 @@
         "typescript": "catalog:build",
       },
       "optionalDependencies": {
-        "@cloudops-tools/cli-darwin-arm64": "0.1.2",
-        "@cloudops-tools/cli-linux-x64": "0.1.2",
-        "@cloudops-tools/cli-win32-x64": "0.1.2",
+        "@cloudops-tools/cli-darwin-arm64": "0.1.3",
+        "@cloudops-tools/cli-linux-x64": "0.1.3",
+        "@cloudops-tools/cli-win32-x64": "0.1.3",
       },
     },
     "documentation": {
@@ -444,11 +444,11 @@
 
     "@cloudops-tools/cli": ["@cloudops-tools/cli@workspace:cli"],
 
-    "@cloudops-tools/cli-darwin-arm64": ["@cloudops-tools/cli-darwin-arm64@0.1.2", "", { "os": "darwin", "cpu": "arm64" }, "sha512-RJl3H0UAj02MKjmeETh8t0TTCG9xulEpH45JfNYMAdeKjqvrihR21zx1dPqsLFjV7fHQzISQckaQ+wssuTFe2g=="],
+    "@cloudops-tools/cli-darwin-arm64": ["@cloudops-tools/cli-darwin-arm64@0.1.3", "", { "os": "darwin", "cpu": "arm64" }, "sha512-c/3gT3XvVsvYv99VDMBWiUeMQU2lusTvFmTNS9Y8oBQ2bGHqUtZVEfH3bj+6UmCh4XeTkcQwz7W/HnAi2ujsUg=="],
 
-    "@cloudops-tools/cli-linux-x64": ["@cloudops-tools/cli-linux-x64@0.1.2", "", { "os": "linux", "cpu": "x64" }, "sha512-F7PyWuPDTIcfz00sdLVoYAtrWD+i6kBzB3wDq4xDwEhxfPu7CUxw6OhWRn8K4ph52yzsEBofLJ3RQFSeVKhoTA=="],
+    "@cloudops-tools/cli-linux-x64": ["@cloudops-tools/cli-linux-x64@0.1.3", "", { "os": "linux", "cpu": "x64" }, "sha512-DieH0sTiqIgAD96De7ol9aELL0uhWhzxVacv48KCQzsP1PdZzAhmRjixkPUQlrOtYCzQluCrKuK2wIKNFwcbng=="],
 
-    "@cloudops-tools/cli-win32-x64": ["@cloudops-tools/cli-win32-x64@0.1.2", "", { "os": "win32", "cpu": "x64" }, "sha512-fdsIc+sov3T8pEDsihajTXzyCoj+QpsHRe2b9iMw29WiJkHmK5jWobDMAY9cRLDJ2a+q1MoS+3QhsJjDSES4Rg=="],
+    "@cloudops-tools/cli-win32-x64": ["@cloudops-tools/cli-win32-x64@0.1.3", "", { "os": "win32", "cpu": "x64" }, "sha512-M3Y6t1fLyzuOaWDrUradYDu/tpuSbkbjxUX+FCrEAuf85dk8HwkpoXBBYxkxT60GLIsQc9xoFXzqeSgkIpXoDw=="],
 
     "@cloudops-tools/documentation": ["@cloudops-tools/documentation@workspace:documentation"],
 
