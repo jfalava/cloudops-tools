@@ -1,6 +1,6 @@
 {
   "name": "@cloudops-tools/cli",
-  "version": "0.1.4",
+  "version": "0.1.3",
   "bin": {
     "cloudops-tools": "./bin/cloudops-tools.js"
   },
