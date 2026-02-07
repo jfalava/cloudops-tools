@@ -32,10 +32,16 @@ jobs:
         include:
           - npm_dir: darwin-arm64
             pkg: "@cloudops-tools/cli-darwin-arm64"
+            binary_artifact: cloudops-tools-macos-arm64
+            npm_binary: cloudops-tools
           - npm_dir: linux-x64
             pkg: "@cloudops-tools/cli-linux-x64"
+            binary_artifact: cloudops-tools-linux-x64
+            npm_binary: cloudops-tools
           - npm_dir: win32-x64
             pkg: "@cloudops-tools/cli-win32-x64"
+            binary_artifact: cloudops-tools-windows-x64.exe
+            npm_binary: cloudops-tools.exe
 
     steps:
       - name: Checkout release commit
@@ -48,19 +54,37 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
-        run: npm install -g npm@10
+        run: npm install -g npm@11
 
-      - name: Download npm platform artifact
-        uses: actions/download-artifact@v4
+      - name: Download platform binary artifact
+        uses: actions/download-artifact@v7
         with:
-          name: npm-${{ matrix.npm_dir }}
-          path: cli/npm/${{ matrix.npm_dir }}/
+          name: ${{ matrix.binary_artifact }}
+          path: /tmp/cloudops-tools-binaries/${{ matrix.npm_dir }}/
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id || inputs.release_run_id }}
+
+      - name: Stage binary in npm package directory
+        shell: bash
+        run: |
+          cp "/tmp/cloudops-tools-binaries/${{ matrix.npm_dir }}/${{ matrix.binary_artifact }}" \
+            "cli/npm/${{ matrix.npm_dir }}/${{ matrix.npm_binary }}"
+
+          if [[ "${{ matrix.npm_dir }}" != "win32-x64" ]]; then
+            chmod +x "cli/npm/${{ matrix.npm_dir }}/${{ matrix.npm_binary }}"
+          fi
+
+      - name: Verify package contents before publish
+        shell: bash
+        run: |
+          test -f "cli/npm/${{ matrix.npm_dir }}/package.json"
+          test -f "cli/npm/${{ matrix.npm_dir }}/README.md"
+          test -f "cli/npm/${{ matrix.npm_dir }}/${{ matrix.npm_binary }}"
+          ls -la "cli/npm/${{ matrix.npm_dir }}/"
 
       - name: List package contents
         run: ls -la cli/npm/${{ matrix.npm_dir }}/
@@ -97,11 +121,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
-        run: npm install -g npm@10
+        run: npm install -g npm@11
 
       - name: Validate tag matches package version
         shell: bash
@@ -123,6 +147,18 @@ jobs:
         working-directory: cli
         run: npm pack --dry-run
 
+      - name: Check if main CLI version already published
+        id: check_main
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./cli/package.json').version")"
+          if npm view "@cloudops-tools/cli@${VERSION}" version 2>/dev/null; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish package
+        if: steps.check_main.outputs.skip != 'true'
         working-directory: cli
         run: npm publish --access public --provenance
