@@ -22,6 +22,7 @@ const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "commands/init": () => import("../../../content/docs/commands/init.mdx"),
   "commands/describe": () => import("../../../content/docs/commands/describe.mdx"),
   "commands/setup-totp": () => import("../../../content/docs/commands/setup-totp.mdx"),
+  "commands/use-letme": () => import("../../../content/docs/commands/use-letme.mdx"),
   "commands/config": () => import("../../../content/docs/commands/config.mdx"),
   sdk: () => import("../../../content/docs/sdk/index.mdx"),
   "sdk/index": () => import("../../../content/docs/sdk/index.mdx"),

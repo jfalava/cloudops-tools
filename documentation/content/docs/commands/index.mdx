@@ -20,28 +20,30 @@ cloudops-tools [options]
 
 ## Subcommands
 
-| Command                                   | Description                                                |
-| ----------------------------------------- | ---------------------------------------------------------- |
-| [`init`](/docs/commands/init)             | Generate cross-region inventory scan with advanced options |
-| [`describe`](/docs/commands/describe)     | Deeply describe a specific AWS resource                    |
-| [`setup-totp`](/docs/commands/setup-totp) | Configure TOTP secret for MFA authentication               |
-| [`config`](/docs/commands/config)         | Manage persistent configuration                            |
+| Command                                   | Description                                                 |
+| ----------------------------------------- | ----------------------------------------------------------- |
+| [`init`](/docs/commands/init)             | Generate cross-region inventory scan with advanced options  |
+| [`describe`](/docs/commands/describe)     | Deeply describe a specific AWS resource                     |
+| [`setup-totp`](/docs/commands/setup-totp) | Configure TOTP secret for MFA authentication                |
+| [`use-letme`](/docs/commands/use-letme)   | Enable `letme` MFA credential obtain flow for scan commands |
+| [`config`](/docs/commands/config)         | Manage persistent configuration                             |
 
 ## Root Scan Options
 
 These options control the default root scan behavior:
 
-| Option            | Alias | Description                                                | Default       |
-| ----------------- | ----- | ---------------------------------------------------------- | ------------- |
-| `--account`       | `-a`  | AWS account or profile name                                | Auto-detected |
-| `--region`        | `-r`  | AWS region(s), comma-separated                             | `us-east-1`   |
-| `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`)       | `csv`         |
-| `--services`      | `-s`  | Comma-separated list of services to scan (`all` supported) | All services  |
-| `--describe`      |       | Describe all resources of a type                           | -             |
-| `--skip-global`   |       | Skip global services (S3, IAM, CloudFront, Route53, etc.)  | `false`       |
-| `--only-global`   |       | Scan only global services                                  | `false`       |
-| `--debug`         |       | Show raw error output with stack traces                    | `false`       |
-| `--help-examples` |       | Print CLI examples and exit                                | `false`       |
+| Option            | Alias | Description                                                   | Default       |
+| ----------------- | ----- | ------------------------------------------------------------- | ------------- |
+| `--account`       | `-a`  | AWS account or profile name                                   | Auto-detected |
+| `--region`        | `-r`  | AWS region(s), comma-separated                                | `us-east-1`   |
+| `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`)          | `csv`         |
+| `--services`      | `-s`  | Comma-separated list of services to scan (`all` supported)    | All services  |
+| `--describe`      |       | Describe all resources of a type                              | -             |
+| `--use-letme`     |       | Use `letme` and `--account` profile for MFA credential obtain | `false`       |
+| `--skip-global`   |       | Skip global services (S3, IAM, CloudFront, Route53, etc.)     | `false`       |
+| `--only-global`   |       | Scan only global services                                     | `false`       |
+| `--debug`         |       | Show raw error output with stack traces                       | `false`       |
+| `--help-examples` |       | Print CLI examples and exit                                   | `false`       |
 
 ## Framework Global Flags
 
@@ -81,6 +83,9 @@ cloudops-tools --export-format xlsx
 
 # Describe all RDS instances in a region
 cloudops-tools --describe rds --region eu-south-2
+
+# Use `letme` with MFA profile from --account
+cloudops-tools --use-letme --account engineering-prod --region us-east-1
 ```
 
 ## Behavior Notes

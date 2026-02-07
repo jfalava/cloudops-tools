@@ -74,6 +74,11 @@ export const docsTree: Root = {
         },
         {
           type: "page",
+          name: "use-letme",
+          url: "/docs/commands/use-letme",
+        },
+        {
+          type: "page",
           name: "config",
           url: "/docs/commands/config",
         },
