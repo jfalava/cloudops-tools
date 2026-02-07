@@ -1,6 +1,11 @@
 {
   "name": "@cloudops-tools/sdk",
   "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfalava/cloudops-tools.git",
+    "directory": "sdk"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "exports": {

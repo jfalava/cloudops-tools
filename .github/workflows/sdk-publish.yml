@@ -1,0 +1,81 @@
+name: Publish SDK to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: "Git SHA of the SDK release commit"
+        required: true
+        type: string
+  workflow_run:
+    workflows:
+      - Release SDK
+    types:
+      - completed
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-sdk:
+    name: Publish @cloudops-tools/sdk
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout release commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || inputs.release_sha }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Ensure npm CLI supports trusted publishing
+        run: npm install -g npm@11.5.1
+
+      - name: Validate tag matches package version
+        shell: bash
+        run: |
+          TAG="$(git tag --points-at HEAD | grep '^sdk-v' | head -n 1)"
+          if [[ -z "$TAG" ]]; then
+            echo "No git tag found for commit $(git rev-parse --short HEAD)."
+            exit 1
+          fi
+
+          VERSION="$(node -p "require('./sdk/package.json').version")"
+          EXPECTED="sdk-v${VERSION}"
+
+          if [[ "$TAG" != "$EXPECTED" ]]; then
+            echo "Release tag ($TAG) does not match expected sdk/package.json tag ($EXPECTED)."
+            exit 1
+          fi
+
+      - name: Preview package contents
+        working-directory: sdk
+        run: npm pack --dry-run
+
+      - name: Check if SDK version already published
+        id: check
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./sdk/package.json').version")"
+          if npm view "@cloudops-tools/sdk@${VERSION}" version 2>/dev/null; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish SDK
+        if: steps.check.outputs.skip != 'true'
+        working-directory: sdk
+        shell: bash
+        run: |
+          unset NODE_AUTH_TOKEN
+          unset NPM_TOKEN
+          npm publish --access public --provenance
