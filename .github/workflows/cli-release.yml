@@ -3,7 +3,7 @@ name: Release CLI
 on:
   push:
     tags:
-      - "*"
+      - "cli-v*"
 
 permissions:
   contents: read
@@ -21,10 +21,10 @@ jobs:
         run: |
           TAG="${{ github.ref_name }}"
           VERSION="$(node -p "require('./cli/package.json').version")"
+          EXPECTED="cli-v${VERSION}"
 
-          if [[ "$TAG" != "$VERSION" && "$TAG" != "v$VERSION" ]]; then
-            echo "Tag '$TAG' does not match cli/package.json version '$VERSION'."
-            echo "Use '$VERSION' or 'v$VERSION'."
+          if [[ "$TAG" != "$EXPECTED" ]]; then
+            echo "Tag '$TAG' does not match expected CLI tag '$EXPECTED'."
             exit 1
           fi
 
@@ -72,9 +72,8 @@ jobs:
 
       - name: Build native CLI binary
         shell: bash
-        env:
-          BUILD_VERSION: ${{ github.ref_name }}
         run: |
+          BUILD_VERSION="$(node -p "require('./cli/package.json').version")"
           mkdir -p cli/dist
           bun build --compile --minify --sourcemap --bytecode \
             --target="${{ matrix.target }}" \

@@ -139,9 +139,10 @@ jobs:
           fi
 
           VERSION="$(node -p "require('./cli/package.json').version")"
+          EXPECTED="cli-v${VERSION}"
 
-          if [[ "$TAG" != "$VERSION" && "$TAG" != "v$VERSION" ]]; then
-            echo "Release tag ($TAG) does not match cli/package.json version ($VERSION)."
+          if [[ "$TAG" != "$EXPECTED" ]]; then
+            echo "Release tag ($TAG) does not match expected cli/package.json tag ($EXPECTED)."
             exit 1
           fi
 
