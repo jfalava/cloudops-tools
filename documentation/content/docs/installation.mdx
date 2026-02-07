@@ -7,13 +7,27 @@ description: How to install and set up CloudOps Tools
 
 ## Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+ and npm (or Bun)
 - AWS credentials configured (`~/.aws/credentials` or environment variables)
 
-## Install via npm
+## Install
 
 ```bash
 npm install -g @cloudops-tools/cli
+```
+
+With Bun:
+
+```bash
+bun add -g @cloudops-tools/cli
+```
+
+If Bun does not install optional dependencies for your platform, install the platform package
+explicitly:
+
+```bash
+# macOS arm64
+bun add -g @cloudops-tools/cli-darwin-arm64
 ```
 
 ## Verify Installation
@@ -24,8 +38,12 @@ cloudops-tools --version
 
 ## How Installation Works
 
-The npm package installs a small launcher and downloads a native binary for your platform from
-GitHub Releases during `postinstall`.
+`@cloudops-tools/cli` installs a small launcher. The native binary is provided by platform-specific
+optional dependencies:
+
+- `@cloudops-tools/cli-darwin-arm64`
+- `@cloudops-tools/cli-linux-x64`
+- `@cloudops-tools/cli-win32-x64`
 
 Supported prebuilt platforms:
 
