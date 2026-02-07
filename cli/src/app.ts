@@ -3,7 +3,7 @@ import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { argv } from "bun";
 import { Effect } from "effect";
-import { readFile } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import process from "node:process";
 
 import { HELP_EXAMPLES, configCommand, mainCommand, setupTotpCommand } from "@/commands";
@@ -31,10 +31,15 @@ if (wantsVersion) {
   const version =
     typeof BUILD_VERSION !== "undefined"
       ? BUILD_VERSION
-      : await readFile(new URL("../package.json", import.meta.url), "utf8")
-          .then((json) => JSON.parse(json) as { version: string })
-          .then((data) => data.version)
-          .catch(() => "unknown");
+      : (() => {
+          try {
+            const packageJson = readFileSync(new URL("../package.json", import.meta.url), "utf8");
+            const parsed = JSON.parse(packageJson) as { version?: string };
+            return parsed.version ?? "unknown";
+          } catch {
+            return "unknown";
+          }
+        })();
   process.stdout.write(String(version) + "\n");
   process.exit(0);
 }

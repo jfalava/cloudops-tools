@@ -54,8 +54,8 @@ const spawn = (command: string, args: string[] = []): FakeChild => {
   return child;
 };
 
-mock.module("@/lib/spawn", () => ({ spawn }));
-mock.module("@cloudops-tools/sdk", () => ({
+void mock.module("@/lib/spawn", () => ({ spawn }));
+void mock.module("@cloudops-tools/sdk", () => ({
   ...actualSdk,
   getTOTPSecret: async () => "JBSWY3DPEHPK3PXP",
   generateTOTPToken: () => otpToken,
