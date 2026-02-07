@@ -55,15 +55,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
         run: npm install -g npm@11.5.1
-
-      - name: Enforce trusted publishing auth
-        shell: bash
-        run: |
-          npm config delete //registry.npmjs.org/:_authToken || true
 
       - name: Download platform binary artifact
         uses: actions/download-artifact@v7
@@ -108,7 +102,11 @@ jobs:
       - name: Publish ${{ matrix.pkg }}
         if: steps.check.outputs.skip != 'true'
         working-directory: cli/npm/${{ matrix.npm_dir }}
-        run: npm publish --access public --provenance
+        shell: bash
+        run: |
+          unset NODE_AUTH_TOKEN
+          unset NPM_TOKEN
+          npm publish --access public --provenance
 
   publish-main:
     name: Publish main CLI package
@@ -127,15 +125,9 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24"
-          registry-url: https://registry.npmjs.org
 
       - name: Ensure npm CLI supports trusted publishing
         run: npm install -g npm@11.5.1
-
-      - name: Enforce trusted publishing auth
-        shell: bash
-        run: |
-          npm config delete //registry.npmjs.org/:_authToken || true
 
       - name: Validate tag matches package version
         shell: bash
@@ -171,4 +163,8 @@ jobs:
       - name: Publish package
         if: steps.check_main.outputs.skip != 'true'
         working-directory: cli
-        run: npm publish --access public --provenance
+        shell: bash
+        run: |
+          unset NODE_AUTH_TOKEN
+          unset NPM_TOKEN
+          npm publish --access public --provenance
