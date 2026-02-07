@@ -20,13 +20,19 @@ CloudOps Tools is a command-line utility that helps you:
 
 ```bash
 # Install
-bun install -g @cloudops-tools/cli
+npm install -g @cloudops-tools/cli
 
 # Run a basic inventory scan
 cloudops-tools --region us-east-1
 
 # Generate a cross-region security audit
 cloudops-tools init --mode security --export-format xlsx
+```
+
+If you prefer Bun:
+
+```bash
+bun add -g @cloudops-tools/cli
 ```
 
 ## Core Commands
