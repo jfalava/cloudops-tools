@@ -47,8 +47,8 @@
     "typescript": "catalog:build"
   },
   "optionalDependencies": {
-    "@cloudops-tools/cli-darwin-arm64": "0.1.3",
-    "@cloudops-tools/cli-linux-x64": "0.1.3",
-    "@cloudops-tools/cli-win32-x64": "0.1.3"
+    "@cloudops-tools/cli-darwin-arm64": "0.1.4",
+    "@cloudops-tools/cli-linux-x64": "0.1.4",
+    "@cloudops-tools/cli-win32-x64": "0.1.4"
   }
 }

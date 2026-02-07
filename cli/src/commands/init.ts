@@ -2,7 +2,7 @@ import { generateInitInventoryEffect, SdkLive, UtilService } from "@cloudops-too
 import { Command } from "@effect/cli";
 import { Effect, Option } from "effect";
 
-import { activateLetmeProfile } from "@/lib/letme";
+import { requireLetmeActivation } from "@/lib/letme";
 import {
   account,
   initRegions,
@@ -45,22 +45,16 @@ export const initCommand = Command.make(
   }) =>
     Effect.gen(function* (_) {
       if (useLetme) {
-        const letmeProfile = Option.getOrUndefined(account);
-        if (!letmeProfile) {
-          return yield* _(
-            Effect.fail(
-              new Error(
-                "Missing required --account <profile> with --use-letme. Example: cloudops-tools init --use-letme --account engineering-prod",
-              ),
-            ),
-          );
-        }
-
-        yield* _(activateLetmeProfile(letmeProfile));
+        yield* _(
+          requireLetmeActivation(
+            account,
+            "cloudops-tools init --use-letme --account engineering-prod",
+          ),
+        );
       }
 
       const runWithSdk = Effect.gen(function* (_) {
-        const progress = yield* Effect.sync(() => startProgressRenderer({ debug }));
+        const progress = yield* _(Effect.sync(() => startProgressRenderer({ debug })));
         const util = yield* _(UtilService);
         const id = yield* _(
           Option.match(account, {
@@ -70,9 +64,11 @@ export const initCommand = Command.make(
         );
         const regions = Option.map(region, (r: string) => r.split(",").map((s) => s.trim()));
         const limited = Option.map(limitRegions, (r: string) => r.split(",").map((s) => s.trim()));
-        const serviceList = Option.map(services, (s: string) =>
-          s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
-        );
+        const serviceList = Option.match(services, {
+          onNone: () => undefined,
+          onSome: (s: string) =>
+            s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
+        });
 
         yield* generateInitInventoryEffect(
           id,
@@ -83,7 +79,7 @@ export const initCommand = Command.make(
           {
             skipGlobal,
             onlyGlobal,
-            services: Option.getOrUndefined(serviceList),
+            services: serviceList,
           },
         ).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
       });

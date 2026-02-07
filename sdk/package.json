@@ -22,8 +22,8 @@
     "format": "oxfmt",
     "lint": "oxlint --type-aware",
     "test": "bun test ./test/unit/lib",
-    "test:coverage": "bun test --coverage",
-    "test:watch": "bun test --watch",
+    "test:coverage": "bun test ./test/unit/lib --coverage",
+    "test:watch": "bun test ./test/unit/lib --watch",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {

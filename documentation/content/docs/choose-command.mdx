@@ -49,5 +49,7 @@ cloudops-tools --describe rds --region eu-south-2
 
 - Root command and `init` overlap for scans; use root for quick runs and `init` for explicit mode and
   region control.
+- `describe` and `--describe` are both valid: use `describe` for one specific resource ID, and
+  `--describe <type>` for a region-wide snapshot of all resources of that type.
 - `--help-examples` and `--version` exit early and do not run scan logic.
 - `--wizard` is provided by `@effect/cli`; it does not bypass AWS credential requirements.

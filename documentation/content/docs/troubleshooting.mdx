@@ -70,6 +70,39 @@ cloudops-tools init --services EC2,RDS --limit-regions us-east-1
 - Use `--skip-global` to reduce global-service scan time.
 - Use `--only-global` when you only need global services.
 
+## LetMe / --use-letme
+
+Symptom:
+
+- `letme` preflight check fails or times out.
+- `Unable to read stored TOTP secret` appears.
+- `Missing required --account <profile> with --use-letme` appears.
+
+Actions:
+
+1. Confirm `letme` is installed and on your `PATH`:
+
+```bash
+letme --version
+```
+
+2. If TOTP is not configured yet, set it up before using `--use-letme`:
+
+```bash
+cloudops-tools setup-totp
+```
+
+3. Re-run your scan with both `--use-letme` and `--account`:
+
+```bash
+cloudops-tools --use-letme --account engineering-prod --region us-east-1
+```
+
+Notes:
+
+- `--use-letme` requires `--account <profile>` so the CLI knows which profile to activate.
+- If `letme` is missing, install it and restart your shell so `PATH` is updated.
+
 ## Help and Diagnostics Flags
 
 ```bash

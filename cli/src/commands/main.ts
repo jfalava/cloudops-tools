@@ -17,7 +17,7 @@ import { describeCommand } from "@/commands/describe";
 import { getDescribeHandler } from "@/commands/describe-handlers";
 import { initCommand } from "@/commands/init";
 import { setupTotpCommand } from "@/commands/setup-totp";
-import { activateLetmeProfile } from "@/lib/letme";
+import { requireLetmeActivation } from "@/lib/letme";
 import {
   account,
   region,
@@ -102,18 +102,9 @@ export const mainCommand = Command.make(
       }
 
       if (useLetme) {
-        const letmeProfile = Option.getOrUndefined(account);
-        if (!letmeProfile) {
-          return yield* _(
-            Effect.fail(
-              new Error(
-                "Missing required --account <profile> with --use-letme. Example: cloudops-tools --use-letme --account engineering-prod",
-              ),
-            ),
-          );
-        }
-
-        yield* _(activateLetmeProfile(letmeProfile));
+        yield* _(
+          requireLetmeActivation(account, "cloudops-tools --use-letme --account engineering-prod"),
+        );
       }
 
       const runWithSdk = Effect.gen(function* (_) {
@@ -147,9 +138,7 @@ export const mainCommand = Command.make(
             return;
           }
 
-          const report = yield* _(
-            reporting.generateMarkdownReport(handler.title, items as unknown[]),
-          );
+          const report = yield* _(reporting.generateMarkdownReport(handler.title, items));
           const now = new Date().toISOString();
           const date = now.slice(0, 10).replace(/-/g, "");
           const time = now.slice(11, 19).replace(/:/g, "");
@@ -157,8 +146,20 @@ export const mainCommand = Command.make(
           const outputDir = `inventory-output/${id}`;
           const outputPath = `${outputDir}/describe-${describeType.toLowerCase()}-${safeRegions}-${date}-${time}.md`;
 
-          yield* _(Effect.promise(() => mkdir(outputDir, { recursive: true })));
-          yield* _(Effect.promise(() => write(outputPath, report)));
+          yield* _(
+            Effect.tryPromise({
+              try: () => mkdir(outputDir, { recursive: true }),
+              catch: (error) =>
+                new Error(`Failed to create output directory "${outputDir}": ${String(error)}`),
+            }),
+          );
+          yield* _(
+            Effect.tryPromise({
+              try: () => write(outputPath, report),
+              catch: (error) =>
+                new Error(`Failed to write report to "${outputPath}": ${String(error)}`),
+            }),
+          );
           yield* _(Console.log(ui.success(`Wrote ${outputPath}`)));
           return;
         }
@@ -169,12 +170,14 @@ export const mainCommand = Command.make(
             s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
         });
 
-        const progress = yield* Effect.sync(() => startProgressRenderer({ debug }));
-        yield* generateInitInventoryEffect(id, "basic", format, regions, debug, {
-          skipGlobal,
-          onlyGlobal,
-          services: serviceList,
-        }).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
+        const progress = yield* _(Effect.sync(() => startProgressRenderer({ debug })));
+        yield* _(
+          generateInitInventoryEffect(id, "basic", format, regions, debug, {
+            skipGlobal,
+            onlyGlobal,
+            services: serviceList,
+          }).pipe(Effect.ensuring(Effect.sync(() => progress.stop()))),
+        );
       });
 
       yield* _(runWithSdk.pipe(Effect.provide(SdkLive)));

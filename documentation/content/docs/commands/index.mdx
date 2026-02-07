@@ -20,13 +20,12 @@ cloudops-tools [options]
 
 ## Subcommands
 
-| Command                                   | Description                                                 |
-| ----------------------------------------- | ----------------------------------------------------------- |
-| [`init`](/docs/commands/init)             | Generate cross-region inventory scan with advanced options  |
-| [`describe`](/docs/commands/describe)     | Deeply describe a specific AWS resource                     |
-| [`setup-totp`](/docs/commands/setup-totp) | Configure TOTP secret for MFA authentication                |
-| [`use-letme`](/docs/commands/use-letme)   | Enable `letme` MFA credential obtain flow for scan commands |
-| [`config`](/docs/commands/config)         | Manage persistent configuration                             |
+| Command                                   | Description                                                |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| [`init`](/docs/commands/init)             | Generate cross-region inventory scan with advanced options |
+| [`describe`](/docs/commands/describe)     | Deeply describe a specific AWS resource                    |
+| [`setup-totp`](/docs/commands/setup-totp) | Configure TOTP secret for MFA authentication               |
+| [`config`](/docs/commands/config)         | Manage persistent configuration                            |
 
 ## Root Scan Options
 
@@ -44,6 +43,9 @@ These options control the default root scan behavior:
 | `--only-global`   |       | Scan only global services                                     | `false`       |
 | `--debug`         |       | Show raw error output with stack traces                       | `false`       |
 | `--help-examples` |       | Print CLI examples and exit                                   | `false`       |
+
+For `--use-letme` setup and troubleshooting workflow, see the
+[`use-letme` guide](/docs/commands/use-letme).
 
 ## Framework Global Flags
 
