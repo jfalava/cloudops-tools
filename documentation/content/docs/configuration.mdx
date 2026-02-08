@@ -63,13 +63,3 @@ cloudops-tools config unset defaultServices
 ```bash
 cloudops-tools config path
 ```
-
-## Notes
-
-- Current CLI behavior: config values are stored and retrievable, but scan commands do not yet
-  auto-apply them as runtime defaults.
-- Pass scan flags explicitly on `cloudops-tools` or `cloudops-tools init` for now.
-
-```bash
-cloudops-tools init --mode security --export-format xlsx --region us-east-1
-```
