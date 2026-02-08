@@ -33,27 +33,22 @@ cloudops-tools setup-totp
 
 When prompted, enter your TOTP secret key (the base32-encoded secret from your MFA device setup).
 
-## Use Cases
+## Current use cases
 
 ### AWS MFA with letme
 
-If you use `letme` for AWS credential management, this command configures the TOTP secret so that MFA codes can be automatically generated:
+If you use `letme` for assuming roles, this command configures the TOTP secret so that MFA codes can be automatically generated:
 
 ```bash
 # Configure TOTP once
 cloudops-tools setup-totp
 
-# Then use letme with automatic MFA
-letme in my-account
+# Then use --use-letme to let the CLI know to `obtain` a role using letme, then set up the account as the default profile
+# All with a single parameter
+cloudops-tools --region eu-south-2 --account account-in-letme-dynamodb --use-letme
 ```
-
-### Programmatic MFA Access
-
-For scripts that need to authenticate with MFA-protected AWS accounts, the stored TOTP secret enables automatic code generation.
 
 ## Security Considerations
 
-- The TOTP secret is stored locally via Bun secrets (OS-backed secret storage), not in `config.json`
-- Ensure your workstation has appropriate security controls
-- Do not share your TOTP secret
+- The TOTP secret is stored locally via Bun secrets (OS-backed secret storage like [Keychain](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac), [Credential Manager](https://support.microsoft.com/en-us/windows/credential-manager-in-windows-1b5c916a-6a16-889f-8581-fc16e8165ac0) or [libsecret](https://github.com/GNOME/libsecret)), not in `config.json`
 - Consider using AWS IAM Identity Center (SSO) for team environments
