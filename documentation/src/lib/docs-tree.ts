@@ -69,11 +69,6 @@ export const docsTree: Root = {
         },
         {
           type: "page",
-          name: "setup-totp",
-          url: "/docs/commands/setup-totp",
-        },
-        {
-          type: "page",
           name: "use-letme",
           url: "/docs/commands/use-letme",
         },
