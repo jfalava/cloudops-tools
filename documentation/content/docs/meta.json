@@ -1,16 +1,4 @@
 {
   "title": "Documentation",
-  "pages": [
-    "index",
-    "installation",
-    "build-cli",
-    "configuration",
-    "choose-command",
-    "scan-profiles",
-    "troubleshooting",
-    "---Commands---",
-    "commands",
-    "---SDK---",
-    "sdk"
-  ]
+  "pages": ["---Docs---", "cli", "sdk"]
 }

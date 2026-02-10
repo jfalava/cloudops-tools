@@ -1,75 +1,12 @@
 ---
-title: Getting Started
-description: Install CloudOps Tools and run your first inventory scan
+title: Documentation
+description: CloudOps Tools documentation - CLI and SDK
 ---
 
-# Getting Started
+import { redirect } from "@tanstack/react-router";
 
-Use this guide to install CloudOps Tools and run your first scan in a few minutes.
-
-## What You'll Do
-
-CloudOps Tools helps you:
-
-- Inventory AWS resources across regions and services
-- Export reports in CSV, Excel, or JSON
-- Describe resources in detail
-- Run security-focused scans
-
-## 1. Install
-
-```bash
-npm install -g @cloudops-tools/cli
-```
-
-If you prefer Bun:
-
-```bash
-bun add -g @cloudops-tools/cli
-```
-
-## 2. Verify Installation
-
-```bash
-cloudops-tools --version
-```
-
-## 3. Run Your First Scan
-
-```bash
-cloudops-tools --region us-east-1
-```
-
-## 4. Try a Security Audit
-
-```bash
-cloudops-tools init --mode security --export-format xlsx
-```
-
-## 5. Need More Examples?
-
-```bash
-cloudops-tools --help-examples
-```
-
-## Core Commands
-
-See command details in the command reference:
-
-- [Commands Overview](/docs/commands)
-- [init](/docs/commands/init)
-- [describe](/docs/commands/describe)
-- [config](/docs/commands/config)
-- [use-letme](/docs/commands/use-letme) - MFA authentication with letme (includes TOTP setup)
-
-## Practical Guides
-
-- [Choose the Right Command](/docs/choose-command)
-- [Scan Profiles](/docs/scan-profiles)
-- [Troubleshooting](/docs/troubleshooting)
-
-## Next Steps
-
-- [Installation Guide](/docs/installation) - Detailed setup instructions
-- [Configuration](/docs/configuration) - Configure defaults and options
-- [Commands Overview](/docs/commands) - Full command and option reference
+export const Route = createFileRoute("/docs")({
+  beforeLoad: () => {
+    throw redirect({ to: "/docs/cli" });
+  },
+});
