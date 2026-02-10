@@ -38,12 +38,12 @@ export function Footer() {
                 r="89"
                 fill="url(#_R_4ir5ulb_-iconGradient)"
                 stroke="var(--color-fd-primary)"
-                stroke-width="1"
+                strokeWidth="1"
               ></circle>
               <defs>
                 <linearGradient id="_R_4ir5ulb_-iconGradient" gradientTransform="rotate(45)">
-                  <stop offset="45%" stop-color="var(--color-fd-background)"></stop>
-                  <stop offset="100%" stop-color="var(--color-fd-primary)"></stop>
+                  <stop offset="45%" stopColor="var(--color-fd-background)"></stop>
+                  <stop offset="100%" stopColor="var(--color-fd-primary)"></stop>
                 </linearGradient>
               </defs>
             </svg>
