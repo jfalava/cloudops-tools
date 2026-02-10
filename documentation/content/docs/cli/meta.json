@@ -1,0 +1,15 @@
+{
+  "title": "CLI",
+  "pages": [
+    "index",
+    "installation",
+    "build-cli",
+    "configuration",
+    "---Guides---",
+    "choose-command",
+    "scan-profiles",
+    "troubleshooting",
+    "---Commands---",
+    "commands"
+  ]
+}

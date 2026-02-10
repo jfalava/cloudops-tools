@@ -11,23 +11,23 @@ export const docsTree: Root = {
       index: {
         type: "page",
         name: "Getting Started",
-        url: "/docs",
+        url: "/docs/cli",
       },
       children: [
         {
           type: "page",
           name: "Installation",
-          url: "/docs/installation",
+          url: "/docs/cli/installation",
         },
         {
           type: "page",
           name: "Build CLI Binary",
-          url: "/docs/build-cli",
+          url: "/docs/cli/build-cli",
         },
         {
           type: "page",
           name: "Configuration",
-          url: "/docs/configuration",
+          url: "/docs/cli/configuration",
         },
         {
           type: "separator",
@@ -36,17 +36,17 @@ export const docsTree: Root = {
         {
           type: "page",
           name: "Choose Command",
-          url: "/docs/choose-command",
+          url: "/docs/cli/choose-command",
         },
         {
           type: "page",
           name: "Scan Profiles",
-          url: "/docs/scan-profiles",
+          url: "/docs/cli/scan-profiles",
         },
         {
           type: "page",
           name: "Troubleshooting",
-          url: "/docs/troubleshooting",
+          url: "/docs/cli/troubleshooting",
         },
         {
           type: "separator",
@@ -55,27 +55,27 @@ export const docsTree: Root = {
         {
           type: "page",
           name: "Overview",
-          url: "/docs/commands",
+          url: "/docs/cli/commands",
         },
         {
           type: "page",
           name: "init",
-          url: "/docs/commands/init",
+          url: "/docs/cli/commands/init",
         },
         {
           type: "page",
           name: "describe",
-          url: "/docs/commands/describe",
+          url: "/docs/cli/commands/describe",
         },
         {
           type: "page",
           name: "use-letme",
-          url: "/docs/commands/use-letme",
+          url: "/docs/cli/commands/use-letme",
         },
         {
           type: "page",
           name: "config",
-          url: "/docs/commands/config",
+          url: "/docs/cli/commands/config",
         },
       ],
     },

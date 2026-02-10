@@ -20,11 +20,11 @@ cloudops-tools [options]
 
 ## Subcommands
 
-| Command                               | Description                                                |
-| ------------------------------------- | ---------------------------------------------------------- |
-| [`init`](/docs/commands/init)         | Generate cross-region inventory scan with advanced options |
-| [`describe`](/docs/commands/describe) | Deeply describe a specific AWS resource                    |
-| [`config`](/docs/commands/config)     | Manage persistent configuration                            |
+| Command                                   | Description                                                |
+| ----------------------------------------- | ---------------------------------------------------------- |
+| [`init`](/docs/cli/commands/init)         | Generate cross-region inventory scan with advanced options |
+| [`describe`](/docs/cli/commands/describe) | Deeply describe a specific AWS resource                    |
+| [`config`](/docs/cli/commands/config)     | Manage persistent configuration                            |
 
 ## Root Scan Options
 
@@ -44,7 +44,7 @@ These options control the default root scan behavior:
 | `--help-examples` |       | Print CLI examples and exit                                                           | `false`       |
 
 For `--use-letme` setup and troubleshooting workflow, see the
-[`use-letme` guide](/docs/commands/use-letme).
+[`use-letme` guide](/docs/cli/commands/use-letme).
 
 ## Framework Global Flags
 
@@ -98,6 +98,6 @@ cloudops-tools --use-letme --account engineering-prod --region us-east-1
 
 ## Related Guides
 
-- [Choose the Right Command](/docs/choose-command)
-- [Scan Profiles](/docs/scan-profiles)
-- [Troubleshooting](/docs/troubleshooting)
+- [Choose the Right Command](/docs/cli/choose-command)
+- [Scan Profiles](/docs/cli/scan-profiles)
+- [Troubleshooting](/docs/cli/troubleshooting)
