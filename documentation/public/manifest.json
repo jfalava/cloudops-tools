@@ -1,6 +1,6 @@
 {
-  "short_name": "TanStack App",
-  "name": "Create TanStack App Sample",
+  "short_name": "CloudOps Tools Documentation",
+  "name": "AWS cloud operations toolkit with a powerful CLI and TypeScript SDK for inventory management, resource discovery, and automation.",
   "icons": [
     {
       "src": "favicon.ico",
