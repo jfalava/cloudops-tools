@@ -4,13 +4,6 @@
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
 
-@font-face {
-  font-family: "Google Sans Code";
-  font-style: normal;
-  font-weight: 200 900;
-  font-display: swap;
-}
-
 body {
   @apply m-0;
   font-family:

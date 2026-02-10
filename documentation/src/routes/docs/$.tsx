@@ -1,4 +1,4 @@
-import { createFileRoute, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
@@ -54,6 +54,12 @@ export const Route = createFileRoute("/docs/$")({
   component: DocsPageComponent,
   loader: async ({ params }) => {
     const slug = params["_splat"] || "";
+
+    // Redirect /docs to /docs/cli
+    if (slug === "" || slug === "index") {
+      throw redirect({ to: "/docs/$", params: { _splat: "cli" } });
+    }
+
     const docModule = docModules[slug];
 
     if (!docModule) {

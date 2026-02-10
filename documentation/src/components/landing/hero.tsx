@@ -1,3 +1,5 @@
+import type { ComponentType, ReactNode } from "react";
+
 import { Terminal, Code2 } from "lucide-react";
 
 function DocCard({
@@ -7,7 +9,7 @@ function DocCard({
   description,
 }: {
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   title: string;
   description: string;
 }) {
@@ -29,7 +31,7 @@ function DocCard({
   );
 }
 
-function QuickLink({ href, children }: { href: string; children: React.ReactNode }) {
+function QuickLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <a href={href} className="text-primary text-sm hover:underline">
       {children}
