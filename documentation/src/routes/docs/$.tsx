@@ -1,6 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
-import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
@@ -74,11 +73,9 @@ function DocsPageComponent() {
   const params = Route.useParams();
   const slug = params["_splat"] || "";
 
-  type MdxComponents = typeof defaultMdxComponents;
+  type DocModule = Awaited<ReturnType<(typeof docModules)[string]>>;
 
-  const [MDXContent, setMDXContent] = useState<React.ComponentType<{
-    components?: MdxComponents;
-  }> | null>(null);
+  const [MDXContent, setMDXContent] = useState<DocModule["default"] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -94,7 +91,7 @@ function DocsPageComponent() {
           throw notFound();
         }
         const module = await docModule();
-        setMDXContent(() => module.default);
+        setMDXContent(module.default);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
@@ -142,9 +139,7 @@ function DocsPageComponent() {
               </div>
             }
           >
-            <MDXContent
-              components={defaultMdxComponents}
-            />
+            <MDXContent />
           </ErrorBoundary>
         </DocsBody>
       </DocsPage>
