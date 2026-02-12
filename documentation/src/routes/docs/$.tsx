@@ -100,10 +100,7 @@ function DocsPageComponent() {
       }
     };
 
-    loadModule().catch((err: unknown) => {
-      setError(err instanceof Error ? err : new Error(String(err)));
-      setIsLoading(false);
-    });
+    void loadModule();
   }, [slug]);
 
   if (isLoading) {
