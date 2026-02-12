@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: release-cli-latest-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 

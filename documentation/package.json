@@ -53,7 +53,7 @@
     "oxlint-tsgolint": "catalog:build",
     "typedoc": "catalog:build",
     "typescript": "catalog:build",
-    "vite": "^8.0.0-beta.13",
+    "vite": "8.0.0-beta.13",
     "vitest": "4.0.18",
     "web-vitals": "5.1.0",
     "wrangler": "4.65.0"
