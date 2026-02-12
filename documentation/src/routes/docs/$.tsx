@@ -74,8 +74,10 @@ function DocsPageComponent() {
   const params = Route.useParams();
   const slug = params["_splat"] || "";
 
+  type MdxComponents = typeof defaultMdxComponents;
+
   const [MDXContent, setMDXContent] = useState<React.ComponentType<{
-    components?: Record<string, React.ComponentType<Record<string, unknown>>>;
+    components?: MdxComponents;
   }> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -141,12 +143,7 @@ function DocsPageComponent() {
             }
           >
             <MDXContent
-              components={
-                defaultMdxComponents as unknown as Record<
-                  string,
-                  React.ComponentType<Record<string, unknown>>
-                >
-              }
+              components={defaultMdxComponents}
             />
           </ErrorBoundary>
         </DocsBody>

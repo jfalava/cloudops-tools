@@ -1,6 +1,5 @@
-import type { ComponentType, ReactNode } from "react";
-
 import { Terminal, Code2 } from "lucide-react";
+import type { ComponentType, ReactNode } from "react";
 
 function DocCard({
   href,

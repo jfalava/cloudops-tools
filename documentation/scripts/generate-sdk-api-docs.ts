@@ -97,20 +97,47 @@ const moduleSpecs = [
 ] as const;
 
 function asObject(value: JsonValue | undefined): JsonObject | undefined {
-  return value && typeof value === "object" && !Array.isArray(value)
-    ? (value as JsonObject)
-    : undefined;
+  return value && isJsonObject(value) ? value : undefined;
 }
 
 function asArray(value: JsonValue | undefined): JsonValue[] {
   return Array.isArray(value) ? value : [];
 }
 
+function isJsonObject(value: JsonValue): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isJsonValue(value: unknown): value is JsonValue {
+  if (value === null) {
+    return true;
+  }
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return value.every(isJsonValue);
+  }
+  if (typeof value === "object") {
+    return Object.values(value).every(isJsonValue);
+  }
+  return false;
+}
+
+function isReflectionShape(value: JsonValue): value is ReflectionShape {
+  return isJsonObject(value);
+}
+
 function readProject(filePath: string): ProjectShape {
-  const parsed = JSON.parse(readFileSync(filePath, "utf8")) as JsonValue;
+  const parsed: unknown = JSON.parse(readFileSync(filePath, "utf8"));
+  if (!isJsonValue(parsed)) {
+    return {
+      children: [],
+    };
+  }
   const project = asObject(parsed);
   return {
-    children: asArray(project?.children).map((child) => child as ReflectionShape),
+    children: asArray(project?.children).filter(isReflectionShape),
   };
 }
 
