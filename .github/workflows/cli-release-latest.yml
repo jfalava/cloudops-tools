@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "cli/**"
+      - "bun.lock"
 
 concurrency:
   group: release-cli-latest-${{ github.ref }}

@@ -1,0 +1,39 @@
+name: Release SDK Latest
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "sdk/**"
+      - "bun.lock"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Update SDK latest release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Move sdk-latest tag to current main commit
+        shell: bash
+        run: |
+          git tag -f sdk-latest "${GITHUB_SHA}"
+          git push origin refs/tags/sdk-latest --force
+
+      - name: Publish SDK latest release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: sdk-latest
+          name: SDK Latest (main)
+          prerelease: true
+          make_latest: false
+          generate_release_notes: true
