@@ -1,5 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
+import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
@@ -75,14 +76,14 @@ function DocsPageComponent() {
 
   type DocModule = Awaited<ReturnType<(typeof docModules)[string]>>;
 
-  const [MDXContent, setMDXContent] = useState<DocModule["default"] | null>(null);
+  const [docModule, setDocModule] = useState<DocModule | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
     setError(null);
-    setMDXContent(null);
+    setDocModule(null);
 
     const loadModule = async () => {
       try {
@@ -91,7 +92,7 @@ function DocsPageComponent() {
           throw notFound();
         }
         const module = await docModule();
-        setMDXContent(module.default);
+        setDocModule(module);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));
       } finally {
@@ -99,10 +100,7 @@ function DocsPageComponent() {
       }
     };
 
-    loadModule().catch((err: unknown) => {
-      setError(err instanceof Error ? err : new Error(String(err)));
-      setIsLoading(false);
-    });
+    void loadModule();
   }, [slug]);
 
   if (isLoading) {
@@ -121,9 +119,11 @@ function DocsPageComponent() {
     throw error;
   }
 
-  if (!MDXContent) {
+  if (!docModule) {
     throw notFound();
   }
+
+  const MDXContent = docModule.default;
 
   return (
     <DocsLayout tree={docsTree} {...baseOptions()}>
@@ -139,7 +139,7 @@ function DocsPageComponent() {
               </div>
             }
           >
-            <MDXContent />
+            <MDXContent components={defaultMdxComponents} />
           </ErrorBoundary>
         </DocsBody>
       </DocsPage>

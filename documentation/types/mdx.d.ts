@@ -1,6 +1,6 @@
 declare module "*.mdx" {
   const Component: React.ComponentType<{
-    components?: Record<string, React.ComponentType<Record<string, unknown>>>;
+    components?: typeof import("fumadocs-ui/mdx").default;
   }>;
   export default Component;
   export const metadata: Record<string, unknown> | undefined;
