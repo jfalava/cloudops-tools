@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "@cloudops-tools/monorepo",
+      "devDependencies": {
+        "oxfmt": "^0.32.0",
+      },
     },
     "cli": {
       "name": "@cloudops-tools/cli",

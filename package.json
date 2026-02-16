@@ -54,6 +54,7 @@
     "documentation:format": "bun run --filter @cloudops-tools/documentation format",
     "documentation:lint": "bun run --filter @cloudops-tools/documentation lint",
     "documentation:typecheck": "bun run --filter @cloudops-tools/documentation typecheck",
+    "format": "oxfmt",
     "format:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/documentation format",
     "lint:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/documentation lint",
     "sdk:check": "bun run --filter @cloudops-tools/sdk check",
@@ -61,5 +62,8 @@
     "sdk:lint": "bun run --filter @cloudops-tools/sdk lint",
     "sdk:typecheck": "bun run --filter @cloudops-tools/sdk typecheck",
     "typecheck:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/documentation typecheck"
+  },
+  "devDependencies": {
+    "oxfmt": "^0.32.0"
   }
 }

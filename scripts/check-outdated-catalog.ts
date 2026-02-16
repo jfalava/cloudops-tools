@@ -1,4 +1,6 @@
 #!/usr/bin/env bun
+/* eslint-disable no-console */
+
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { join } from "node:path";
