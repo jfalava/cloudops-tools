@@ -17,6 +17,7 @@ Operations provide high-level workflows that compose many services.
 - Service filtering
 - Progress event emission
 - Automatic SQLite storage for historical queries
+- Incremental scanning to output only changed resources
 
 ```ts
 import { Effect } from "effect";
@@ -37,6 +38,23 @@ await Effect.runPromise(
   ).pipe(Effect.provide(SdkLive)),
 );
 ```
+
+### Incremental Scanning
+
+Enable incremental mode to only output resources that have changed since the last scan:
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+await Effect.runPromise(
+  generateInitInventoryEffect("123456789012", "basic", "csv", ["us-east-1"], false, {
+    incremental: true, // Only output new/changed resources
+  }).pipe(Effect.provide(SdkLive)),
+);
+```
+
+Incremental mode uses resource fingerprints stored in SQLite to detect changes. The completion event includes statistics about new, changed, unchanged, and removed resources.
 
 ## Query Operations
 

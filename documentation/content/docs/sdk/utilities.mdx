@@ -64,15 +64,17 @@ await Effect.runPromise(program.pipe(Effect.provide(InventoryDbServiceLive)));
 
 ### InventoryDbService Methods
 
-| Method           | Purpose                                          |
-| ---------------- | ------------------------------------------------ |
-| `initialize`     | Create database schema if needed                 |
-| `saveRun`        | Store inventory run with all resources           |
-| `getRuns`        | List past runs for an account                    |
-| `getResources`   | Get resources from a specific run (with filters) |
-| `queryResources` | Query resources across runs with filters         |
-| `getChanges`     | Compare two most recent runs for changes         |
-| `close`          | Close database connection                        |
+| Method                  | Purpose                                           |
+| ----------------------- | ------------------------------------------------- |
+| `initialize`            | Create database schema if needed                  |
+| `saveRun`               | Store inventory run with all resources            |
+| `getRuns`               | List past runs for an account                     |
+| `getResources`          | Get resources from a specific run (with filters)  |
+| `queryResources`        | Query resources across runs with filters          |
+| `getChanges`            | Compare two most recent runs for changes          |
+| `getIncrementalChanges` | Compare new resources with stored fingerprints    |
+| `updateFingerprints`    | Update resource fingerprints for incremental scan |
+| `close`                 | Close database connection                         |
 
 ## Output Helpers
 

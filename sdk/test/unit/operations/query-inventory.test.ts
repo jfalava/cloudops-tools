@@ -1,6 +1,7 @@
 import { Database, type SQLQueryBindings } from "bun:sqlite";
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 import { Effect, Layer } from "effect";
+import { createHash } from "node:crypto";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -53,6 +54,20 @@ const createTestDbService = (dbPath: string): InventoryDbService => {
     db.run(`CREATE INDEX IF NOT EXISTS idx_resources_type ON resources(type)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_resources_region ON resources(region)`);
     db.run(`CREATE INDEX IF NOT EXISTS idx_runs_account ON inventory_runs(account_id)`);
+
+    db.run(`
+      CREATE TABLE IF NOT EXISTS resource_fingerprints (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        account_id TEXT NOT NULL,
+        arn TEXT NOT NULL,
+        fingerprint TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        UNIQUE(account_id, arn)
+      )
+    `);
+    db.run(
+      `CREATE INDEX IF NOT EXISTS idx_fingerprints_account ON resource_fingerprints(account_id)`,
+    );
   };
 
   return InventoryDbService.of({
@@ -440,6 +455,129 @@ const createTestDbService = (dbPath: string): InventoryDbService => {
         }
 
         return changes;
+      }),
+
+    getIncrementalChanges: (accountId, resources) =>
+      Effect.sync(() => {
+        const computeFingerprint = (r: {
+          type: string;
+          name: string;
+          region: string;
+          state?: string;
+          size?: string;
+          encrypted?: string;
+          publicAccess?: string;
+        }): string => {
+          const data = JSON.stringify({
+            type: r.type,
+            name: r.name,
+            region: r.region,
+            state: r.state,
+            size: r.size,
+            encrypted: r.encrypted,
+            publicAccess: r.publicAccess,
+          });
+          return createHash("sha256").update(data).digest("hex");
+        };
+
+        const currentFingerprints = new Map<string, string>();
+        for (const r of resources) {
+          currentFingerprints.set(r.arn, computeFingerprint(r));
+        }
+
+        const query = db.prepare(`
+          SELECT arn, fingerprint FROM resource_fingerprints WHERE account_id = $accountId
+        `);
+
+        const rows = query.all({ $accountId: accountId } as SQLQueryBindings) as Array<{
+          arn: string;
+          fingerprint: string;
+        }>;
+
+        const previousFingerprints = new Map<string, string>();
+        for (const row of rows) {
+          previousFingerprints.set(row.arn, row.fingerprint);
+        }
+
+        const newResources: typeof resources = [];
+        const changedResources: typeof resources = [];
+        let unchangedCount = 0;
+
+        for (const r of resources) {
+          const currentFp = currentFingerprints.get(r.arn);
+          const prevFp = previousFingerprints.get(r.arn);
+
+          if (!prevFp) {
+            newResources.push(r);
+          } else if (currentFp !== prevFp) {
+            changedResources.push(r);
+          } else {
+            unchangedCount += 1;
+          }
+        }
+
+        let removedCount = 0;
+        for (const arn of previousFingerprints.keys()) {
+          if (!currentFingerprints.has(arn)) {
+            removedCount += 1;
+          }
+        }
+
+        return {
+          newResources,
+          changedResources,
+          unchangedCount,
+          removedCount,
+        };
+      }),
+
+    updateFingerprints: (accountId, resources) =>
+      Effect.sync(() => {
+        const computeFingerprint = (r: {
+          type: string;
+          name: string;
+          region: string;
+          state?: string;
+          size?: string;
+          encrypted?: string;
+          publicAccess?: string;
+        }): string => {
+          const data = JSON.stringify({
+            type: r.type,
+            name: r.name,
+            region: r.region,
+            state: r.state,
+            size: r.size,
+            encrypted: r.encrypted,
+            publicAccess: r.publicAccess,
+          });
+          return createHash("sha256").update(data).digest("hex");
+        };
+
+        const updatedAt = new Date().toISOString();
+
+        const insertFingerprint = db.prepare(`
+          INSERT INTO resource_fingerprints (account_id, arn, fingerprint, updated_at)
+          VALUES ($accountId, $arn, $fingerprint, $updatedAt)
+          ON CONFLICT(account_id, arn) DO UPDATE SET
+            fingerprint = excluded.fingerprint,
+            updated_at = excluded.updated_at
+        `);
+
+        const insertMany = db.transaction((items: Array<{ [key: string]: unknown }>) => {
+          for (const item of items) {
+            insertFingerprint.run(item as SQLQueryBindings);
+          }
+        });
+
+        const records = resources.map((r) => ({
+          $accountId: accountId,
+          $arn: r.arn,
+          $fingerprint: computeFingerprint(r),
+          $updatedAt: updatedAt,
+        }));
+
+        insertMany(records);
       }),
 
     close: () =>

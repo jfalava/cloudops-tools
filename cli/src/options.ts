@@ -44,6 +44,10 @@ export const onlyGlobalOption = Options.boolean("only-global").pipe(
   Options.withDescription("Scan only global services (skip all regional services)"),
 );
 
+export const incrementalOption = Options.boolean("incremental").pipe(
+  Options.withDescription("Only output new or changed resources since last scan"),
+);
+
 export const modeOption = Options.withDefault(
   Options.choice("mode", ["basic", "detailed", "security", "cost"]),
   "basic" as const,

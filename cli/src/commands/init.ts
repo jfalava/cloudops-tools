@@ -11,6 +11,7 @@ import {
   debugOption,
   skipGlobalOption,
   onlyGlobalOption,
+  incrementalOption,
   modeOption,
   servicesOption,
   useLetmeOption,
@@ -27,6 +28,7 @@ export const initCommand = Command.make(
     debug: debugOption,
     skipGlobal: skipGlobalOption,
     onlyGlobal: onlyGlobalOption,
+    incremental: incrementalOption,
     mode: modeOption,
     services: servicesOption,
     useLetme: useLetmeOption,
@@ -40,6 +42,7 @@ export const initCommand = Command.make(
     debug,
     skipGlobal,
     onlyGlobal,
+    incremental,
     services,
     useLetme,
   }) =>
@@ -80,6 +83,7 @@ export const initCommand = Command.make(
             skipGlobal,
             onlyGlobal,
             services: serviceList,
+            incremental,
           },
         ).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
       });

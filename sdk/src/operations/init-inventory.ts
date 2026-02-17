@@ -191,6 +191,7 @@ export const generateInitInventoryEffect = (
     readonly onlyGlobal?: boolean;
     readonly services?: string[];
     readonly skipDb?: boolean;
+    readonly incremental?: boolean;
   },
 ) =>
   // This orchestrator intentionally branches on mode/service/region to keep progress and output wiring in one place.
@@ -1411,49 +1412,96 @@ export const generateInitInventoryEffect = (
 
     const allResources = [...regionalResults.flat(), ...globalResources];
 
+    // Incremental scanning: filter to only new/changed resources
+    let resourcesToOutput = allResources;
+    let incrementalStats:
+      | {
+          newCount: number;
+          changedCount: number;
+          unchangedCount: number;
+          removedCount: number;
+        }
+      | undefined = undefined;
+
+    if (options?.incremental && !options.skipDb) {
+      const db = yield* _(InventoryDbService);
+      yield* _(db.initialize());
+
+      const incremental = yield* _(db.getIncrementalChanges(accountId, allResources));
+
+      incrementalStats = {
+        newCount: incremental.newResources.length,
+        changedCount: incremental.changedResources.length,
+        unchangedCount: incremental.unchangedCount,
+        removedCount: incremental.removedCount,
+      };
+
+      resourcesToOutput = [...incremental.newResources, ...incremental.changedResources];
+
+      progressEmitter.emitProgress(
+        createProgressEvent<ProgressEvent>(ProgressEventType.PROGRESS, {
+          percentage: 95,
+          message: `Incremental: ${incrementalStats.newCount} new, ${incrementalStats.changedCount} changed, ${incrementalStats.unchangedCount} unchanged`,
+          completed: totalTasks,
+          total: totalTasks,
+        }),
+      );
+    }
+
     // Writing output
     const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const outputDir = `inventory-output/${accountId}`;
-    const modePrefix = mode === "basic" ? "init" : `init-${mode}`;
+    const modePrefix = options?.incremental
+      ? `init-incremental`
+      : mode === "basic"
+        ? "init"
+        : `init-${mode}`;
     const basePath = `${outputDir}/${modePrefix}-${accountId}-${timestamp}`;
 
     const csvHeader = getCSVHeader(mode) + "\n";
-    const csvRows = allResources.map((r) => resourceToCSVRow(r, mode)).join("\n");
+    const csvRows = resourcesToOutput.map((r) => resourceToCSVRow(r, mode)).join("\n");
     yield* _(Effect.promise(() => mkdir(outputDir, { recursive: true })));
-    yield* _(
-      Effect.promise(() => writeInventoryFile(csvHeader + csvRows, basePath, format, "Inventory")),
-    );
+
+    if (resourcesToOutput.length > 0) {
+      yield* _(
+        Effect.promise(() =>
+          writeInventoryFile(csvHeader + csvRows, basePath, format, "Inventory"),
+        ),
+      );
+    }
 
     const outputFiles: string[] = [];
     const shouldWriteCsv = format === "csv" || format === "both" || format === "all";
     const shouldWriteXlsx = format === "xlsx" || format === "both" || format === "all";
 
-    if (shouldWriteCsv) {
-      const csvPath = basePath.endsWith(".csv") ? basePath : `${basePath}.csv`;
-      outputFiles.push(csvPath);
-      const size = Bun.file(csvPath).size;
-      progressEmitter.emitProgress(
-        createProgressEvent<FileWrittenEvent>(ProgressEventType.FILE_WRITTEN, {
-          filePath: csvPath,
-          format: "csv",
-          size,
-        }),
-      );
-    }
+    if (resourcesToOutput.length > 0) {
+      if (shouldWriteCsv) {
+        const csvPath = basePath.endsWith(".csv") ? basePath : `${basePath}.csv`;
+        outputFiles.push(csvPath);
+        const size = Bun.file(csvPath).size;
+        progressEmitter.emitProgress(
+          createProgressEvent<FileWrittenEvent>(ProgressEventType.FILE_WRITTEN, {
+            filePath: csvPath,
+            format: "csv",
+            size,
+          }),
+        );
+      }
 
-    if (shouldWriteXlsx) {
-      const xlsxPath = basePath.endsWith(".csv")
-        ? basePath.replace(/\.csv$/, ".xlsx")
-        : `${basePath}.xlsx`;
-      outputFiles.push(xlsxPath);
-      const size = Bun.file(xlsxPath).size;
-      progressEmitter.emitProgress(
-        createProgressEvent<FileWrittenEvent>(ProgressEventType.FILE_WRITTEN, {
-          filePath: xlsxPath,
-          format: "xlsx",
-          size,
-        }),
-      );
+      if (shouldWriteXlsx) {
+        const xlsxPath = basePath.endsWith(".csv")
+          ? basePath.replace(/\.csv$/, ".xlsx")
+          : `${basePath}.xlsx`;
+        outputFiles.push(xlsxPath);
+        const size = Bun.file(xlsxPath).size;
+        progressEmitter.emitProgress(
+          createProgressEvent<FileWrittenEvent>(ProgressEventType.FILE_WRITTEN, {
+            filePath: xlsxPath,
+            format: "xlsx",
+            size,
+          }),
+        );
+      }
     }
 
     const summary = allResources.reduce<Record<string, number>>((acc, resource) => {
@@ -1466,6 +1514,7 @@ export const generateInitInventoryEffect = (
       const db = yield* _(InventoryDbService);
       yield* _(db.initialize());
       yield* _(db.saveRun(accountId, mode, allResources));
+      yield* _(db.updateFingerprints(accountId, allResources));
     }
 
     progressEmitter.emitProgress(
@@ -1474,6 +1523,7 @@ export const generateInitInventoryEffect = (
         duration: Date.now() - runStart,
         outputFiles,
         summary,
+        incremental: incrementalStats,
       }),
     );
 

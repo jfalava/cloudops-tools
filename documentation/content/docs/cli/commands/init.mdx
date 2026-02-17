@@ -27,6 +27,7 @@ The `init` command performs a full inventory scan across multiple AWS regions. U
 | `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`) | `csv`         |
 | `--mode`          |       | Scan mode (`basic`, `detailed`, `security`, `cost`)  | `basic`       |
 | `--services`      | `-s`  | Comma-separated list of services                     | All services  |
+| `--incremental`   |       | Only output new or changed resources                 | `false`       |
 | `--skip-global`   |       | Skip global services                                 | `false`       |
 | `--only-global`   |       | Scan only global services                            | `false`       |
 | `--debug`         |       | Show raw error output                                | `false`       |
@@ -81,6 +82,41 @@ cloudops-tools init --skip-global --region us-east-1
 
 # Scan only global services
 cloudops-tools init --only-global
+
+# Incremental scan - only output changed resources
+cloudops-tools init --incremental
+```
+
+## Incremental Scanning
+
+The `--incremental` flag enables smart scanning that only outputs resources that are new or have changed since the last scan:
+
+```bash
+# First scan - all resources are output
+cloudops-tools init
+
+# Second scan - only changed resources are output
+cloudops-tools init --incremental
+```
+
+### How It Works
+
+1. Resource fingerprints (hashes of key attributes) are stored in the SQLite database
+2. On subsequent scans, new fingerprints are compared with stored ones
+3. Only resources with changed fingerprints are written to output files
+4. Summary shows: new, changed, unchanged, and removed resource counts
+
+### Benefits
+
+- **Smaller output files**: Focus on what actually changed
+- **Faster review**: No need to scan through unchanged resources
+- **Change tracking**: See exactly what's different between scans
+
+### Example Output
+
+```
+Incremental: 5 new, 3 changed, 142 unchanged
+Output file: inventory-output/123456789012/init-incremental-20240215.csv
 ```
 
 ## Output
