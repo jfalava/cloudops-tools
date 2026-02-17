@@ -28,6 +28,7 @@ The `init` command performs a full inventory scan across multiple AWS regions. U
 | `--mode`          |       | Scan mode (`basic`, `detailed`, `security`, `cost`)  | `basic`       |
 | `--services`      | `-s`  | Comma-separated list of services                     | All services  |
 | `--incremental`   |       | Only output new or changed resources                 | `false`       |
+| `--min-interval`  |       | Skip scan if recent scan within N minutes            | -             |
 | `--skip-global`   |       | Skip global services                                 | `false`       |
 | `--only-global`   |       | Scan only global services                            | `false`       |
 | `--debug`         |       | Show raw error output                                | `false`       |
@@ -118,6 +119,24 @@ cloudops-tools init --incremental
 Incremental: 5 new, 3 changed, 142 unchanged
 Output file: inventory-output/123456789012/init-incremental-20240215.csv
 ```
+
+## Scan Deduplication
+
+The `--min-interval` flag prevents duplicate scans by skipping if a recent scan exists:
+
+```bash
+# Skip scan if one was done in the last 60 minutes
+cloudops-tools init --min-interval 60
+
+# Useful for cron jobs to avoid redundant scans
+cloudops-tools init --min-interval 1440  # 24 hours
+```
+
+### How It Works
+
+1. Checks the SQLite database for the last scan time
+2. If a scan completed within the specified interval, exits immediately
+3. Otherwise, proceeds with the scan normally
 
 ## Output
 

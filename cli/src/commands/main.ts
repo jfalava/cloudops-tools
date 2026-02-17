@@ -30,6 +30,7 @@ import {
   servicesOption,
   helpExamplesOption,
   useLetmeOption,
+  noCacheOption,
 } from "@/options";
 import { startProgressRenderer } from "@/progress";
 import { ui } from "@/ui";
@@ -83,6 +84,7 @@ export const mainCommand = Command.make(
     services: servicesOption,
     helpExamples: helpExamplesOption,
     useLetme: useLetmeOption,
+    noCache: noCacheOption,
   },
   ({
     account,
@@ -95,6 +97,7 @@ export const mainCommand = Command.make(
     services,
     helpExamples,
     useLetme,
+    noCache,
   }) =>
     Effect.gen(function* (_) {
       if (helpExamples) {
@@ -125,7 +128,13 @@ export const mainCommand = Command.make(
           const networking = yield* _(NetworkingService);
           const reporting = yield* _(ReportingService);
 
-          const handler = getDescribeHandler(describeType, database, compute, networking);
+          const handler = getDescribeHandler(describeType, {
+            database,
+            compute,
+            networking,
+            useCache: !noCache,
+            cacheTtlSeconds: 300,
+          });
           if (!handler) {
             yield* _(Console.log(ui.error(`Unsupported --describe type: ${describeType}`)));
             return;

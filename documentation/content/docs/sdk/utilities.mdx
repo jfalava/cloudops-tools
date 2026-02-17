@@ -74,6 +74,9 @@ await Effect.runPromise(program.pipe(Effect.provide(InventoryDbServiceLive)));
 | `getChanges`            | Compare two most recent runs for changes          |
 | `getIncrementalChanges` | Compare new resources with stored fingerprints    |
 | `updateFingerprints`    | Update resource fingerprints for incremental scan |
+| `getDescribeCache`      | Get cached describe data if not expired           |
+| `setDescribeCache`      | Store describe data in cache with TTL             |
+| `checkRecentScan`       | Check if recent scan exists within interval       |
 | `close`                 | Close database connection                         |
 
 ## Output Helpers

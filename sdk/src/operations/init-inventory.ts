@@ -192,12 +192,34 @@ export const generateInitInventoryEffect = (
     readonly services?: string[];
     readonly skipDb?: boolean;
     readonly incremental?: boolean;
+    readonly minIntervalMinutes?: number;
+    readonly useCache?: boolean;
+    readonly cacheTtlSeconds?: number;
   },
 ) =>
   // This orchestrator intentionally branches on mode/service/region to keep progress and output wiring in one place.
   // eslint-disable-next-line complexity
   Effect.gen(function* (_) {
     const runStart = Date.now();
+
+    // Check for recent scan (deduplication)
+    if (options?.minIntervalMinutes && options.minIntervalMinutes > 0) {
+      const db = yield* _(InventoryDbService);
+      yield* _(db.initialize());
+      const dedupResult = yield* _(db.checkRecentScan(accountId, mode, options.minIntervalMinutes));
+      if (dedupResult.shouldSkip) {
+        progressEmitter.emitProgress(
+          createProgressEvent<CompletedEvent>(ProgressEventType.COMPLETED, {
+            totalResources: 0,
+            duration: 0,
+            outputFiles: [],
+            summary: { skipped: 1 },
+          }),
+        );
+        return [];
+      }
+    }
+
     const utils = yield* _(UtilService);
     const compute = yield* _(ComputeService);
     const storage = yield* _(StorageService);

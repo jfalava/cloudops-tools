@@ -12,6 +12,7 @@ import {
   skipGlobalOption,
   onlyGlobalOption,
   incrementalOption,
+  minIntervalOption,
   modeOption,
   servicesOption,
   useLetmeOption,
@@ -29,6 +30,7 @@ export const initCommand = Command.make(
     skipGlobal: skipGlobalOption,
     onlyGlobal: onlyGlobalOption,
     incremental: incrementalOption,
+    minInterval: minIntervalOption,
     mode: modeOption,
     services: servicesOption,
     useLetme: useLetmeOption,
@@ -43,6 +45,7 @@ export const initCommand = Command.make(
     skipGlobal,
     onlyGlobal,
     incremental,
+    minInterval,
     services,
     useLetme,
   }) =>
@@ -84,6 +87,7 @@ export const initCommand = Command.make(
             onlyGlobal,
             services: serviceList,
             incremental,
+            minIntervalMinutes: Option.getOrUndefined(minInterval),
           },
         ).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
       });

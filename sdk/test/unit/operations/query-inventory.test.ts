@@ -68,6 +68,21 @@ const createTestDbService = (dbPath: string): InventoryDbService => {
     db.run(
       `CREATE INDEX IF NOT EXISTS idx_fingerprints_account ON resource_fingerprints(account_id)`,
     );
+
+    db.run(`
+      CREATE TABLE IF NOT EXISTS describe_cache (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        resource_type TEXT NOT NULL,
+        region TEXT NOT NULL,
+        data TEXT NOT NULL,
+        cached_at TEXT NOT NULL,
+        ttl_seconds INTEGER NOT NULL DEFAULT 300,
+        UNIQUE(resource_type, region)
+      )
+    `);
+    db.run(
+      `CREATE INDEX IF NOT EXISTS idx_describe_cache_type_region ON describe_cache(resource_type, region)`,
+    );
   };
 
   return InventoryDbService.of({
@@ -578,6 +593,120 @@ const createTestDbService = (dbPath: string): InventoryDbService => {
         }));
 
         insertMany(records);
+      }),
+
+    getDescribeCache: (resourceType, region) =>
+      Effect.sync(() => {
+        if (!initialized) {
+          createSchema();
+          initialized = true;
+        }
+
+        const query = db.prepare(`
+          SELECT id, resource_type, region, data, cached_at, ttl_seconds
+          FROM describe_cache
+          WHERE resource_type = $resourceType AND region = $region
+        `);
+
+        const row = query.get({
+          $resourceType: resourceType.toUpperCase(),
+          $region: region,
+        } as SQLQueryBindings) as
+          | {
+              id: number;
+              resource_type: string;
+              region: string;
+              data: string;
+              cached_at: string;
+              ttl_seconds: number;
+            }
+          | undefined;
+
+        if (!row) {
+          return null;
+        }
+
+        const cachedAt = new Date(row.cached_at);
+        const expiresAt = new Date(cachedAt.getTime() + row.ttl_seconds * 1000);
+        if (new Date() > expiresAt) {
+          return null;
+        }
+
+        return {
+          id: row.id,
+          resourceType: row.resource_type,
+          region: row.region,
+          data: row.data,
+          cachedAt: row.cached_at,
+          ttlSeconds: row.ttl_seconds,
+        };
+      }),
+
+    setDescribeCache: (resourceType, region, data, ttlSeconds = 300) =>
+      Effect.sync(() => {
+        if (!initialized) {
+          createSchema();
+          initialized = true;
+        }
+
+        const cachedAt = new Date().toISOString();
+        const dataJson = JSON.stringify(data);
+
+        const insert = db.prepare(`
+          INSERT INTO describe_cache (resource_type, region, data, cached_at, ttl_seconds)
+          VALUES ($resourceType, $region, $data, $cachedAt, $ttlSeconds)
+          ON CONFLICT(resource_type, region) DO UPDATE SET
+            data = excluded.data,
+            cached_at = excluded.cached_at,
+            ttl_seconds = excluded.ttl_seconds
+        `);
+
+        insert.run({
+          $resourceType: resourceType.toUpperCase(),
+          $region: region,
+          $data: dataJson,
+          $cachedAt: cachedAt,
+          $ttlSeconds: ttlSeconds,
+        } as SQLQueryBindings);
+      }),
+
+    checkRecentScan: (accountId, mode, minIntervalMinutes) =>
+      Effect.sync(() => {
+        if (!initialized) {
+          createSchema();
+          initialized = true;
+        }
+
+        const query = db.prepare(`
+          SELECT run_at
+          FROM inventory_runs
+          WHERE account_id = $accountId AND mode = $mode
+          ORDER BY run_at DESC
+          LIMIT 1
+        `);
+
+        const row = query.get({
+          $accountId: accountId,
+          $mode: mode,
+        } as SQLQueryBindings) as { run_at: string } | undefined;
+
+        if (!row) {
+          return {
+            shouldSkip: false,
+            lastRunAt: null,
+            minutesSinceLastRun: null,
+          };
+        }
+
+        const lastRunAt = new Date(row.run_at);
+        const now = new Date();
+        const minutesSinceLastRun = (now.getTime() - lastRunAt.getTime()) / (1000 * 60);
+
+        return {
+          shouldSkip: minutesSinceLastRun < minIntervalMinutes,
+          lastRunAt: row.run_at,
+          minutesSinceLastRun,
+        };
       }),
 
     close: () =>
