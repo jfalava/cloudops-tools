@@ -14,6 +14,7 @@ import { StorageServiceLive } from "../services/storage";
 import { UtilServiceLive } from "../services/utils";
 import { AwsConfigLive } from "./aws-config";
 import { ConfigServiceLive } from "./config";
+import { InventoryDbServiceLive } from "./inventory-db";
 
 /**
  * All services provided manually to avoid circular dependencies and ensure proper initialization.
@@ -36,4 +37,5 @@ export const SdkLive = BaseServicesLive.pipe(
   Layer.provideMerge(AwsConfigLive),
   Layer.merge(ReportingServiceLive.pipe(Layer.provide(BaseServicesLive))),
   Layer.merge(ConfigServiceLive),
+  Layer.merge(InventoryDbServiceLive),
 );

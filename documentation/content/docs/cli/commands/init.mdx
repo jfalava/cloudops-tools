@@ -88,3 +88,15 @@ cloudops-tools init --only-global
 The command generates inventory files in the `inventory-output/{account-id}/` directory with the format:
 
 - `inventory-{date}-{time}.csv` (or `.xlsx`, `.json`)
+
+## Historical Storage
+
+All inventory runs are automatically stored in a local SQLite database at `~/.config/cloudops-tools/inventory.db`. Use the [`query`](/docs/cli/commands/query) command to analyze historical data without re-scanning AWS:
+
+```bash
+# Query past runs
+cloudops-tools query --runs
+
+# Detect infrastructure changes
+cloudops-tools query --changes
+```

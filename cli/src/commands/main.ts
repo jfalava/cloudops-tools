@@ -16,6 +16,7 @@ import { configCommand } from "@/commands/config";
 import { describeCommand } from "@/commands/describe";
 import { getDescribeHandler } from "@/commands/describe-handlers";
 import { initCommand } from "@/commands/init";
+import { queryCommand } from "@/commands/query";
 import { setupTotpCommand } from "@/commands/setup-totp";
 import { requireLetmeActivation } from "@/lib/letme";
 import {
@@ -183,6 +184,12 @@ export const mainCommand = Command.make(
       yield* _(runWithSdk.pipe(Effect.provide(SdkLive)));
     }),
 ).pipe(
-  Command.withSubcommands([setupTotpCommand, initCommand, describeCommand, configCommand]),
+  Command.withSubcommands([
+    setupTotpCommand,
+    initCommand,
+    describeCommand,
+    configCommand,
+    queryCommand,
+  ]),
   Command.withDescription(HELP_DESCRIPTION),
 );

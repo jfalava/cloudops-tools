@@ -1,6 +1,7 @@
 import { Cause, Effect, Exit, Ref } from "effect";
 import { mkdir } from "node:fs/promises";
 
+import { InventoryDbService } from "../lib/inventory-db";
 import {
   progressEmitter,
   createProgressEvent,
@@ -189,6 +190,7 @@ export const generateInitInventoryEffect = (
     readonly skipGlobal?: boolean;
     readonly onlyGlobal?: boolean;
     readonly services?: string[];
+    readonly skipDb?: boolean;
   },
 ) =>
   // This orchestrator intentionally branches on mode/service/region to keep progress and output wiring in one place.
@@ -1458,6 +1460,13 @@ export const generateInitInventoryEffect = (
       acc[resource.type] = (acc[resource.type] || 0) + 1;
       return acc;
     }, {});
+
+    // Save to SQLite database
+    if (!options?.skipDb) {
+      const db = yield* _(InventoryDbService);
+      yield* _(db.initialize());
+      yield* _(db.saveRun(accountId, mode, allResources));
+    }
 
     progressEmitter.emitProgress(
       createProgressEvent<CompletedEvent>(ProgressEventType.COMPLETED, {

@@ -12,11 +12,18 @@ The CloudOps Tools SDK (`@cloudops-tools/sdk`) is the programmatic foundation us
 | Import path                       | Use for                                         |
 | --------------------------------- | ----------------------------------------------- |
 | `@cloudops-tools/sdk`             | Main exports for most integrations              |
-| `@cloudops-tools/sdk/operations`  | Inventory orchestration                         |
+| `@cloudops-tools/sdk/operations`  | Inventory orchestration and historical queries  |
 | `@cloudops-tools/sdk/services`    | Service-level AWS inventory APIs                |
-| `@cloudops-tools/sdk/lib`         | Helpers: config, events, output, version checks |
+| `@cloudops-tools/sdk/lib`         | Helpers: config, events, output, SQLite storage |
 | `@cloudops-tools/sdk/types`       | Shared type definitions                         |
 | `@cloudops-tools/sdk/credentials` | Credential provider helper                      |
+
+## Key Features
+
+- **Multi-region inventory**: Scan 45+ AWS services across all regions
+- **Historical tracking**: SQLite-based storage for trend analysis and change detection
+- **Query operations**: Analyze past inventories without AWS API calls
+- **Multiple output formats**: CSV, XLSX, JSON export
 
 ## API Reference
 

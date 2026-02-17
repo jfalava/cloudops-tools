@@ -13,3 +13,4 @@ export * from "./lib/totp";
 export * from "./lib/version";
 export * from "./lib/progress-events";
 export * from "./lib/config";
+export * from "./lib/inventory-db";

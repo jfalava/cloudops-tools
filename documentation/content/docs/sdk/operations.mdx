@@ -7,7 +7,7 @@ description: High-level inventory orchestration APIs in the SDK
 
 Operations provide high-level workflows that compose many services.
 
-## Main Operation
+## Inventory Generation
 
 `generateInitInventoryEffect` runs cross-region inventory generation with support for:
 
@@ -16,8 +16,7 @@ Operations provide high-level workflows that compose many services.
 - Region limiting and global-service toggles
 - Service filtering
 - Progress event emission
-
-## Example
+- Automatic SQLite storage for historical queries
 
 ```ts
 import { Effect } from "effect";
@@ -39,7 +38,62 @@ await Effect.runPromise(
 );
 ```
 
+## Query Operations
+
+Query historical inventory data from the local SQLite database without re-scanning AWS.
+
+### Query Resources
+
+`queryInventoryEffect` retrieves resources from past inventory runs:
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, queryInventoryEffect } from "@cloudops-tools/sdk";
+
+const results = await Effect.runPromise(
+  queryInventoryEffect("123456789012", {
+    type: "EC2", // Filter by resource type
+    region: "us-east-1", // Filter by region
+    days: 7, // Last 7 days
+  }).pipe(Effect.provide(SdkLive)),
+);
+
+// results: Array<{ runAt: string; resources: ResourceRecord[] }>
+```
+
+### List Inventory Runs
+
+`listInventoryRunsEffect` shows past inventory executions:
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, listInventoryRunsEffect } from "@cloudops-tools/sdk";
+
+const runs = await Effect.runPromise(
+  listInventoryRunsEffect("123456789012", 30).pipe(Effect.provide(SdkLive)),
+);
+
+// runs: Array<{ id, accountId, timestamp, runAt, mode, totalResources }>
+```
+
+### Detect Changes
+
+`getInventoryChangesEffect` compares the two most recent runs:
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, getInventoryChangesEffect } from "@cloudops-tools/sdk";
+
+const changes = await Effect.runPromise(
+  getInventoryChangesEffect("123456789012", 7).pipe(Effect.provide(SdkLive)),
+);
+
+// changes: Array<{ type, name, region, change, oldValue, newValue }>
+// change: "added" | "removed" | "modified"
+```
+
 ## When To Use Operations vs Services
 
 - Use `operations` when you want SDK-managed orchestration and output handling.
 - Use `services` when you want custom orchestration or targeted data collection.
+- Use `query operations` to analyze historical data without AWS API calls.

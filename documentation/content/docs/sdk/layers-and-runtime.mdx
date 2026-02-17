@@ -15,6 +15,7 @@ The SDK uses Effect layers for dependency injection. Most apps can use `SdkLive`
 - Core utility layer (`UtilServiceLive`)
 - All service layers (compute, storage, database, networking, security, platform, reporting)
 - Config service layer (`ConfigServiceLive`)
+- Inventory database layer (`InventoryDbServiceLive`) for SQLite historical storage
 
 ## Standard Runtime Pattern
 
@@ -59,3 +60,4 @@ const accountId = await Effect.runPromise(program.pipe(Effect.provide(UtilServic
 - Use `SdkLive` for production runs unless you need special wiring.
 - Override narrowly (one service at a time) with test layers for deterministic tests.
 - Keep layer construction near app startup, not inside business logic.
+- Query operations automatically use the SQLite database stored at `~/.config/cloudops-tools/inventory.db`.
