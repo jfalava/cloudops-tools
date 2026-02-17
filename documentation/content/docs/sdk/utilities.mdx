@@ -1,6 +1,6 @@
 ---
 title: Utilities
-description: Utility modules for progress events, output formatting, config, version checks, and TOTP
+description: Utility modules for progress events, output formatting, config, version checks, TOTP, and SQLite storage
 ---
 
 # Utilities
@@ -31,6 +31,53 @@ progressEmitter.onProgress((event: InventoryProgressEvent) => {
   }
 });
 ```
+
+## Inventory Database
+
+`InventoryDbService` provides SQLite-based historical inventory storage. Data is stored at `~/.config/cloudops-tools/inventory.db`.
+
+```ts
+import { Effect } from "effect";
+import { InventoryDbService, InventoryDbServiceLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* () {
+  const db = yield* InventoryDbService;
+  yield* db.initialize();
+
+  // Save an inventory run
+  const runId = yield* db.saveRun("123456789012", "basic", [
+    { type: "EC2", name: "instance-1", region: "us-east-1", arn: "arn:aws:ec2:..." },
+  ]);
+
+  // Query past runs
+  const runs = yield* db.getRuns("123456789012", 30);
+
+  // Get resources from a specific run
+  const resources = yield* db.getResources(runId, { type: "EC2" });
+
+  // Detect changes between runs
+  const changes = yield* db.getChanges("123456789012", 7);
+});
+
+await Effect.runPromise(program.pipe(Effect.provide(InventoryDbServiceLive)));
+```
+
+### InventoryDbService Methods
+
+| Method                  | Purpose                                           |
+| ----------------------- | ------------------------------------------------- |
+| `initialize`            | Create database schema if needed                  |
+| `saveRun`               | Store inventory run with all resources            |
+| `getRuns`               | List past runs for an account                     |
+| `getResources`          | Get resources from a specific run (with filters)  |
+| `queryResources`        | Query resources across runs with filters          |
+| `getChanges`            | Compare two most recent runs for changes          |
+| `getIncrementalChanges` | Compare new resources with stored fingerprints    |
+| `updateFingerprints`    | Update resource fingerprints for incremental scan |
+| `getDescribeCache`      | Get cached describe data if not expired           |
+| `setDescribeCache`      | Store describe data in cache with TTL             |
+| `checkRecentScan`       | Check if recent scan exists within interval       |
+| `close`                 | Close database connection                         |
 
 ## Output Helpers
 

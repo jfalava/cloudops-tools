@@ -11,14 +11,15 @@ This document provides essential information for agentic coding agents working i
 ## Build, Test & Quality Commands
 
 ### Package-Specific Commands
+
 ```bash
 # CLI Package
 bun run cli:lint          # Lint CLI package
-bun run cli:typecheck     # Type check CLI package  
+bun run cli:typecheck     # Type check CLI package
 bun run cli:format        # Format CLI package
 bun run cli:check         # Run all quality checks (typecheck + lint + format)
 
-# SDK Package  
+# SDK Package
 bun run sdk:lint          # Lint SDK package
 bun run sdk:typecheck     # Type check SDK package
 bun run sdk:format        # Format SDK package
@@ -29,6 +30,7 @@ bun run sdk:test:watch    # Watch mode for development
 ```
 
 ### Global Commands
+
 ```bash
 bun run check:global      # Run all quality checks across packages
 bun run format:global     # Format all packages
@@ -37,6 +39,7 @@ bun run typecheck:global  # Type check all packages
 ```
 
 ### Build Commands
+
 ```bash
 bun run cli:build:all     # Build for all platforms
 bun run cli:build:windows # Build Windows x64 binary
@@ -45,6 +48,7 @@ bun run cli:build:macos   # Build macOS ARM binary
 ```
 
 ### Development Workflow
+
 ```bash
 bun run check:catalog     # Validate catalog usage across workspaces
 bun run check:outdated    # Check for outdated catalog dependencies
@@ -53,6 +57,7 @@ bun run check:outdated    # Check for outdated catalog dependencies
 ## Code Style Guidelines
 
 ### Import Conventions
+
 - **External libraries**: Standard imports (`import { Effect } from "effect"`)
 - **Internal modules**: Use `@/` pattern for workspace-relative imports
 - **AWS SDK**: Prefer distilled-aws wrapper over direct AWS SDK imports
@@ -60,6 +65,7 @@ bun run check:outdated    # Check for outdated catalog dependencies
 - **No duplicate imports**: Enforced by linting rules
 
 ### Formatting Rules (OXFmt)
+
 - **Print width**: 100 characters
 - **Indentation**: 2 spaces (no tabs)
 - **Quotes**: Double quotes only
@@ -68,6 +74,7 @@ bun run check:outdated    # Check for outdated catalog dependencies
 - **Automatic sorting**: Package.json scripts and imports
 
 ### TypeScript Configuration
+
 - **Strict mode**: Enabled with comprehensive type checking
 - **Target**: ESNext with modern features
 - **Module resolution**: Bundler mode
@@ -76,6 +83,7 @@ bun run check:outdated    # Check for outdated catalog dependencies
 - **No implicit overrides**: Enabled
 
 ### Linting Rules (OXLint + TSGO)
+
 - **Type safety**: No `any`, unsafe assignments, calls, member access, or returns
 - **Code complexity**: Max depth 4, max params 5, max statements 40, complexity 12
 - **Best practices**: No console (except warn/error), no eval, no debugger
@@ -83,6 +91,7 @@ bun run check:outdated    # Check for outdated catalog dependencies
 - **Naming**: Variables unused should be prefixed with underscore (`_`)
 
 ### Functional Programming Patterns
+
 - **Effect library**: All async operations wrapped in Effect types
 - **Pure functions**: Avoid side effects in core logic
 - **Layer system**: Use Effect's dependency injection via layers
@@ -90,16 +99,18 @@ bun run check:outdated    # Check for outdated catalog dependencies
 - **Generators**: Use `Effect.gen` for sequencing async operations
 
 ### AWS Integration Guidelines
+
 - **Credential management**: Use distilled-aws wrapper for pure Effect operations
 - **Region handling**: Default to `us-east-1` unless specified
 - **Service clients**: Use dependency injection pattern via Effect layers
 - **Error handling**: Wrap all AWS calls in Effect.tryPromise
 
 ### File Organization
+
 ```
 sdk/src/
 ├── services/      # AWS service integrations
-├── operations/    # Business logic operations  
+├── operations/    # Business logic operations
 ├── lib/          # Utility functions and helpers
 ├── types/        # TypeScript type definitions
 ├── credentials/  # AWS credential management
@@ -112,6 +123,7 @@ cli/src/
 ```
 
 ### Testing Guidelines
+
 - **Framework**: Bun's built-in test runner
 - **Test files**: Use `.test.ts` or `.spec.ts` extensions
 - **Location**: Place tests alongside source files or in dedicated test directories
@@ -119,12 +131,14 @@ cli/src/
 - **Watch mode**: Use `bun test --watch` during development
 
 ### Dependency Management
+
 - **Workspace catalog**: All shared dependencies must use `"catalog:"` version
 - **Catalog validation**: Run `bun run check:catalog` to ensure compliance
 - **Bun workspaces**: Use workspace references (`"workspace:*"`) for internal packages
 - **Type safety**: Strict TypeScript with TSGO compiler for enhanced checks
 
 ### Error Handling Patterns
+
 ```typescript
 // Preferred: Effect-based error handling
 const result = Effect.gen(function* (_) {
@@ -142,6 +156,7 @@ try {
 ```
 
 ### CLI Development Patterns
+
 - Use `@effect/cli` for command definitions
 - Options and arguments should have proper validation
 - Commands should return Effects for execution
@@ -151,6 +166,7 @@ try {
 ## Quality Gates
 
 Before committing changes, ensure all quality checks pass:
+
 ```bash
 bun run check:global  # Comprehensive quality check
 ```

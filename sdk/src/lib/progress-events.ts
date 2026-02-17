@@ -139,6 +139,13 @@ export interface CompletedEvent extends BaseProgressEvent {
   outputFiles: string[];
   /** Summary of resources by service */
   summary: Record<string, number>;
+  /** Incremental scan statistics (when incremental mode is enabled) */
+  incremental?: {
+    newCount: number;
+    changedCount: number;
+    unchangedCount: number;
+    removedCount: number;
+  };
 }
 
 /**

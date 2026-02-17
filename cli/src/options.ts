@@ -44,6 +44,18 @@ export const onlyGlobalOption = Options.boolean("only-global").pipe(
   Options.withDescription("Scan only global services (skip all regional services)"),
 );
 
+export const incrementalOption = Options.boolean("incremental").pipe(
+  Options.withDescription("Only output new or changed resources since last scan"),
+);
+
+export const minIntervalOption = Options.optional(Options.integer("min-interval")).pipe(
+  Options.withDescription("Skip scan if a recent scan exists within N minutes"),
+);
+
+export const noCacheOption = Options.boolean("no-cache").pipe(
+  Options.withDescription("Disable caching for describe operations"),
+);
+
 export const modeOption = Options.withDefault(
   Options.choice("mode", ["basic", "detailed", "security", "cost"]),
   "basic" as const,

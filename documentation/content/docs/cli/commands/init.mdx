@@ -27,6 +27,8 @@ The `init` command performs a full inventory scan across multiple AWS regions. U
 | `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`) | `csv`         |
 | `--mode`          |       | Scan mode (`basic`, `detailed`, `security`, `cost`)  | `basic`       |
 | `--services`      | `-s`  | Comma-separated list of services                     | All services  |
+| `--incremental`   |       | Only output new or changed resources                 | `false`       |
+| `--min-interval`  |       | Skip scan if recent scan within N minutes            | -             |
 | `--skip-global`   |       | Skip global services                                 | `false`       |
 | `--only-global`   |       | Scan only global services                            | `false`       |
 | `--debug`         |       | Show raw error output                                | `false`       |
@@ -81,10 +83,75 @@ cloudops-tools init --skip-global --region us-east-1
 
 # Scan only global services
 cloudops-tools init --only-global
+
+# Incremental scan - only output changed resources
+cloudops-tools init --incremental
 ```
+
+## Incremental Scanning
+
+The `--incremental` flag enables smart scanning that only outputs resources that are new or have changed since the last scan:
+
+```bash
+# First scan - all resources are output
+cloudops-tools init
+
+# Second scan - only changed resources are output
+cloudops-tools init --incremental
+```
+
+### How It Works
+
+1. Resource fingerprints (hashes of key attributes) are stored in the SQLite database
+2. On subsequent scans, new fingerprints are compared with stored ones
+3. Only resources with changed fingerprints are written to output files
+4. Summary shows: new, changed, unchanged, and removed resource counts
+
+### Benefits
+
+- **Smaller output files**: Focus on what actually changed
+- **Faster review**: No need to scan through unchanged resources
+- **Change tracking**: See exactly what's different between scans
+
+### Example Output
+
+```
+Incremental: 5 new, 3 changed, 142 unchanged
+Output file: inventory-output/123456789012/init-incremental-20240215.csv
+```
+
+## Scan Deduplication
+
+The `--min-interval` flag prevents duplicate scans by skipping if a recent scan exists:
+
+```bash
+# Skip scan if one was done in the last 60 minutes
+cloudops-tools init --min-interval 60
+
+# Useful for cron jobs to avoid redundant scans
+cloudops-tools init --min-interval 1440  # 24 hours
+```
+
+### How It Works
+
+1. Checks the SQLite database for the last scan time
+2. If a scan completed within the specified interval, exits immediately
+3. Otherwise, proceeds with the scan normally
 
 ## Output
 
 The command generates inventory files in the `inventory-output/{account-id}/` directory with the format:
 
 - `inventory-{date}-{time}.csv` (or `.xlsx`, `.json`)
+
+## Historical Storage
+
+All inventory runs are automatically stored in a local SQLite database at `~/.config/cloudops-tools/inventory.db`. Use the [`query`](/docs/cli/commands/query) command to analyze historical data without re-scanning AWS:
+
+```bash
+# Query past runs
+cloudops-tools query --runs
+
+# Detect infrastructure changes
+cloudops-tools query --changes
+```

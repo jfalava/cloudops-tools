@@ -52,6 +52,56 @@ await Effect.runPromise(
 );
 ```
 
+## Query historical inventory data
+
+Query past inventories without re-scanning AWS:
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, queryInventoryEffect } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  // Get all EC2 instances from the last 7 days
+  const results = yield* _(
+    queryInventoryEffect("123456789012", {
+      type: "EC2",
+      days: 7,
+    }),
+  );
+
+  // Flatten to single resource list
+  const allInstances = results.flatMap((r) => r.resources);
+  console.log(`Found ${allInstances.length} EC2 instances across ${results.length} runs`);
+
+  return allInstances;
+});
+
+const instances = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
+## Detect infrastructure changes
+
+Compare the two most recent inventory runs:
+
+```ts
+import { Effect } from "effect";
+import { SdkLive, getInventoryChangesEffect } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const changes = yield* _(getInventoryChangesEffect("123456789012", 7));
+
+  const added = changes.filter((c) => c.change === "added");
+  const removed = changes.filter((c) => c.change === "removed");
+  const modified = changes.filter((c) => c.change === "modified");
+
+  console.log(`Added: ${added.length}, Removed: ${removed.length}, Modified: ${modified.length}`);
+
+  return { added, removed, modified };
+});
+
+const result = await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
+```
+
 ## Stream progress events to your logger
 
 ```ts

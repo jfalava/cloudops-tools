@@ -52,14 +52,30 @@ cloudops-tools init --mode security --export-format xlsx
 cloudops-tools --help-examples
 ```
 
+## 6. Query Historical Data
+
+After running scans, query past inventories without AWS API calls:
+
+```bash
+# List past inventory runs
+cloudops-tools query --runs
+
+# Query specific resource types
+cloudops-tools query --type EC2 --days 7
+
+# Detect infrastructure changes
+cloudops-tools query --changes
+```
+
 ## Core Commands
 
 See command details in the command reference:
 
 - [Commands Overview](/docs/cli/commands)
-- [init](/docs/cli/commands/init)
-- [describe](/docs/cli/commands/describe)
-- [config](/docs/cli/commands/config)
+- [init](/docs/cli/commands/init) - Run inventory scans
+- [query](/docs/cli/commands/query) - Query historical inventory data
+- [describe](/docs/cli/commands/describe) - Deep dive into resources
+- [config](/docs/cli/commands/config) - Manage configuration
 - [use-letme](/docs/cli/commands/use-letme) - MFA authentication with letme (includes TOTP setup)
 
 ## Practical Guides

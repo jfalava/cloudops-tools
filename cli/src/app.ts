@@ -1,12 +1,18 @@
-import { ConfigServiceLive } from "@cloudops-tools/sdk";
+import { ConfigServiceLive, InventoryDbServiceLive } from "@cloudops-tools/sdk";
 import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { argv } from "bun";
-import { Effect } from "effect";
+import { Effect, Layer } from "effect";
 import { readFileSync } from "node:fs";
 import process from "node:process";
 
-import { HELP_EXAMPLES, configCommand, mainCommand, setupTotpCommand } from "@/commands";
+import {
+  HELP_EXAMPLES,
+  configCommand,
+  mainCommand,
+  setupTotpCommand,
+  queryCommand,
+} from "@/commands";
 
 declare const BUILD_VERSION: string | undefined;
 
@@ -18,6 +24,7 @@ const CLI_CONFIG = {
 const cli = Command.run(mainCommand, CLI_CONFIG);
 const configCli = Command.run(configCommand, CLI_CONFIG);
 const setupTotpCli = Command.run(setupTotpCommand, CLI_CONFIG);
+const queryCli = Command.run(queryCommand, CLI_CONFIG);
 
 const args = argv.slice(2);
 const forceInit = args.includes("--init");
@@ -37,6 +44,7 @@ const normalizedArgs = forceSetupTotp
 const normalizedArgsForDetection = normalizedArgs.slice(2);
 const wantsSetupTotp = forceSetupTotp || normalizedArgsForDetection.includes("setup-totp");
 const wantsConfig = forceConfig || normalizedArgsForDetection.includes("config");
+const wantsQuery = normalizedArgsForDetection.includes("query");
 
 if (wantsVersion) {
   const version =
@@ -114,17 +122,24 @@ const withErrorHandling = <R>(effect: Effect.Effect<void, unknown, R>) =>
         }),
       );
 
-const selectedCli = wantsSetupTotp ? setupTotpCli : wantsConfig ? configCli : cli;
+const selectedCli = wantsSetupTotp
+  ? setupTotpCli
+  : wantsConfig
+    ? configCli
+    : wantsQuery
+      ? queryCli
+      : cli;
 const argsForSelectedCli = wantsSetupTotp
   ? stripTokens(stripFirstToken(normalizedArgs, "setup-totp"), ["--debug"])
   : wantsConfig
     ? stripTokens(stripFirstToken(normalizedArgs, "config"), ["--debug"])
-    : normalizedArgs;
+    : wantsQuery
+      ? stripTokens(stripFirstToken(normalizedArgs, "query"), ["--debug"])
+      : normalizedArgs;
 const baseEffect = selectedCli(argsForSelectedCli);
 
-const provided = baseEffect.pipe(
-  Effect.provide(ConfigServiceLive),
-  Effect.provide(BunContext.layer),
-);
+const baseLayer = Layer.merge(ConfigServiceLive, InventoryDbServiceLive);
+
+const provided = baseEffect.pipe(Effect.provide(baseLayer), Effect.provide(BunContext.layer));
 
 withErrorHandling(provided).pipe(BunRuntime.runMain);

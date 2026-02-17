@@ -24,6 +24,7 @@ cloudops-tools [options]
 | ----------------------------------------- | ---------------------------------------------------------- |
 | [`init`](/docs/cli/commands/init)         | Generate cross-region inventory scan with advanced options |
 | [`describe`](/docs/cli/commands/describe) | Deeply describe a specific AWS resource                    |
+| [`query`](/docs/cli/commands/query)       | Query historical inventory data from local SQLite database |
 | [`config`](/docs/cli/commands/config)     | Manage persistent configuration                            |
 
 ## Root Scan Options
@@ -37,6 +38,7 @@ These options control the default root scan behavior:
 | `--export-format` | `-f`  | Export format (`csv`, `xlsx`, `json`, `both`, `all`)                                  | `csv`         |
 | `--services`      | `-s`  | Comma-separated list of services to scan (`all` supported)                            | All services  |
 | `--describe`      |       | Describe all resources of a type                                                      | -             |
+| `--no-cache`      |       | Disable caching for describe operations                                               | `false`       |
 | `--use-letme`     |       | Use `letme` and `--account` profile for MFA credential obtain (requires `setup-totp`) | `false`       |
 | `--skip-global`   |       | Skip global services (S3, IAM, CloudFront, Route53, etc.)                             | `false`       |
 | `--only-global`   |       | Scan only global services                                                             | `false`       |

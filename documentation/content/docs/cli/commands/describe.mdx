@@ -23,9 +23,10 @@ cloudops-tools describe <type> <region> <id> [options]
 
 ## Options
 
-| Option    | Description                             | Default |
-| --------- | --------------------------------------- | ------- |
-| `--debug` | Show raw error output with stack traces | `false` |
+| Option       | Description                                       | Default |
+| ------------ | ------------------------------------------------- | ------- |
+| `--debug`    | Show raw error output with stack traces           | `false` |
+| `--no-cache` | Disable caching, always fetch fresh data from AWS | `false` |
 
 ## Common Resource Types
 
@@ -97,3 +98,20 @@ cloudops-tools --describe dynamodb --region us-west-2
 ```
 
 This writes a Markdown file to `inventory-output/{account-id}/describe-{type}-{region}-{timestamp}.md`
+
+## Caching
+
+Batch `--describe` operations are automatically cached for 5 minutes. Repeated describe calls within this window return cached results instantly:
+
+```bash
+# First call - fetches from AWS (5+ seconds)
+cloudops-tools --describe ec2 --region us-east-1
+
+# Second call within 5 minutes - returns cached data (instant)
+cloudops-tools --describe ec2 --region us-east-1
+
+# Bypass cache to get fresh data
+cloudops-tools --describe ec2 --region us-east-1 --no-cache
+```
+
+Cache is stored in `~/.config/cloudops-tools/inventory.db`
