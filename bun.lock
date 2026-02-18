@@ -10,7 +10,7 @@
     },
     "cli": {
       "name": "@cloudops-tools/cli",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "bin": {
         "cloudops-tools": "./bin/cloudops-tools.js",
       },
@@ -35,10 +35,22 @@
         "typescript": "catalog:build",
       },
       "optionalDependencies": {
-        "@cloudops-tools/cli-darwin-arm64": "0.2.0",
-        "@cloudops-tools/cli-linux-x64": "0.2.0",
-        "@cloudops-tools/cli-win32-x64": "0.2.0",
+        "@cloudops-tools/cli-darwin-arm64": "workspace:*",
+        "@cloudops-tools/cli-linux-x64": "workspace:*",
+        "@cloudops-tools/cli-win32-x64": "workspace:*",
       },
+    },
+    "cli/npm/darwin-arm64": {
+      "name": "@cloudops-tools/cli-darwin-arm64",
+      "version": "0.2.1",
+    },
+    "cli/npm/linux-x64": {
+      "name": "@cloudops-tools/cli-linux-x64",
+      "version": "0.2.1",
+    },
+    "cli/npm/win32-x64": {
+      "name": "@cloudops-tools/cli-win32-x64",
+      "version": "0.2.1",
     },
     "documentation": {
       "name": "@cloudops-tools/documentation",
@@ -446,6 +458,12 @@
     "@cloudflare/workerd-windows-64": ["@cloudflare/workerd-windows-64@1.20260212.0", "", { "os": "win32", "cpu": "x64" }, "sha512-wHRI218Xn4ndgWJCUHH4Zx0YlU5q/o6OmcxXkcw95tJOsQn4lDrhppioPh4eScxJZALf2X+ODeZcyQTCq5exGw=="],
 
     "@cloudops-tools/cli": ["@cloudops-tools/cli@workspace:cli"],
+
+    "@cloudops-tools/cli-darwin-arm64": ["@cloudops-tools/cli-darwin-arm64@workspace:cli/npm/darwin-arm64"],
+
+    "@cloudops-tools/cli-linux-x64": ["@cloudops-tools/cli-linux-x64@workspace:cli/npm/linux-x64"],
+
+    "@cloudops-tools/cli-win32-x64": ["@cloudops-tools/cli-win32-x64@workspace:cli/npm/win32-x64"],
 
     "@cloudops-tools/documentation": ["@cloudops-tools/documentation@workspace:documentation"],
 
