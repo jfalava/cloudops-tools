@@ -10,15 +10,16 @@ import {
 describe("getEKSVersionStatus", () => {
   const testCases: Array<{
     version: string | undefined;
-    expected: "Current" | "Deprecated" | "Unknown";
+    expected: "Current" | "Deprecated" | "Extended Support" | "Unknown";
   }> = [
-    { version: "1.31", expected: "Current" },
-    { version: "1.30", expected: "Current" },
-    { version: "1.29", expected: "Current" },
-    { version: "1.28", expected: "Deprecated" },
+    { version: "1.35", expected: "Current" },
+    { version: "1.34", expected: "Current" },
+    { version: "1.31", expected: "Extended Support" },
+    { version: "1.30", expected: "Extended Support" },
+    { version: "1.29", expected: "Extended Support" },
     { version: "1.24", expected: "Unknown" },
-    { version: "1.29.3", expected: "Current" },
-    { version: "1.28.5", expected: "Deprecated" },
+    { version: "1.29.3", expected: "Extended Support" },
+    { version: "1.28.5", expected: "Unknown" },
     { version: undefined, expected: "Unknown" },
     { version: "", expected: "Unknown" },
     { version: "invalid", expected: "Unknown" },
@@ -38,22 +39,26 @@ describe("getLambdaRuntimeStatus", () => {
   }> = [
     // Current runtimes
     { runtime: "nodejs20.x", expected: "Current" },
-    { runtime: "nodejs18.x", expected: "Current" },
+    { runtime: "nodejs24.x", expected: "Current" },
     { runtime: "python3.12", expected: "Current" },
-    { runtime: "python3.11", expected: "Current" },
+    { runtime: "python3.14", expected: "Current" },
     { runtime: "java21", expected: "Current" },
+    { runtime: "java8.al2", expected: "Current" },
     { runtime: "dotnet8", expected: "Current" },
     { runtime: "ruby3.3", expected: "Current" },
+    { runtime: "provided.al2023", expected: "Current" },
     // Deprecated runtimes
+    { runtime: "nodejs18.x", expected: "Deprecated" },
     { runtime: "nodejs16.x", expected: "Deprecated" },
     { runtime: "python3.9", expected: "Deprecated" },
-    { runtime: "java8.al2", expected: "Deprecated" },
-    { runtime: "dotnetcore3.1", expected: "Deprecated" },
+    { runtime: "go1.x", expected: "Deprecated" },
+    { runtime: "dotnet6", expected: "Deprecated" },
     { runtime: "ruby2.7", expected: "Deprecated" },
     // End of Life runtimes
     { runtime: "nodejs12.x", expected: "End of Life" },
     { runtime: "python2.7", expected: "End of Life" },
     { runtime: "python3.6", expected: "End of Life" },
+    { runtime: "dotnetcore3.1", expected: "End of Life" },
     // Unknown cases
     { runtime: undefined, expected: "Unknown" },
     { runtime: "", expected: "Unknown" },
@@ -161,7 +166,7 @@ describe("version comparison edge cases", () => {
   });
 
   test("handles version suffixes", () => {
-    expect(getEKSVersionStatus("1.29-eks-1")).toBe("Current");
-    expect(getEKSVersionStatus("1.28-eks-1")).toBe("Deprecated");
+    expect(getEKSVersionStatus("1.29-eks-1")).toBe("Extended Support");
+    expect(getEKSVersionStatus("1.28-eks-1")).toBe("Unknown");
   });
 });

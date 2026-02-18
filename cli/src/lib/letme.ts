@@ -1,6 +1,7 @@
+import process from "node:process";
+
 import { generateTOTPToken, getTOTPSecret } from "@cloudops-tools/sdk";
 import { Effect, Option } from "effect";
-import process from "node:process";
 
 import { spawn } from "@/lib/spawn";
 

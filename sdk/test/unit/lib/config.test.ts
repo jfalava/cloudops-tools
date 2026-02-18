@@ -1,8 +1,9 @@
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
-import { Effect, Option } from "effect";
 import { mkdtemp, readFile, rm, writeFile, mkdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
+import { Effect, Option } from "effect";
 
 import {
   type CloudOpsConfig,

@@ -1,8 +1,7 @@
 import ExcelJS from "exceljs";
 
-import type { WebInventoryData } from "./json-output";
-
 import { isObjectRecord } from "./aws-payload";
+import type { WebInventoryData } from "./json-output";
 
 /**
  * Parses CSV data into a 2D array

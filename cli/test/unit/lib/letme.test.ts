@@ -1,7 +1,8 @@
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
-import { Effect } from "effect";
 import { EventEmitter } from "node:events";
 import process from "node:process";
+
+import { Effect } from "effect";
 
 const otpToken = "123456";
 

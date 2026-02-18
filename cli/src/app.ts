@@ -1,10 +1,11 @@
+import { readFileSync } from "node:fs";
+import process from "node:process";
+
 import { ConfigServiceLive, InventoryDbServiceLive } from "@cloudops-tools/sdk";
 import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { argv } from "bun";
 import { Effect, Layer } from "effect";
-import { readFileSync } from "node:fs";
-import process from "node:process";
 
 import {
   HELP_EXAMPLES,
@@ -16,9 +17,19 @@ import {
 
 declare const BUILD_VERSION: string | undefined;
 
+const PACKAGE_VERSION = (() => {
+  try {
+    const packageJson = readFileSync(new URL("../package.json", import.meta.url), "utf8");
+    const parsed = JSON.parse(packageJson) as { version?: string };
+    return parsed.version ?? "unknown";
+  } catch {
+    return "unknown";
+  }
+})();
+
 const CLI_CONFIG = {
   name: "CloudOps Tools",
-  version: "0.1.0",
+  version: PACKAGE_VERSION,
 } as const;
 
 const cli = Command.run(mainCommand, CLI_CONFIG);
@@ -47,18 +58,7 @@ const wantsConfig = forceConfig || normalizedArgsForDetection.includes("config")
 const wantsQuery = normalizedArgsForDetection.includes("query");
 
 if (wantsVersion) {
-  const version =
-    typeof BUILD_VERSION !== "undefined"
-      ? BUILD_VERSION
-      : (() => {
-          try {
-            const packageJson = readFileSync(new URL("../package.json", import.meta.url), "utf8");
-            const parsed = JSON.parse(packageJson) as { version?: string };
-            return parsed.version ?? "unknown";
-          } catch {
-            return "unknown";
-          }
-        })();
+  const version = typeof BUILD_VERSION !== "undefined" ? BUILD_VERSION : PACKAGE_VERSION;
   process.stdout.write(version + "\n");
   process.exit(0);
 }

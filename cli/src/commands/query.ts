@@ -6,7 +6,7 @@ import {
 import { Command, Options } from "@effect/cli";
 import { Effect, Console, Option } from "effect";
 
-import { account } from "@/options";
+import { account as accountOption } from "@/options";
 import { ui } from "@/ui";
 
 const queryType = Options.optional(Options.text("type")).pipe(
@@ -196,7 +196,7 @@ const displayResources = (
 export const queryCommand = Command.make(
   "query",
   {
-    account,
+    account: accountOption,
     type: queryType,
     region: queryRegion,
     days: queryDays,

@@ -4,9 +4,9 @@ import { Effect, Option } from "effect";
 
 import { requireLetmeActivation } from "@/lib/letme";
 import {
-  account,
+  account as accountOption,
   initRegions,
-  limitRegions,
+  limitRegions as limitRegionsOption,
   exportFormat,
   debugOption,
   skipGlobalOption,
@@ -22,9 +22,9 @@ import { startProgressRenderer } from "@/progress";
 export const initCommand = Command.make(
   "init",
   {
-    account,
+    account: accountOption,
     region: initRegions,
-    limitRegions,
+    limitRegions: limitRegionsOption,
     format: exportFormat,
     debug: debugOption,
     skipGlobal: skipGlobalOption,
@@ -59,10 +59,10 @@ export const initCommand = Command.make(
         );
       }
 
-      const runWithSdk = Effect.gen(function* (_) {
-        const progress = yield* _(Effect.sync(() => startProgressRenderer({ debug })));
-        const util = yield* _(UtilService);
-        const id = yield* _(
+      const runWithSdk = Effect.gen(function* (__inner) {
+        const progress = yield* __inner(Effect.sync(() => startProgressRenderer({ debug })));
+        const util = yield* __inner(UtilService);
+        const id = yield* __inner(
           Option.match(account, {
             onNone: () => util.getAccountId(),
             onSome: (value) => Effect.succeed(value),
@@ -76,20 +76,22 @@ export const initCommand = Command.make(
             s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
         });
 
-        yield* generateInitInventoryEffect(
-          id,
-          mode,
-          format,
-          Option.getOrUndefined(Option.orElse(regions, () => limited)),
-          debug,
-          {
-            skipGlobal,
-            onlyGlobal,
-            services: serviceList,
-            incremental,
-            minIntervalMinutes: Option.getOrUndefined(minInterval),
-          },
-        ).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
+        yield* __inner(
+          generateInitInventoryEffect(
+            id,
+            mode,
+            format,
+            Option.getOrUndefined(Option.orElse(regions, () => limited)),
+            debug,
+            {
+              skipGlobal,
+              onlyGlobal,
+              services: serviceList,
+              incremental,
+              minIntervalMinutes: Option.getOrUndefined(minInterval),
+            },
+          ).pipe(Effect.ensuring(Effect.sync(() => progress.stop()))),
+        );
       });
 
       yield* _(runWithSdk.pipe(Effect.provide(SdkLive)));

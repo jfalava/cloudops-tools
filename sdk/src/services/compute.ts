@@ -11,6 +11,8 @@ import * as Lightsail from "distilled-aws/lightsail";
 import * as SageMaker from "distilled-aws/sagemaker";
 import { Context, Effect, Stream, Layer } from "effect";
 
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import { describeElasticBeanstalkEnvironments as patchedDescribeElasticBeanstalk } from "../patches";
 import type {
   EC2Instance,
   LambdaFunction,
@@ -25,9 +27,6 @@ import type {
   ElasticBeanstalkEnvironment,
   SageMakerDomain,
 } from "../types/aws-cli.types";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import { describeElasticBeanstalkEnvironments as patchedDescribeElasticBeanstalk } from "../patches";
 
 type UnknownRecord = Record<string, unknown>;
 

@@ -9,6 +9,11 @@ import * as SFN from "distilled-aws/sfn";
 import * as SSM from "distilled-aws/ssm";
 import { Context, Effect, Stream, Layer } from "effect";
 
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import {
+  describeCloudFrontDistributions as patchedCloudFront,
+  describeRoute53HostedZones as patchedRoute53,
+} from "../patches";
 import type {
   CloudWatchAlarm,
   CloudFrontDistribution,
@@ -22,12 +27,6 @@ import type {
   SSMParameter,
   Route53Domain,
 } from "../types/aws-cli.types";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import {
-  describeCloudFrontDistributions as patchedCloudFront,
-  describeRoute53HostedZones as patchedRoute53,
-} from "../patches";
 
 type UnknownRecord = Record<string, unknown>;
 

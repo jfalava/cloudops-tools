@@ -2,7 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
   "plugins": ["eslint", "react", "typescript", "unicorn", "oxc", "import", "promise"],
   "env": {
-    "browser": true,
+    "node": true,
+    "browser": false,
     "es2022": true
   },
   "rules": {
@@ -48,7 +49,23 @@
       "error",
       {
         "hoist": "functions",
-        "builtinGlobals": true
+        "builtinGlobals": true,
+        "allow": [
+          "Effect",
+          "Option",
+          "process",
+          "config",
+          "error",
+          "event",
+          "name",
+          "version",
+          "run",
+          "runs",
+          "stop",
+          "require",
+          "mkdir",
+          "env"
+        ]
       }
     ],
     "no-param-reassign": "error",
@@ -58,7 +75,6 @@
     "no-extra-bind": "error",
     "no-useless-constructor": "error",
     "no-unused-expressions": "error",
-
     "eqeqeq": [
       "error",
       "always",
@@ -95,5 +111,31 @@
     "react/no-direct-mutation-state": "error",
     "react/no-find-dom-node": "error",
     "react/no-danger": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "no-shadow": [
+          "error",
+          {
+            "hoist": "functions",
+            "builtinGlobals": true,
+            "allow": [
+              "describe",
+              "expect",
+              "test",
+              "beforeEach",
+              "afterEach",
+              "afterAll",
+              "rm",
+              "error",
+              "process",
+              "Effect"
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

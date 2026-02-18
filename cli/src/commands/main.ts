@@ -1,3 +1,5 @@
+import { mkdir } from "node:fs/promises";
+
 import {
   generateInitInventoryEffect,
   SdkLive,
@@ -10,7 +12,6 @@ import {
 import { Command } from "@effect/cli";
 import { write } from "bun";
 import { Effect, Option, Console } from "effect";
-import { mkdir } from "node:fs/promises";
 
 import { configCommand } from "@/commands/config";
 import { describeCommand } from "@/commands/describe";
@@ -20,8 +21,8 @@ import { queryCommand } from "@/commands/query";
 import { setupTotpCommand } from "@/commands/setup-totp";
 import { requireLetmeActivation } from "@/lib/letme";
 import {
-  account,
-  region,
+  account as accountOption,
+  region as regionOption,
   exportFormat,
   debugOption,
   skipGlobalOption,
@@ -74,8 +75,8 @@ Examples:
 export const mainCommand = Command.make(
   "cloudops-tools",
   {
-    account,
-    region,
+    account: accountOption,
+    region: regionOption,
     format: exportFormat,
     debug: debugOption,
     skipGlobal: skipGlobalOption,
@@ -93,40 +94,39 @@ export const mainCommand = Command.make(
     debug,
     skipGlobal,
     onlyGlobal,
-    describe,
+    describe: describeSelection,
     services,
     helpExamples,
     useLetme,
     noCache,
   }) =>
-    Effect.gen(function* (_) {
+    Effect.gen(function* () {
       if (helpExamples) {
-        yield* _(Console.log(HELP_EXAMPLES.trim()));
+        yield* Console.log(HELP_EXAMPLES.trim());
         return;
       }
 
       if (useLetme) {
-        yield* _(
-          requireLetmeActivation(account, "cloudops-tools --use-letme --account engineering-prod"),
+        yield* requireLetmeActivation(
+          account,
+          "cloudops-tools --use-letme --account engineering-prod",
         );
       }
 
-      const runWithSdk = Effect.gen(function* (_) {
-        const util = yield* _(UtilService);
-        const id = yield* _(
-          Option.match(account, {
-            onNone: () => util.getAccountId(),
-            onSome: (value) => Effect.succeed(value),
-          }),
-        );
+      const runWithSdk = Effect.gen(function* () {
+        const util = yield* UtilService;
+        const id = yield* Option.match(account, {
+          onNone: () => util.getAccountId(),
+          onSome: (value) => Effect.succeed(value),
+        });
         const regions = region.split(",").map((r) => r.trim());
 
-        const describeType = Option.getOrUndefined(describe);
+        const describeType = Option.getOrUndefined(describeSelection);
         if (describeType) {
-          const database = yield* _(DatabaseService);
-          const compute = yield* _(ComputeService);
-          const networking = yield* _(NetworkingService);
-          const reporting = yield* _(ReportingService);
+          const database = yield* DatabaseService;
+          const compute = yield* ComputeService;
+          const networking = yield* NetworkingService;
+          const reporting = yield* ReportingService;
 
           const handler = getDescribeHandler(describeType, {
             database,
@@ -136,19 +136,19 @@ export const mainCommand = Command.make(
             cacheTtlSeconds: 300,
           });
           if (!handler) {
-            yield* _(Console.log(ui.error(`Unsupported --describe type: ${describeType}`)));
+            yield* Console.log(ui.error(`Unsupported --describe type: ${describeType}`));
             return;
           }
 
-          const itemsByRegion = yield* _(Effect.forEach(regions, handler.fetchByRegion));
+          const itemsByRegion = yield* Effect.forEach(regions, handler.fetchByRegion);
           const items = itemsByRegion.flat();
 
           if (items.length === 0) {
-            yield* _(Console.log(ui.info(`No ${handler.title} found in ${regions.join(", ")}`)));
+            yield* Console.log(ui.info(`No ${handler.title} found in ${regions.join(", ")}`));
             return;
           }
 
-          const report = yield* _(reporting.generateMarkdownReport(handler.title, items));
+          const report = yield* reporting.generateMarkdownReport(handler.title, items);
           const now = new Date().toISOString();
           const date = now.slice(0, 10).replace(/-/g, "");
           const time = now.slice(11, 19).replace(/:/g, "");
@@ -156,21 +156,17 @@ export const mainCommand = Command.make(
           const outputDir = `inventory-output/${id}`;
           const outputPath = `${outputDir}/describe-${describeType.toLowerCase()}-${safeRegions}-${date}-${time}.md`;
 
-          yield* _(
-            Effect.tryPromise({
-              try: () => mkdir(outputDir, { recursive: true }),
-              catch: (error) =>
-                new Error(`Failed to create output directory "${outputDir}": ${String(error)}`),
-            }),
-          );
-          yield* _(
-            Effect.tryPromise({
-              try: () => write(outputPath, report),
-              catch: (error) =>
-                new Error(`Failed to write report to "${outputPath}": ${String(error)}`),
-            }),
-          );
-          yield* _(Console.log(ui.success(`Wrote ${outputPath}`)));
+          yield* Effect.tryPromise({
+            try: () => mkdir(outputDir, { recursive: true }),
+            catch: (error) =>
+              new Error(`Failed to create output directory "${outputDir}": ${String(error)}`),
+          });
+          yield* Effect.tryPromise({
+            try: () => write(outputPath, report),
+            catch: (error) =>
+              new Error(`Failed to write report to "${outputPath}": ${String(error)}`),
+          });
+          yield* Console.log(ui.success(`Wrote ${outputPath}`));
           return;
         }
 
@@ -180,17 +176,15 @@ export const mainCommand = Command.make(
             s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
         });
 
-        const progress = yield* _(Effect.sync(() => startProgressRenderer({ debug })));
-        yield* _(
-          generateInitInventoryEffect(id, "basic", format, regions, debug, {
-            skipGlobal,
-            onlyGlobal,
-            services: serviceList,
-          }).pipe(Effect.ensuring(Effect.sync(() => progress.stop()))),
-        );
+        const progress = yield* Effect.sync(() => startProgressRenderer({ debug }));
+        yield* generateInitInventoryEffect(id, "basic", format, regions, debug, {
+          skipGlobal,
+          onlyGlobal,
+          services: serviceList,
+        }).pipe(Effect.ensuring(Effect.sync(() => progress.stop())));
       });
 
-      yield* _(runWithSdk.pipe(Effect.provide(SdkLive)));
+      yield* runWithSdk.pipe(Effect.provide(SdkLive));
     }),
 ).pipe(
   Command.withSubcommands([

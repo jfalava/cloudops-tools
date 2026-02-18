@@ -6,6 +6,14 @@ import * as SecretsManager from "distilled-aws/secrets-manager";
 import * as WAFV2 from "distilled-aws/wafv2";
 import { Context, Effect, Stream, Layer } from "effect";
 
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import {
+  asDate,
+  asString,
+  isObjectRecord,
+  normalizeArray,
+  tagListToRecord,
+} from "../lib/aws-payload";
 import type {
   IAMUser,
   IAMRole,
@@ -15,15 +23,6 @@ import type {
   GuardDutyDetector,
   CognitoUserPool,
 } from "../types/aws-cli.types";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import {
-  asDate,
-  asString,
-  isObjectRecord,
-  normalizeArray,
-  tagListToRecord,
-} from "../lib/aws-payload";
 
 type WafAclBase = Omit<WAFWebACL, "tags">;
 
@@ -206,8 +205,8 @@ export const SecurityServiceLive = Layer.effect(
             Effect.forEach(
               acls,
               (acl) =>
-                Effect.gen(function* (_) {
-                  const tagsResp: unknown = yield* _(
+                Effect.gen(function* (__inner) {
+                  const tagsResp: unknown = yield* __inner(
                     WAFV2.listTagsForResource({ ResourceARN: acl.arn }).pipe(
                       Effect.catchAll(() =>
                         Effect.succeed({ TagInfoForResource: { TagList: [] } }),
@@ -295,7 +294,7 @@ export const SecurityServiceLive = Layer.effect(
             Effect.forEach(
               pools,
               (pool: unknown) =>
-                Effect.gen(function* (_) {
+                Effect.gen(function* (__inner) {
                   if (!isObjectRecord(pool)) {
                     return null;
                   }
@@ -305,7 +304,7 @@ export const SecurityServiceLive = Layer.effect(
                     return null;
                   }
 
-                  const detailsResp: unknown = yield* _(
+                  const detailsResp: unknown = yield* __inner(
                     Cognito.describeUserPool({ UserPoolId: id }).pipe(
                       Effect.map((r) => r.UserPool),
                       Effect.catchAll(() => Effect.succeed(undefined)),
@@ -317,7 +316,7 @@ export const SecurityServiceLive = Layer.effect(
                     return null;
                   }
 
-                  const tagsResp: unknown = yield* _(
+                  const tagsResp: unknown = yield* __inner(
                     Cognito.listTagsForResource({
                       ResourceArn: asString(detailsResp.Arn) ?? "",
                     }).pipe(

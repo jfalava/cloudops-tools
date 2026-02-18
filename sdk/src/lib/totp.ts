@@ -1,4 +1,5 @@
 import os from "node:os";
+
 import * as OTPAuth from "otpauth";
 
 const SECRET_KEY = "aws_totp_secret";

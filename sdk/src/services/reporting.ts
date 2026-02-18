@@ -2,6 +2,7 @@ import { Context, Effect, Layer } from "effect";
 import json2md from "json2md";
 
 import { asString, isObjectRecord, normalizeArray } from "../lib/aws-payload";
+
 import {
   ComputeService,
   DatabaseService,
@@ -177,14 +178,14 @@ export const ReportingServiceLive = Layer.effect(
         }),
 
       describeResourceHarder: (type: string, region: string, id: string, debug?: boolean) =>
-        Effect.gen(function* (_) {
+        Effect.gen(function* (__inner) {
           const normalizedType = type.toUpperCase();
           const finder = describeFinders[normalizedType];
           if (!finder) {
             return `Unsupported resource type for deep inspection: ${type}`;
           }
 
-          const details = yield* _(finder(region, id));
+          const details = yield* __inner(finder(region, id));
 
           if (!details) {
             return `Resource not found: ${type} ${id} in ${region}`;

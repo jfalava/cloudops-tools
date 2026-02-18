@@ -1,8 +1,9 @@
-import { spawnSync } from "bun";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+
+import { spawnSync } from "bun";
 
 const cliRoot = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
 
@@ -121,7 +122,7 @@ describe("ui", () => {
 
   describe("color environment handling", () => {
     test("NO_COLOR disables colors at import time", () => {
-      const env = { ...process.env, NO_COLOR: "1" };
+      const noColorEnv = { ...process.env, NO_COLOR: "1" };
 
       const result = spawnSync({
         cmd: [
@@ -130,7 +131,7 @@ describe("ui", () => {
           'delete process.env.FORCE_COLOR; const { ui } = await import("./src/ui"); process.stdout.write(ui.info("test"));',
         ],
         cwd: cliRoot,
-        env,
+        env: noColorEnv,
       });
 
       expect(result.exitCode).toBe(0);

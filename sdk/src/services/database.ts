@@ -9,6 +9,14 @@ import * as RedshiftServerless from "distilled-aws/redshift-serverless";
 import * as TimestreamWrite from "distilled-aws/timestream-write";
 import { Context, Effect, Stream, Layer } from "effect";
 
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import {
+  describeRdsInstances,
+  getRdsInstance,
+  describeElastiCacheClusters,
+  describeDocDBClusters,
+  describeNeptuneClusters,
+} from "../patches";
 import type {
   RDSInstance,
   DynamoDBTable,
@@ -24,15 +32,6 @@ import type {
   RedshiftServerlessNamespace,
   OpenSearchServerlessCollection,
 } from "../types/aws-cli.types";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import {
-  describeRdsInstances,
-  getRdsInstance,
-  describeElastiCacheClusters,
-  describeDocDBClusters,
-  describeNeptuneClusters,
-} from "../patches";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -169,8 +168,8 @@ export const DatabaseServiceLive = Layer.succeed(
           Effect.forEach(
             tableNames,
             (tableName) =>
-              Effect.gen(function* (_) {
-                const tableResp = yield* _(
+              Effect.gen(function* (__inner) {
+                const tableResp = yield* __inner(
                   DynamoDB.describeTable({ TableName: tableName }).pipe(
                     Effect.provide(config),
                     Effect.provide(AwsConfigLive),
@@ -185,7 +184,7 @@ export const DatabaseServiceLive = Layer.succeed(
                 let tags: Record<string, string> = {};
                 const tableArn = getString(table, "TableArn");
                 if (tableArn) {
-                  tags = yield* _(
+                  tags = yield* __inner(
                     DynamoDB.listTagsOfResource({ ResourceArn: tableArn }).pipe(
                       Effect.map((response) =>
                         toTagRecord(getArray(response, "Tags"), "Key", "Value"),

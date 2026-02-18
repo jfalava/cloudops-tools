@@ -1,8 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import ExcelJS from "exceljs";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+
+import ExcelJS from "exceljs";
 
 import { csvToXlsx, writeInventoryFile } from "../../../src/lib/spreadsheet";
 

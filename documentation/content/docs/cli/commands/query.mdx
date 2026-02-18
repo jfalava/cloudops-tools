@@ -90,7 +90,7 @@ cloudops-tools query --runs --limit 20
 cloudops-tools query --type Lambda --days 30
 
 # Check what changed in production account
-cloudops-tools query --account prod --changes
+cloudops-tools query --account 123456789012 --changes
 
 # Query specific region and date range
 cloudops-tools query --region eu-west-1 --from 2024-01-01 --to 2024-01-15
@@ -142,3 +142,27 @@ Modified (2):
 - Database location: `~/.config/cloudops-tools/inventory.db`
 - Query operations are instant and don't require AWS credentials
 - Changes are detected by comparing the two most recent runs within the specified time window
+
+### Account Parameter
+
+**Important:** The `--account` flag defaults to `default`. You must specify the same account ID used during `init` to query your data:
+
+```bash
+# First, run init (uses auto-detected account ID)
+cloudops-tools init --region eu-central-1
+# Account ID: 123456789012
+
+# Query requires the same account ID
+cloudops-tools query --runs --account 123456789012
+
+# Without --account, defaults to "default" (no data found)
+cloudops-tools query --runs
+# Output: No inventory runs found
+```
+
+To find your account ID:
+
+```bash
+# Check what accounts have data
+sqlite3 ~/.config/cloudops-tools/inventory.db "SELECT DISTINCT account_id FROM inventory_runs;"
+```

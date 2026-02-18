@@ -23,6 +23,7 @@ const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "cli/commands/index": () => import("../../../content/docs/cli/commands/index.mdx"),
   "cli/commands/init": () => import("../../../content/docs/cli/commands/init.mdx"),
   "cli/commands/describe": () => import("../../../content/docs/cli/commands/describe.mdx"),
+  "cli/commands/query": () => import("../../../content/docs/cli/commands/query.mdx"),
   "cli/commands/use-letme": () => import("../../../content/docs/cli/commands/use-letme.mdx"),
   "cli/commands/config": () => import("../../../content/docs/cli/commands/config.mdx"),
   sdk: () => import("../../../content/docs/sdk/index.mdx"),
@@ -87,14 +88,18 @@ function DocsPageComponent() {
 
     const loadModule = async () => {
       try {
-        const docModule = docModules[slug];
-        if (!docModule) {
+        const moduleLoader = docModules[slug];
+        if (!moduleLoader) {
           throw notFound();
         }
-        const module = await docModule();
-        setDocModule(module);
+        const loadedModule = await moduleLoader();
+        setDocModule(loadedModule);
       } catch (err) {
-        setError(err instanceof Error ? err : new Error(String(err)));
+        if (err instanceof Error) {
+          setError(err);
+          return;
+        }
+        throw err;
       } finally {
         setIsLoading(false);
       }

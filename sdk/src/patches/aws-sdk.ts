@@ -24,6 +24,7 @@ import { RDSClient, DescribeDBInstancesCommand, type DBInstance } from "@aws-sdk
 import { Route53Client, ListHostedZonesCommand } from "@aws-sdk/client-route-53";
 import { Effect } from "effect";
 
+import { getCredentialsProvider } from "../credentials/credentials";
 import type {
   RDSInstance,
   ElastiCacheCluster,
@@ -34,8 +35,6 @@ import type {
   Route53HostedZone,
   GlobalAccelerator,
 } from "../types/aws-cli.types";
-
-import { getCredentialsProvider } from "../credentials/credentials";
 
 /**
  * Patch layer: use AWS SDK v3 directly for AWS Query services that currently

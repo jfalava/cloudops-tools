@@ -1,5 +1,6 @@
-import { Cause, Effect, Exit, Ref } from "effect";
 import { mkdir } from "node:fs/promises";
+
+import { Cause, Effect, Exit, Ref as EffectRef } from "effect";
 
 import { InventoryDbService } from "../lib/inventory-db";
 import {
@@ -254,7 +255,7 @@ export const generateInitInventoryEffect = (
     const globalServices = ALL_GLOBAL_SERVICES.filter(shouldRunService);
     const totalTasks =
       regions.length * regionalServices.length + (options?.skipGlobal ? 0 : globalServices.length);
-    const completedRef = yield* _(Ref.make(0));
+    const completedRef = yield* _(EffectRef.make(0));
 
     progressEmitter.emitProgress(
       createProgressEvent<StartedEvent>(ProgressEventType.STARTED, {
@@ -267,7 +268,7 @@ export const generateInitInventoryEffect = (
 
     const emitProgressUpdate = (service: string, region: string) =>
       Effect.gen(function* (__) {
-        const completed = yield* __(Ref.updateAndGet(completedRef, (n) => n + 1));
+        const completed = yield* __(EffectRef.updateAndGet(completedRef, (n) => n + 1));
         const percentage = totalTasks === 0 ? 100 : Math.floor((completed / totalTasks) * 100);
         progressEmitter.emitProgress(
           createProgressEvent<ProgressEvent>(ProgressEventType.PROGRESS, {
@@ -295,11 +296,11 @@ export const generateInitInventoryEffect = (
           }),
         );
 
-        const exit = yield* __(Effect.exit(effect));
+        const effectExit = yield* __(Effect.exit(effect));
         const duration = Date.now() - startedAt;
 
-        if (Exit.isSuccess(exit)) {
-          const resourceCount = countResources(exit.value);
+        if (Exit.isSuccess(effectExit)) {
+          const resourceCount = countResources(effectExit.value);
           progressEmitter.emitProgress(
             createProgressEvent<ServiceCompletedEvent>(ProgressEventType.SERVICE_COMPLETED, {
               service,
@@ -309,12 +310,12 @@ export const generateInitInventoryEffect = (
             }),
           );
           yield* __(emitProgressUpdate(service, region));
-          return exit.value;
+          return effectExit.value;
         }
 
-        const failure = Cause.failureOption(exit.cause);
+        const failure = Cause.failureOption(effectExit.cause);
         const error = debug
-          ? String(exit.cause)
+          ? String(effectExit.cause)
           : failure._tag === "Some"
             ? failure.value instanceof Error
               ? failure.value.message
