@@ -72,7 +72,7 @@
     "@aws-sdk/client-sts": "3.993.0",
     "@aws-sdk/client-wafv2": "3.993.0",
     "@aws-sdk/credential-providers": "3.993.0",
-    "@aws-sdk/types": "3.993.1",
+    "@aws-sdk/types": "3.973.1",
     "@effect/platform": "catalog:effect",
     "distilled-aws": "0.0.21",
     "effect": "catalog:effect",
