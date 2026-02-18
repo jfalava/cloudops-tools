@@ -45,9 +45,9 @@ export const DeveloperToolsServiceLive = Layer.effect(
         ),
 
       describeGlueJobs: (region: string) =>
-        Effect.gen(function* (_) {
+        Effect.gen(function* (__inner) {
           const config = makeRegionConfig(region);
-          const jobNames = yield* _(
+          const jobNames = yield* __inner(
             Glue.listJobs.items({}).pipe(
               Stream.runCollect,
               Effect.map((c) => Array.from(c)),
@@ -60,7 +60,7 @@ export const DeveloperToolsServiceLive = Layer.effect(
             return [];
           }
 
-          return yield* _(
+          return yield* __inner(
             Effect.forEach(
               jobNames,
               (name) =>

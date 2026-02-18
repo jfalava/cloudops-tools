@@ -87,11 +87,11 @@ function DocsPageComponent() {
 
     const loadModule = async () => {
       try {
-        const docModule = docModules[slug];
-        if (!docModule) {
+        const moduleLoader = docModules[slug];
+        if (!moduleLoader) {
           throw notFound();
         }
-        const module = await docModule();
+        const module = await moduleLoader();
         setDocModule(module);
       } catch (err) {
         setError(err instanceof Error ? err : new Error(String(err)));

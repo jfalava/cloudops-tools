@@ -1,4 +1,4 @@
-import { $ } from "bun";
+import { $ as bunShell } from "bun";
 
 /**
  * Find AWS CLI executable path
@@ -14,7 +14,7 @@ export async function findAwsCliPath(): Promise<string | null> {
 
   for (const awsPath of paths) {
     try {
-      await $`${awsPath} --version`.quiet();
+      await bunShell`${awsPath} --version`.quiet();
       return awsPath;
     } catch {
       continue;
@@ -33,7 +33,7 @@ export async function getAwsCliVersion(): Promise<string | null> {
     return null;
   }
   try {
-    const result = await $`${awsPath} --version`.quiet();
+    const result = await bunShell`${awsPath} --version`.quiet();
     const output = result.stdout.toString().trim() || result.stderr.toString().trim();
     const match = output.match(/aws-cli\/(\d+\.\d+\.\d+)/);
     return match?.[1] ?? null;

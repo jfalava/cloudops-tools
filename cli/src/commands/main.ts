@@ -137,7 +137,7 @@ export const mainCommand = Command.make(
             cacheTtlSeconds: 300,
           });
           if (!handler) {
-            yield* _(Console.log(ui.error(`Unsupported --describe type: ${describeType}`)));
+            yield* __inner(Console.log(ui.error(`Unsupported --describe type: ${describeType}`)));
             return;
           }
 
@@ -145,7 +145,9 @@ export const mainCommand = Command.make(
           const items = itemsByRegion.flat();
 
           if (items.length === 0) {
-            yield* _(Console.log(ui.info(`No ${handler.title} found in ${regions.join(", ")}`)));
+            yield* __inner(
+              Console.log(ui.info(`No ${handler.title} found in ${regions.join(", ")}`)),
+            );
             return;
           }
 

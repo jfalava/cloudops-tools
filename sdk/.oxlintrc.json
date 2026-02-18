@@ -3,7 +3,7 @@
   "plugins": ["eslint", "react", "typescript", "unicorn", "oxc", "import", "promise"],
   "env": {
     "node": true,
-    "browser": true,
+    "browser": false,
     "es2022": true
   },
   "globals": {
@@ -16,7 +16,6 @@
     "typescript/no-unsafe-call": "error",
     "typescript/no-unsafe-member-access": "error",
     "typescript/no-unsafe-return": "error",
-
     "no-unused-vars": [
       "error",
       {
@@ -54,7 +53,34 @@
       "error",
       {
         "hoist": "functions",
-        "builtinGlobals": false
+        "builtinGlobals": true,
+        "allow": [
+          "Effect",
+          "Option",
+          "process",
+          "describe",
+          "expect",
+          "test",
+          "beforeEach",
+          "afterEach",
+          "afterAll",
+          "config",
+          "error",
+          "event",
+          "name",
+          "version",
+          "db",
+          "rs",
+          "run",
+          "runs",
+          "stop",
+          "require",
+          "mkdir",
+          "env",
+          "status",
+          "prompt",
+          "rm"
+        ]
       }
     ],
     "no-param-reassign": "error",
@@ -64,7 +90,6 @@
     "no-extra-bind": "error",
     "no-useless-constructor": "error",
     "no-unused-expressions": "error",
-
     "eqeqeq": [
       "error",
       "always",

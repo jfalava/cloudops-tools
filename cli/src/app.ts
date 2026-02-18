@@ -17,9 +17,19 @@ import {
 
 declare const BUILD_VERSION: string | undefined;
 
+const PACKAGE_VERSION = (() => {
+  try {
+    const packageJson = readFileSync(new URL("../package.json", import.meta.url), "utf8");
+    const parsed = JSON.parse(packageJson) as { version?: string };
+    return parsed.version ?? "unknown";
+  } catch {
+    return "unknown";
+  }
+})();
+
 const CLI_CONFIG = {
   name: "CloudOps Tools",
-  version: "0.1.0",
+  version: PACKAGE_VERSION,
 } as const;
 
 const cli = Command.run(mainCommand, CLI_CONFIG);
@@ -48,18 +58,7 @@ const wantsConfig = forceConfig || normalizedArgsForDetection.includes("config")
 const wantsQuery = normalizedArgsForDetection.includes("query");
 
 if (wantsVersion) {
-  const version =
-    typeof BUILD_VERSION !== "undefined"
-      ? BUILD_VERSION
-      : (() => {
-          try {
-            const packageJson = readFileSync(new URL("../package.json", import.meta.url), "utf8");
-            const parsed = JSON.parse(packageJson) as { version?: string };
-            return parsed.version ?? "unknown";
-          } catch {
-            return "unknown";
-          }
-        })();
+  const version = typeof BUILD_VERSION !== "undefined" ? BUILD_VERSION : PACKAGE_VERSION;
   process.stdout.write(version + "\n");
   process.exit(0);
 }
