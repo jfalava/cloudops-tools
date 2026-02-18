@@ -1,5 +1,6 @@
-import { Cause, Effect, Exit, Ref } from "effect";
 import { mkdir } from "node:fs/promises";
+
+import { Cause, Effect, Exit, Ref } from "effect";
 
 import { InventoryDbService } from "../lib/inventory-db";
 import {

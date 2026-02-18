@@ -54,7 +54,7 @@
       "error",
       {
         "hoist": "functions",
-        "builtinGlobals": true
+        "builtinGlobals": false
       }
     ],
     "no-param-reassign": "error",

@@ -1,8 +1,9 @@
-import { spawnSync } from "bun";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+
+import { spawnSync } from "bun";
 
 const cliRoot = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
 

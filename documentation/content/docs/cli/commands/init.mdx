@@ -155,12 +155,12 @@ All inventory runs are automatically stored in a local SQLite database at `~/.co
 
 ### What's Stored
 
-| Table | Purpose |
-|-------|---------|
-| `inventory_runs` | Scan metadata (account, mode, timestamp, resource count) |
-| `resources` | Full resource details for each run |
-| `resource_fingerprints` | Hashes for incremental change detection |
-| `describe_cache` | Cached describe results with TTL |
+| Table                   | Purpose                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| `inventory_runs`        | Scan metadata (account, mode, timestamp, resource count) |
+| `resources`             | Full resource details for each run                       |
+| `resource_fingerprints` | Hashes for incremental change detection                  |
+| `describe_cache`        | Cached describe results with TTL                         |
 
 ### Querying Historical Data
 

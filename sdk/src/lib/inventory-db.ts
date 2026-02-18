@@ -1,8 +1,9 @@
 import { Database, type SQLQueryBindings } from "bun:sqlite";
-import { Context, Effect, Layer } from "effect";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+
+import { Context, Effect, Layer } from "effect";
 
 export interface InventoryRun {
   readonly id: number;

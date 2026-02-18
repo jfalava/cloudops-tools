@@ -3,14 +3,13 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import type { EC2Instance } from "../../../src/types/aws-cli.types";
-
 import {
   createWebInventoryJson,
   writeInventoryWithJson,
   writeJsonInventoryFile,
   type WebInventoryData,
 } from "../../../src/lib/json-output";
+import type { EC2Instance } from "../../../src/types/aws-cli.types";
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 const parseJson = <T>(content: string): T => JSON.parse(content) as T;

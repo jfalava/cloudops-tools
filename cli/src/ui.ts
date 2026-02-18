@@ -1,4 +1,5 @@
 import process from "node:process";
+
 import pc from "picocolors";
 
 const isColorEnabled = (): boolean => {

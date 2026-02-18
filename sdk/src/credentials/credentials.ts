@@ -1,6 +1,5 @@
-import type { AwsCredentialIdentityProvider } from "@aws-sdk/types";
-
 import { fromIni, fromNodeProviderChain } from "@aws-sdk/credential-providers";
+import type { AwsCredentialIdentityProvider } from "@aws-sdk/types";
 
 /**
  * Credential management for AWS SDK clients

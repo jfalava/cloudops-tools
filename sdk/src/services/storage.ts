@@ -9,6 +9,16 @@ import * as S3 from "distilled-aws/s3";
 import * as StorageGatewaySvc from "distilled-aws/storage-gateway";
 import { Context, Effect, Stream, Layer } from "effect";
 
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import {
+  asBoolean,
+  asDate,
+  asNumber,
+  asString,
+  getNameTag,
+  isObjectRecord,
+  tagListToRecord,
+} from "../lib/aws-payload";
 import type {
   S3Bucket,
   EBSVolume,
@@ -20,17 +30,6 @@ import type {
   BackupGateway,
   RbinRule,
 } from "../types/aws-cli.types";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import {
-  asBoolean,
-  asDate,
-  asNumber,
-  asString,
-  getNameTag,
-  isObjectRecord,
-  tagListToRecord,
-} from "../lib/aws-payload";
 
 function toIsoString(value: unknown): string | undefined {
   return asDate(value)?.toISOString();
@@ -62,13 +61,13 @@ export const StorageServiceLive = Layer.succeed(StorageService, {
         Effect.forEach(
           buckets,
           (bucket) =>
-            Effect.gen(function* (_) {
+            Effect.gen(function* (__inner) {
               if (!bucket.Name) {
                 return null;
               }
               const name = bucket.Name;
 
-              const region = yield* _(
+              const region = yield* __inner(
                 S3.getBucketLocation({ Bucket: name }).pipe(
                   Effect.map((r) => r.LocationConstraint || "us-east-1"),
                   Effect.catchAll(() => Effect.succeed("us-east-1")),
@@ -76,7 +75,7 @@ export const StorageServiceLive = Layer.succeed(StorageService, {
                 ),
               );
 
-              const publicAccess = yield* _(
+              const publicAccess = yield* __inner(
                 S3.getPublicAccessBlock({ Bucket: name }).pipe(
                   Effect.map((r) => {
                     const c = r.PublicAccessBlockConfiguration;
@@ -92,7 +91,7 @@ export const StorageServiceLive = Layer.succeed(StorageService, {
                 ),
               );
 
-              const tags = yield* _(
+              const tags = yield* __inner(
                 S3.getBucketTagging({ Bucket: name }).pipe(
                   Effect.map((r) =>
                     (r.TagSet || []).reduce(

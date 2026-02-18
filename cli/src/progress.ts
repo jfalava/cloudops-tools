@@ -1,9 +1,10 @@
+import process from "node:process";
+
 import {
   progressEmitter,
   ProgressEventType,
   type InventoryProgressEvent,
 } from "@cloudops-tools/sdk";
-import process from "node:process";
 
 import { ui } from "@/ui";
 

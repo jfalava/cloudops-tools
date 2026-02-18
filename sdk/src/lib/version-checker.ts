@@ -65,7 +65,15 @@ const DEFAULT_POLICY: VersionPolicyOverrides = {
       "dotnet6",
       "ruby2.7",
     ],
-    endOfLife: ["nodejs10.x", "nodejs12.x", "python2.7", "python3.6", "python3.7", "dotnetcore3.1", "ruby2.5"],
+    endOfLife: [
+      "nodejs10.x",
+      "nodejs12.x",
+      "python2.7",
+      "python3.6",
+      "python3.7",
+      "dotnetcore3.1",
+      "ruby2.5",
+    ],
   },
   rds: {
     postgres: { currentMin: "12" },

@@ -4,6 +4,8 @@ import * as ELBv2 from "distilled-aws/elastic-load-balancing-v2";
 import * as VPCLattice from "distilled-aws/vpc-lattice";
 import { Context, Effect, Stream, Layer } from "effect";
 
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import { describeGlobalAccelerators as patchedGlobalAccelerators } from "../patches";
 import type {
   VPC,
   Subnet,
@@ -24,9 +26,6 @@ import type {
   DirectConnectConnection,
   VpcLatticeService,
 } from "../types/aws-cli.types";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import { describeGlobalAccelerators as patchedGlobalAccelerators } from "../patches";
 
 type UnknownRecord = Record<string, unknown>;
 type AwsTag = { Key?: string; Value?: string };
@@ -242,11 +241,11 @@ export const NetworkingServiceLive = Layer.succeed(
           Effect.forEach(
             lbs,
             (lb) =>
-              Effect.gen(function* (_) {
+              Effect.gen(function* (__inner) {
                 if (!lb.arn) {
                   return lb;
                 }
-                const tagsResp = yield* _(
+                const tagsResp = yield* __inner(
                   ELBv2.describeTags({ ResourceArns: [lb.arn] }).pipe(
                     Effect.catchAll(() => Effect.succeed({ TagDescriptions: [] })),
                     Effect.provide(config),

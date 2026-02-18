@@ -1,10 +1,11 @@
+import { readFileSync } from "node:fs";
+import process from "node:process";
+
 import { ConfigServiceLive, InventoryDbServiceLive } from "@cloudops-tools/sdk";
 import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { argv } from "bun";
 import { Effect, Layer } from "effect";
-import { readFileSync } from "node:fs";
-import process from "node:process";
 
 import {
   HELP_EXAMPLES,

@@ -1,3 +1,5 @@
+import { mkdir } from "node:fs/promises";
+
 import {
   generateInitInventoryEffect,
   SdkLive,
@@ -10,7 +12,6 @@ import {
 import { Command } from "@effect/cli";
 import { write } from "bun";
 import { Effect, Option, Console } from "effect";
-import { mkdir } from "node:fs/promises";
 
 import { configCommand } from "@/commands/config";
 import { describeCommand } from "@/commands/describe";
@@ -20,8 +21,8 @@ import { queryCommand } from "@/commands/query";
 import { setupTotpCommand } from "@/commands/setup-totp";
 import { requireLetmeActivation } from "@/lib/letme";
 import {
-  account,
-  region,
+  account as accountOption,
+  region as regionOption,
   exportFormat,
   debugOption,
   skipGlobalOption,
@@ -74,8 +75,8 @@ Examples:
 export const mainCommand = Command.make(
   "cloudops-tools",
   {
-    account,
-    region,
+    account: accountOption,
+    region: regionOption,
     format: exportFormat,
     debug: debugOption,
     skipGlobal: skipGlobalOption,
@@ -111,9 +112,9 @@ export const mainCommand = Command.make(
         );
       }
 
-      const runWithSdk = Effect.gen(function* (_) {
-        const util = yield* _(UtilService);
-        const id = yield* _(
+      const runWithSdk = Effect.gen(function* (__inner) {
+        const util = yield* __inner(UtilService);
+        const id = yield* __inner(
           Option.match(account, {
             onNone: () => util.getAccountId(),
             onSome: (value) => Effect.succeed(value),
@@ -123,10 +124,10 @@ export const mainCommand = Command.make(
 
         const describeType = Option.getOrUndefined(describe);
         if (describeType) {
-          const database = yield* _(DatabaseService);
-          const compute = yield* _(ComputeService);
-          const networking = yield* _(NetworkingService);
-          const reporting = yield* _(ReportingService);
+          const database = yield* __inner(DatabaseService);
+          const compute = yield* __inner(ComputeService);
+          const networking = yield* __inner(NetworkingService);
+          const reporting = yield* __inner(ReportingService);
 
           const handler = getDescribeHandler(describeType, {
             database,
@@ -140,7 +141,7 @@ export const mainCommand = Command.make(
             return;
           }
 
-          const itemsByRegion = yield* _(Effect.forEach(regions, handler.fetchByRegion));
+          const itemsByRegion = yield* __inner(Effect.forEach(regions, handler.fetchByRegion));
           const items = itemsByRegion.flat();
 
           if (items.length === 0) {
@@ -148,7 +149,7 @@ export const mainCommand = Command.make(
             return;
           }
 
-          const report = yield* _(reporting.generateMarkdownReport(handler.title, items));
+          const report = yield* __inner(reporting.generateMarkdownReport(handler.title, items));
           const now = new Date().toISOString();
           const date = now.slice(0, 10).replace(/-/g, "");
           const time = now.slice(11, 19).replace(/:/g, "");
@@ -156,21 +157,21 @@ export const mainCommand = Command.make(
           const outputDir = `inventory-output/${id}`;
           const outputPath = `${outputDir}/describe-${describeType.toLowerCase()}-${safeRegions}-${date}-${time}.md`;
 
-          yield* _(
+          yield* __inner(
             Effect.tryPromise({
               try: () => mkdir(outputDir, { recursive: true }),
               catch: (error) =>
                 new Error(`Failed to create output directory "${outputDir}": ${String(error)}`),
             }),
           );
-          yield* _(
+          yield* __inner(
             Effect.tryPromise({
               try: () => write(outputPath, report),
               catch: (error) =>
                 new Error(`Failed to write report to "${outputPath}": ${String(error)}`),
             }),
           );
-          yield* _(Console.log(ui.success(`Wrote ${outputPath}`)));
+          yield* __inner(Console.log(ui.success(`Wrote ${outputPath}`)));
           return;
         }
 
@@ -180,8 +181,8 @@ export const mainCommand = Command.make(
             s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
         });
 
-        const progress = yield* _(Effect.sync(() => startProgressRenderer({ debug })));
-        yield* _(
+        const progress = yield* __inner(Effect.sync(() => startProgressRenderer({ debug })));
+        yield* __inner(
           generateInitInventoryEffect(id, "basic", format, regions, debug, {
             skipGlobal,
             onlyGlobal,

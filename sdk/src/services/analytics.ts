@@ -3,8 +3,6 @@ import * as EMR from "distilled-aws/emr";
 import * as Kinesis from "distilled-aws/kinesis";
 import { Context, Effect, Stream, Layer } from "effect";
 
-import type { KinesisStream, AthenaWorkgroup, EMRCluster } from "../types/aws-cli.types";
-
 import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
 import {
   asDate,
@@ -14,6 +12,7 @@ import {
   normalizeArray,
   tagListToRecord,
 } from "../lib/aws-payload";
+import type { KinesisStream, AthenaWorkgroup, EMRCluster } from "../types/aws-cli.types";
 
 function toIsoString(value: unknown): string | undefined {
   return asDate(value)?.toISOString();
@@ -50,8 +49,8 @@ export const AnalyticsServiceLive = Layer.effect(
             Effect.forEach(
               streamNames,
               (name) =>
-                Effect.gen(function* (_) {
-                  const descData: unknown = yield* _(
+                Effect.gen(function* (__inner) {
+                  const descData: unknown = yield* __inner(
                     Kinesis.describeStream({ StreamName: name }).pipe(
                       Effect.provide(config),
                       Effect.provide(AwsConfigLive),
@@ -65,7 +64,7 @@ export const AnalyticsServiceLive = Layer.effect(
                     return null;
                   }
 
-                  const tagsResp: unknown = yield* _(
+                  const tagsResp: unknown = yield* __inner(
                     Kinesis.listTagsForStream({ StreamName: name }).pipe(
                       Effect.catchAll(() => Effect.succeed({ Tags: [] })),
                       Effect.provide(config),

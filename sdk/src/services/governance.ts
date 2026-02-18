@@ -3,14 +3,13 @@ import * as ControlTower from "distilled-aws/controltower";
 import * as Organizations from "distilled-aws/organizations";
 import { Context, Effect, Stream, Layer } from "effect";
 
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import { asBoolean, asString, isObjectRecord, normalizeArray } from "../lib/aws-payload";
 import type {
   ControlTowerGuardrail,
   ServiceControlPolicy,
   ConfigRule,
 } from "../types/aws-cli.types";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import { asBoolean, asString, isObjectRecord, normalizeArray } from "../lib/aws-payload";
 
 function getControlName(controlIdentifier: unknown): string {
   const identifier = asString(controlIdentifier);
