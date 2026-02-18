@@ -146,12 +146,35 @@ The command generates inventory files in the `inventory-output/{account-id}/` di
 
 ## Historical Storage
 
-All inventory runs are automatically stored in a local SQLite database at `~/.config/cloudops-tools/inventory.db`. Use the [`query`](/docs/cli/commands/query) command to analyze historical data without re-scanning AWS:
+All inventory runs are automatically stored in a local SQLite database at `~/.config/cloudops-tools/inventory.db`. This enables:
+
+- **Query past runs**: View scan history without AWS API calls
+- **Change detection**: Compare resources between runs
+- **Incremental scans**: Only output changed resources
+- **Scan deduplication**: Skip redundant scans
+
+### What's Stored
+
+| Table | Purpose |
+|-------|---------|
+| `inventory_runs` | Scan metadata (account, mode, timestamp, resource count) |
+| `resources` | Full resource details for each run |
+| `resource_fingerprints` | Hashes for incremental change detection |
+| `describe_cache` | Cached describe results with TTL |
+
+### Querying Historical Data
+
+Use the [`query`](/docs/cli/commands/query) command to analyze historical data:
 
 ```bash
-# Query past runs
-cloudops-tools query --runs
+# List all runs for an account
+cloudops-tools query --runs --account 123456789012
 
-# Detect infrastructure changes
-cloudops-tools query --changes
+# Detect changes since last run
+cloudops-tools query --changes --account 123456789012
+
+# Query specific resource types
+cloudops-tools query --type EC2 --days 7 --account 123456789012
 ```
+
+**Note:** Always specify `--account` with the same account ID used during `init` to query your data.

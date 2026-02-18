@@ -54,17 +54,20 @@ cloudops-tools --help-examples
 
 ## 6. Query Historical Data
 
-After running scans, query past inventories without AWS API calls:
+After running scans, query past inventories without AWS API calls. All data is stored in a local SQLite database (`~/.config/cloudops-tools/inventory.db`):
 
 ```bash
-# List past inventory runs
-cloudops-tools query --runs
+# Find your account ID from scans
+sqlite3 ~/.config/cloudops-tools/inventory.db "SELECT DISTINCT account_id FROM inventory_runs;"
 
-# Query specific resource types
-cloudops-tools query --type EC2 --days 7
+# List past inventory runs (use your account ID)
+cloudops-tools query --runs --account YOUR_ACCOUNT_ID
 
 # Detect infrastructure changes
-cloudops-tools query --changes
+cloudops-tools query --changes --account YOUR_ACCOUNT_ID
+
+# Query specific resource types
+cloudops-tools query --type EC2 --days 7 --account YOUR_ACCOUNT_ID
 ```
 
 ## Core Commands
