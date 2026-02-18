@@ -39,11 +39,11 @@ export const getDescribeHandler = (
     ) => Effect.Effect<ReadonlyArray<Record<string, unknown>>, unknown, InventoryDbService>) =>
     (regionName) =>
       Effect.gen(function* (_) {
-        const db = yield* _(InventoryDbService);
-        yield* _(db.initialize());
+        const dbService = yield* _(InventoryDbService);
+        yield* _(dbService.initialize());
 
         if (useCache) {
-          const cached = yield* _(db.getDescribeCache(resourceType, regionName));
+          const cached = yield* _(dbService.getDescribeCache(resourceType, regionName));
           if (cached) {
             return JSON.parse(cached.data) as ReadonlyArray<Record<string, unknown>>;
           }
@@ -53,7 +53,9 @@ export const getDescribeHandler = (
         const itemsWithRegion = addRegion(items, regionName);
 
         if (useCache) {
-          yield* _(db.setDescribeCache(resourceType, regionName, itemsWithRegion, cacheTtlSeconds));
+          yield* _(
+            dbService.setDescribeCache(resourceType, regionName, itemsWithRegion, cacheTtlSeconds),
+          );
         }
 
         return itemsWithRegion;

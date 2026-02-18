@@ -45,45 +45,41 @@ export const DeveloperToolsServiceLive = Layer.effect(
         ),
 
       describeGlueJobs: (region: string) =>
-        Effect.gen(function* (__inner) {
+        Effect.gen(function* () {
           const config = makeRegionConfig(region);
-          const jobNames = yield* __inner(
-            Glue.listJobs.items({}).pipe(
-              Stream.runCollect,
-              Effect.map((c) => Array.from(c)),
-              Effect.provide(config),
-              Effect.provide(AwsConfigLive),
-            ),
+          const jobNames = yield* Glue.listJobs.items({}).pipe(
+            Stream.runCollect,
+            Effect.map((c) => Array.from(c)),
+            Effect.provide(config),
+            Effect.provide(AwsConfigLive),
           );
 
           if (jobNames.length === 0) {
             return [];
           }
 
-          return yield* __inner(
-            Effect.forEach(
-              jobNames,
-              (name) =>
-                Glue.getJob({ JobName: name as string }).pipe(
-                  Effect.map((r) => {
-                    const j = r.Job;
-                    return {
-                      name: j?.Name || "unknown",
-                      description: j?.Description || "N/A",
-                      role: j?.Role || "unknown",
-                      createdOn: j?.CreatedOn?.toISOString() || "N/A",
-                      lastModifiedOn: j?.LastModifiedOn?.toISOString() || "N/A",
-                      executionProperty: j?.ExecutionProperty,
-                    } as GlueJob;
-                  }),
-                  Effect.catchAll(() => Effect.succeed(null)),
-                  Effect.provide(config),
-                  Effect.provide(AwsConfigLive),
-                ),
-              { concurrency: 5 },
-            ),
-            Effect.map((results) => results.filter((j): j is GlueJob => j !== null)),
-          );
+          return yield* Effect.forEach(
+            jobNames,
+            (name) =>
+              Glue.getJob({ JobName: name as string }).pipe(
+                Effect.map((r) => {
+                  const j = r.Job;
+                  const job: GlueJob = {
+                    name: j?.Name ?? "unknown",
+                    description: j?.Description ?? "N/A",
+                    role: j?.Role ?? "unknown",
+                    createdOn: j?.CreatedOn?.toISOString() || "N/A",
+                    lastModifiedOn: j?.LastModifiedOn?.toISOString() || "N/A",
+                    executionProperty: j?.ExecutionProperty ?? null,
+                  };
+                  return job;
+                }),
+                Effect.catchAll(() => Effect.succeed(null)),
+                Effect.provide(config),
+                Effect.provide(AwsConfigLive),
+              ),
+            { concurrency: 5 },
+          ).pipe(Effect.map((results) => results.filter((j): j is GlueJob => j !== null)));
         }),
     }),
   ),

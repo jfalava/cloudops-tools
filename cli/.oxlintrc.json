@@ -54,28 +54,17 @@
           "Effect",
           "Option",
           "process",
-          "describe",
-          "expect",
-          "test",
-          "beforeEach",
-          "afterEach",
-          "afterAll",
           "config",
           "error",
           "event",
           "name",
           "version",
-          "db",
-          "rs",
           "run",
           "runs",
           "stop",
           "require",
           "mkdir",
-          "env",
-          "status",
-          "prompt",
-          "rm"
+          "env"
         ]
       }
     ],
@@ -122,5 +111,31 @@
     "react/no-direct-mutation-state": "error",
     "react/no-find-dom-node": "error",
     "react/no-danger": "error"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts"],
+      "rules": {
+        "no-shadow": [
+          "error",
+          {
+            "hoist": "functions",
+            "builtinGlobals": true,
+            "allow": [
+              "describe",
+              "expect",
+              "test",
+              "beforeEach",
+              "afterEach",
+              "afterAll",
+              "rm",
+              "error",
+              "process",
+              "Effect"
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }
