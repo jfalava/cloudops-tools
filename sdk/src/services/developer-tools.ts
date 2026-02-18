@@ -50,6 +50,22 @@ export const DeveloperToolsServiceLive = Layer.effect(
           const jobNames = yield* Glue.listJobs.items({}).pipe(
             Stream.runCollect,
             Effect.map((c) => Array.from(c)),
+            Effect.flatMap((rawJobNames) =>
+              Effect.try({
+                try: () =>
+                  rawJobNames.map((rawName) => {
+                    const jobName = asString(rawName);
+                    if (!jobName) {
+                      throw new Error(
+                        `Glue.listJobs returned non-string JobName in region "${region}"`,
+                      );
+                    }
+                    return jobName;
+                  }),
+                catch: (error) =>
+                  error instanceof Error ? error : new Error(`Failed to parse Glue job names: ${String(error)}`),
+              }),
+            ),
             Effect.provide(config),
             Effect.provide(AwsConfigLive),
           );
@@ -61,7 +77,7 @@ export const DeveloperToolsServiceLive = Layer.effect(
           return yield* Effect.forEach(
             jobNames,
             (name) =>
-              Glue.getJob({ JobName: name as string }).pipe(
+              Glue.getJob({ JobName: name }).pipe(
                 Effect.map((r) => {
                   const j = r.Job;
                   const job: GlueJob = {
@@ -74,6 +90,12 @@ export const DeveloperToolsServiceLive = Layer.effect(
                   };
                   return job;
                 }),
+                Effect.tapError((error) =>
+                  Effect.sync(() => {
+                    const message = error instanceof Error ? error.message : String(error);
+                    console.warn(`Failed to describe Glue job "${name}" in ${region}: ${message}`);
+                  }),
+                ),
                 Effect.catchAll(() => Effect.succeed(null)),
                 Effect.provide(config),
                 Effect.provide(AwsConfigLive),
