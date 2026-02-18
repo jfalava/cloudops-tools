@@ -14,6 +14,7 @@ import {
   setupTotpCommand,
   queryCommand,
 } from "@/commands";
+import { resolveCliVersion } from "@/lib/version";
 
 declare const BUILD_VERSION: string | undefined;
 
@@ -58,7 +59,10 @@ const wantsConfig = forceConfig || normalizedArgsForDetection.includes("config")
 const wantsQuery = normalizedArgsForDetection.includes("query");
 
 if (wantsVersion) {
-  const version = typeof BUILD_VERSION !== "undefined" ? BUILD_VERSION : PACKAGE_VERSION;
+  const version = resolveCliVersion(
+    typeof BUILD_VERSION !== "undefined" ? BUILD_VERSION : undefined,
+    PACKAGE_VERSION,
+  );
   process.stdout.write(version + "\n");
   process.exit(0);
 }

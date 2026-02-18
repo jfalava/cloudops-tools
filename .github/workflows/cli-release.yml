@@ -77,7 +77,7 @@ jobs:
           mkdir -p cli/dist
           bun build --compile --minify --sourcemap --bytecode \
             --target="${{ matrix.target }}" \
-            --define BUILD_VERSION="'\"'${BUILD_VERSION}'\"'" \
+            --define BUILD_VERSION="\"${BUILD_VERSION}\"" \
             ./cli/src/app.ts \
             --outfile "./cli/dist/${{ matrix.binary }}"
 
