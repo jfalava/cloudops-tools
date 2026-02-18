@@ -1,6 +1,6 @@
 {
   "name": "@cloudops-tools/cli",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jfalava/cloudops-tools.git",
@@ -47,8 +47,8 @@
     "typescript": "catalog:build"
   },
   "optionalDependencies": {
-    "@cloudops-tools/cli-darwin-arm64": "0.1.4",
-    "@cloudops-tools/cli-linux-x64": "0.1.4",
-    "@cloudops-tools/cli-win32-x64": "0.1.4"
+    "@cloudops-tools/cli-darwin-arm64": "0.2.0",
+    "@cloudops-tools/cli-linux-x64": "0.2.0",
+    "@cloudops-tools/cli-win32-x64": "0.2.0"
   }
 }
