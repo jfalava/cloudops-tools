@@ -4,6 +4,7 @@
   "workspaces": {
     "packages": [
       "cli",
+      "cli/npm/*",
       "sdk",
       "documentation"
     ],

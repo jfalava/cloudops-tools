@@ -63,7 +63,9 @@ export const DeveloperToolsServiceLive = Layer.effect(
                     return jobName;
                   }),
                 catch: (error) =>
-                  error instanceof Error ? error : new Error(`Failed to parse Glue job names: ${String(error)}`),
+                  error instanceof Error
+                    ? error
+                    : new Error(`Failed to parse Glue job names: ${String(error)}`),
               }),
             ),
             Effect.provide(config),
