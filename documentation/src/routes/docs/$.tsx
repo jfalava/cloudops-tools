@@ -122,7 +122,12 @@ const parseFrontmatter = (source: string): DocFrontmatter => {
 
 const pathToDocSlug = (path: string): string | null => {
   const normalized = path.replace(/\\/g, "/");
-  const marker = "/content/docs/";
+  const markers = ["/content/docs/", "content/docs/"];
+  const marker = markers.find((candidate) => normalized.includes(candidate));
+  if (!marker) {
+    return null;
+  }
+
   const markerIndex = normalized.indexOf(marker);
   if (markerIndex < 0) {
     return null;
@@ -137,6 +142,32 @@ const pathToDocSlug = (path: string): string | null => {
   }
   return relative;
 };
+
+const UPPERCASE_SEGMENTS = new Set([
+  "api",
+  "aws",
+  "cli",
+  "ec2",
+  "ecs",
+  "iam",
+  "rds",
+  "sdk",
+  "s3",
+  "vpc",
+]);
+
+const humanizeSlugSegment = (segment: string): string =>
+  segment
+    .split("-")
+    .filter((part) => part.length > 0)
+    .map((part) => {
+      const lower = part.toLowerCase();
+      if (UPPERCASE_SEGMENTS.has(lower)) {
+        return lower.toUpperCase();
+      }
+      return part[0]?.toUpperCase() + part.slice(1);
+    })
+    .join(" ");
 
 const frontmatterBySlug = (() => {
   const map = new Map<string, DocFrontmatter>();
@@ -172,7 +203,9 @@ const docsSeoForSlug = (slug: string) => {
         : normalizedSlug;
   const frontmatter = frontmatterBySlug.get(normalizedSlug) ?? frontmatterBySlug.get("index") ?? {};
 
-  const fallbackTitle = normalizedSlug ? (normalizedSlug.split("/").at(-1) ?? "Docs") : "Docs";
+  const fallbackTitle = normalizedSlug
+    ? humanizeSlugSegment(normalizedSlug.split("/").at(-1) ?? "docs")
+    : "Docs";
   const pageTitle = frontmatter.title ?? fallbackTitle;
   const title = seoTitle(pageTitle);
   const description = frontmatter.description ?? defaultDocsDescription;
