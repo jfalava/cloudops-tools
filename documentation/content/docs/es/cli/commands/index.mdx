@@ -2,6 +2,7 @@
 title: "Descripción general de los comandos"
 description: "Referencia completa de comandos y banderas globales para CloudOps Tools"
 ---
+
 # Descripción general de los comandos
 
 Esta página es la referencia de comandos para las herramientas de CloudOps.
@@ -20,41 +21,42 @@ cloudops-tools [options]
 
 ## Subcomandos
 
-| Comando | Descripción |
-| ----------------------------------------- | ---------------------------------------------------------- |
-| [`init`](/es/docs/cli/commands/init) | Genere escaneo de inventario entre regiones con opciones avanzadas |
-| [`describe`](/es/docs/cli/commands/describe) | Describir en profundidad un recurso de AWS específico |
-| [`query`](/es/docs/cli/commands/query) | Consultar datos históricos de inventario desde la base de datos SQLite local |
-| [`config`](/es/docs/cli/commands/config) | Administrar configuración persistente |
+| Comando                                      | Descripción                                                                  |
+| -------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`init`](/es/docs/cli/commands/init)         | Genere escaneo de inventario entre regiones con opciones avanzadas           |
+| [`describe`](/es/docs/cli/commands/describe) | Describir en profundidad un recurso de AWS específico                        |
+| [`query`](/es/docs/cli/commands/query)       | Consultar datos históricos de inventario desde la base de datos SQLite local |
+| [`config`](/es/docs/cli/commands/config)     | Administrar configuración persistente                                        |
 
 ## Opciones de escaneo raíz
 
-Estas opciones controlan el comportamiento del análisis del comando raíz cuando utiliza el comando raíz para un análisis:| Opción | Alias ​​| Descripción | Predeterminado |
-| ----------------- | ----- | ------------------------------------------------------------------------------- | ------------- |
-| `--account` | `-a` | Nombre de cuenta o perfil de AWS | Detectado automáticamente |
-| `--region` | `-r` | Regiones de AWS, separadas por comas | `us-east-1` |
-| `--export-format` | `-f` | Formato de exportación (`csv`, `xlsx`, `json`, `both`, `all`) | `csv` |
-| `--services` | `-s` | Lista de servicios separados por comas para escanear (`all` compatible) | Todos los servicios |
-| `--describe` |       | Describe todas las resfuentes de un tipo | - |
-| `--no-cache` |       | Deshabilitar el almacenamiento en caché para operaciones de descripción | `false` |
-| `--use-letme` |       | Utilice el perfil `letme` y `--account` para obtener la credencial MFA (requiere `setup-totp`) | `false` |
-| `--skip-global` |       | Omitir servicios globales (S3, IAM, CloudFront, Route53, etc.) | `false` |
-| `--only-global` |       | Escanear sólo servicios globales | `false` |
-| `--debug` |       | Mostrar salida de error sin formato con seguimientos de pila | `false` |
-| `--help-examples` |       | Imprima ejemplos de CLI y salga | `false` |Para conocer el flujo de trabajo de configuración y solución de problemas de `--use-letme`, consulte la
+| Estas opciones controlan el comportamiento del análisis del comando raíz cuando utiliza el comando raíz para un análisis: | Opción | Alias ​​                                                                                       | Descripción               | Predeterminado                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `--account`                                                                                                               | `-a`   | Nombre de cuenta o perfil de AWS                                                               | Detectado automáticamente |
+| `--region`                                                                                                                | `-r`   | Regiones de AWS, separadas por comas                                                           | `us-east-1`               |
+| `--export-format`                                                                                                         | `-f`   | Formato de exportación (`csv`, `xlsx`, `json`, `both`, `all`)                                  | `csv`                     |
+| `--services`                                                                                                              | `-s`   | Lista de servicios separados por comas para escanear (`all` compatible)                        | Todos los servicios       |
+| `--describe`                                                                                                              |        | Describe todas las resfuentes de un tipo                                                       | -                         |
+| `--no-cache`                                                                                                              |        | Deshabilitar el almacenamiento en caché para operaciones de descripción                        | `false`                   |
+| `--use-letme`                                                                                                             |        | Utilice el perfil `letme` y `--account` para obtener la credencial MFA (requiere `setup-totp`) | `false`                   |
+| `--skip-global`                                                                                                           |        | Omitir servicios globales (S3, IAM, CloudFront, Route53, etc.)                                 | `false`                   |
+| `--only-global`                                                                                                           |        | Escanear sólo servicios globales                                                               | `false`                   |
+| `--debug`                                                                                                                 |        | Mostrar salida de error sin formato con seguimientos de pila                                   | `false`                   |
+| `--help-examples`                                                                                                         |        | Imprima ejemplos de CLI y salga                                                                | `false`                   | Para conocer el flujo de trabajo de configuración y solución de problemas de `--use-letme`, consulte la |
+
 [`use-letme` guía](/es/docs/cli/commands/use-letme).
 
 ## Banderas globales del marco
 
 Estos son proporcionados por `@effect/cli` y aparecen en la salida de ayuda:
 
-| Opción | Descripción |
-| --------------- | -------------------------------------------------------------- |
-| `--help`, `-h` | Mostrar ayuda del comando |
-| `--version` | Mostrar versión de la aplicación |
-| `--wizard` | Iniciar el modo asistente para la entrada de comandos |
-| `--completions` | Generar script de finalización de shell (`sh`, `bash`, `fish`, `zsh`) |
-| `--log-level` | Establecer el umbral de registro de tiempo de ejecución (`all`, `trace`, `debug`, `info`, ...) |
+| Opción          | Descripción                                                                                    |
+| --------------- | ---------------------------------------------------------------------------------------------- |
+| `--help`, `-h`  | Mostrar ayuda del comando                                                                      |
+| `--version`     | Mostrar versión de la aplicación                                                               |
+| `--wizard`      | Iniciar el modo asistente para la entrada de comandos                                          |
+| `--completions` | Generar script de finalización de shell (`sh`, `bash`, `fish`, `zsh`)                          |
+| `--log-level`   | Establecer el umbral de registro de tiempo de ejecución (`all`, `trace`, `debug`, `info`, ...) |
 
 ## Ejemplos rápidos
 
@@ -96,5 +98,6 @@ cloudops-tools --use-letme --account engineering-prod --region us-east-1
   requisitos de credencial.
 
 ## Guías relacionadas- [Elija el comando correcto](/es/docs/cli/choose-command)
+
 - [Perfiles de escaneo](/es/docs/cli/scan-profiles)
 - [Solución de problemas](/es/docs/cli/troubleshooting)

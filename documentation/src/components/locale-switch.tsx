@@ -1,5 +1,4 @@
-import type { Locale } from "@/lib/i18n";
-import { localizePath } from "@/lib/i18n";
+import { localizePath, type Locale } from "@/lib/i18n";
 
 type LocaleSwitchProps = {
   currentLocale: Locale;
@@ -45,4 +44,3 @@ function LocaleLink({
     </a>
   );
 }
-

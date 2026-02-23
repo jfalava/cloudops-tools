@@ -25,7 +25,6 @@
     "@tanstack/react-router-devtools": "1.162.6",
     "@tanstack/react-router-ssr-query": "1.162.6",
     "@tanstack/react-start": "1.162.7",
-    "@tanstack/start-server-core": "1.162.6",
     "@tanstack/router-plugin": "1.162.6",
     "fumadocs-core": "16.6.5",
     "fumadocs-mdx": "14.2.8",

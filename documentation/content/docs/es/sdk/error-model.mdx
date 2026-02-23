@@ -2,27 +2,28 @@
 title: "Modelo de error"
 description: "Taxonomía de errores y patrones de manejo para efectos del SDK de CloudOps"
 ---
+
 # Modelo de error
 
 Las operaciones y servicios del SDK son valores `Effect`, por lo que los errores son valores que puede clasificar y manejar.
 
 ## Tipos de errores exportados
 
-| Tipo de error | Fuente típica | Notas |
-| ----------------- | --------------------------------- | ---------------------------------------------------------------------------------- |
-| `AwsError` | Respuestas del servicio/SDK de AWS | Incluye `service`, `region`, `code`, `statusCode` y ayudantes como `isRetryable` |
-| `CredentialError` | Errores de carga/autenticación de credenciales | Generalmente se recupera arreglando el entorno/perfil de autenticación |
-| `ValidationError` | Entradas/opciones no válidas | La persona que llama debe corregir los datos antes de volver a intentarlo |
-| `FileSystemError` | Operaciones de lectura/escritura/eliminación de archivos | Común en flujos de trabajo de informes/salida |
+| Tipo de error     | Fuente típica                                            | Notas                                                                            |
+| ----------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `AwsError`        | Respuestas del servicio/SDK de AWS                       | Incluye `service`, `region`, `code`, `statusCode` y ayudantes como `isRetryable` |
+| `CredentialError` | Errores de carga/autenticación de credenciales           | Generalmente se recupera arreglando el entorno/perfil de autenticación           |
+| `ValidationError` | Entradas/opciones no válidas                             | La persona que llama debe corregir los datos antes de volver a intentarlo        |
+| `FileSystemError` | Operaciones de lectura/escritura/eliminación de archivos | Común en flujos de trabajo de informes/salida                                    |
 
 ## Escenarios de falla comunes
 
-| Escenario | Señal típica | Manejo recomendado |
-| -------------------------------------- | ------------------------------------------------- | ----------------------------------------- |
-| Problema de limitación de API/servicio transitorio | `AwsError` con código/estado reintentable | Reintentar con intentos de retroceso y límite |
-| Credenciales no válidas/caducadas | `CredentialError` o `AwsError.isCredentialError` | Actualizar perfil/sesión y volver a intentarlo |
-| Valores de región/servicio/filtro no válidos | `ValidationError` | Falla rápido y muestra un mensaje procesable |
-| Fallo de escritura de salida | `FileSystemError` | Registrar la ruta de destino y detener el paso de salida |
+| Escenario                                          | Señal típica                                     | Manejo recomendado                                       |
+| -------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------- |
+| Problema de limitación de API/servicio transitorio | `AwsError` con código/estado reintentable        | Reintentar con intentos de retroceso y límite            |
+| Credenciales no válidas/caducadas                  | `CredentialError` o `AwsError.isCredentialError` | Actualizar perfil/sesión y volver a intentarlo           |
+| Valores de región/servicio/filtro no válidos       | `ValidationError`                                | Falla rápido y muestra un mensaje procesable             |
+| Fallo de escritura de salida                       | `FileSystemError`                                | Registrar la ruta de destino y detener el paso de salida |
 
 ## Patrón de reintento para errores de AWS
 

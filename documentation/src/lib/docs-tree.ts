@@ -1,7 +1,6 @@
 import type { Root } from "fumadocs-core/page-tree";
 
-import type { Locale } from "@/lib/i18n";
-import { localizePath } from "@/lib/i18n";
+import { localizePath, type Locale } from "@/lib/i18n";
 
 const TRANSLATIONS_ES = new Map<string, string>([
   ["Documentation", "Documentación"],
@@ -238,7 +237,9 @@ const localizeString = (value: string, locale: Locale): string => {
   return TRANSLATIONS_ES.get(value) ?? value;
 };
 
-const localizeTreeValue = (value: unknown, locale: Locale): unknown => {
+function localizeTreeValue(value: Root, locale: Locale): Root;
+function localizeTreeValue(value: unknown, locale: Locale): unknown;
+function localizeTreeValue(value: unknown, locale: Locale): unknown {
   if (Array.isArray(value)) {
     return value.map((item) => localizeTreeValue(item, locale));
   }
@@ -262,9 +263,8 @@ const localizeTreeValue = (value: unknown, locale: Locale): unknown => {
   }
 
   return value;
-};
+}
 
-export const getDocsTree = (locale: Locale): Root => localizeTreeValue(baseDocsTree, locale) as Root;
+export const getDocsTree = (locale: Locale): Root => localizeTreeValue(baseDocsTree, locale);
 
 export const docsTree: Root = getDocsTree("en");
-

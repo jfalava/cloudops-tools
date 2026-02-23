@@ -1,11 +1,4 @@
 {
   "title": "Comandos",
-  "pages": [
-    "index",
-    "init",
-    "query",
-    "describe",
-    "use-letme",
-    "config"
-  ]
+  "pages": ["index", "init", "query", "describe", "use-letme", "config"]
 }

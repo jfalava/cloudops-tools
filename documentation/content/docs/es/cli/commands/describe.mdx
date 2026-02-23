@@ -2,6 +2,7 @@
 title: "describir"
 description: "Describir en profundidad un recurso de AWS específico con resultados detallados de Markdown"
 ---
+
 # describir
 
 Obtenga información detallada sobre un recurso de AWS específico, con formato Markdown.
@@ -14,20 +15,21 @@ cloudops-tools describe <type> <region> <id> [options]
 
 ## Argumentos
 
-| Argumento | Descripción | Requerido |
-| -------- | --------------------------------------------------- | -------- |
-| `type` | Tipo de recurso (por ejemplo, `ec2`, `rds`, `lambda`, `vpc`) | Sí |
-| `region` | Región de AWS donde existe el recurso | Sí |
-| `id` | Identificador de recurso (ID de instancia, ARN, etc.) | Sí |
+| Argumento | Descripción                                                  | Requerido |
+| --------- | ------------------------------------------------------------ | --------- |
+| `type`    | Tipo de recurso (por ejemplo, `ec2`, `rds`, `lambda`, `vpc`) | Sí        |
+| `region`  | Región de AWS donde existe el recurso                        | Sí        |
+| `id`      | Identificador de recurso (ID de instancia, ARN, etc.)        | Sí        |
 
 ## Opciones
 
-| Opción | Descripción | Predeterminado |
-| ------------ | ------------------------------------------------- | ------- |
-| `--debug` | Mostrar salida de error sin formato con seguimientos de pila | `false` |
-| `--no-cache` | Deshabilite el almacenamiento en caché, obtenga siempre datos nuevos de AWS | `false` |
+| Opción       | Descripción                                                                 | Predeterminado |
+| ------------ | --------------------------------------------------------------------------- | -------------- |
+| `--debug`    | Mostrar salida de error sin formato con seguimientos de pila                | `false`        |
+| `--no-cache` | Deshabilite el almacenamiento en caché, obtenga siempre datos nuevos de AWS | `false`        |
 
 ## Tipos de recursos comunes| Tipo | Descripción | Formato de identificación |
+
 | ---------- | ---------------------- | ----------------------- |
 | `ec2` | Instancias EC2 | `i-xxxxxxxxxxxxxxxxx` |
 | `rds` | Instancias de bases de datos RDS | Identificador de instancia de base de datos |

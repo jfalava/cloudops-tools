@@ -1,8 +1,7 @@
 import { Terminal, Code2 } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 
-import type { Locale } from "@/lib/i18n";
-import { localizePath } from "@/lib/i18n";
+import { localizePath, type Locale } from "@/lib/i18n";
 
 function DocCard({
   href,
@@ -107,7 +106,9 @@ export function Hero({ locale = "en" }: { locale?: Locale }) {
               {copy.installation}
             </QuickLink>
             <span className="text-muted-foreground">·</span>
-            <QuickLink href={localizePath("/docs/cli/commands", locale)}>{copy.cliCommands}</QuickLink>
+            <QuickLink href={localizePath("/docs/cli/commands", locale)}>
+              {copy.cliCommands}
+            </QuickLink>
             <span className="text-muted-foreground">·</span>
             <QuickLink href={localizePath("/docs/sdk/getting-started", locale)}>
               {copy.sdkGettingStarted}

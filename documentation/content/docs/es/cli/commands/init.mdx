@@ -2,6 +2,7 @@
 title: "inicio"
 description: "Genere escaneo de inventario entre regiones con opciones avanzadas"
 ---
+
 # inicio
 
 Genere un análisis completo del inventario de AWS entre regiones con opciones de configuración avanzadas.
@@ -17,18 +18,19 @@ cloudops-tools init [options]
 El comando `init` realiza un análisis de inventario completo en varias regiones de AWS. A diferencia del escaneo básico, admite diferentes modos de escaneo optimizados para diversos casos de uso, como auditoría de seguridad o análisis de costos.
 
 ## Opciones| Opción | Alias ​​| Descripción | Predeterminado |
+
 | ----------------- | ----- | ---------------------------------------------------- | ------------- |
 | `--account` | `-a` | Nombre de cuenta o perfil de AWS | Detectado automáticamente |
 | `--region` | `-r` | Regiones de AWS, separadas por comas | Todas las regiones |
-| `--limit-regions` |       | Limitar el escaneo a regiones específicas | - |
+| `--limit-regions` | | Limitar el escaneo a regiones específicas | - |
 | `--export-format` | `-f` | Formato de exportación (`csv`, `xlsx`, `json`, `both`, `all`) | `csv` |
-| `--mode` |       | escanear moda (`basic`, `detailed`, `security`, `cost`) | `basic` |
+| `--mode` | | escanear moda (`basic`, `detailed`, `security`, `cost`) | `basic` |
 | `--services` | `-s` | Lista de servicios separados por comas | Todos los servicios |
-| `--incremental` |       | Solo generar recursos nuevos o modificados | `false` |
-| `--min-interval` |       | Omitir el análisis si el análisis reciente se realizó en N minutos | - |
-| `--skip-global` |       | Saltar servicios globales | `false` |
-| `--only-global` |       | Escanear sólo servicios globales | `false` |
-| `--debug` |       | Mostrar salida de error sin formato | `false` |## Modos de escaneo
+| `--incremental` | | Solo generar recursos nuevos o modificados | `false` |
+| `--min-interval` | | Omitir el análisis si el análisis reciente se realizó en N minutos | - |
+| `--skip-global` | | Saltar servicios globales | `false` |
+| `--only-global` | | Escanear sólo servicios globales | `false` |
+| `--debug` | | Mostrar salida de error sin formato | `false` |## Modos de escaneo
 
 ### básico
 
@@ -147,6 +149,7 @@ Todas las ejecuciones de inventario se almacenan automáticamente en una base de
 - **Deduplicación de análisis**: omita análisis redundantes
 
 ### Qué está almacenado| Mesa | Propósito |
+
 | ----------------------- | -------------------------------------------------------- |
 | `inventory_runs` | Escanear metadatos (cuenta, modo, marca de tiempo, recuento de recursos) |
 | `resources` | Detalles completos de los recursos para cada ejecución |

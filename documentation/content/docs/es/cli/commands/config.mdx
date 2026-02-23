@@ -2,6 +2,7 @@
 title: "configuración"
 description: "Administrar la configuración persistente para las herramientas CloudOps"
 ---
+
 # configuración
 
 Administre los ajustes de configuración persistentes para las herramientas CloudOps.
@@ -14,20 +15,21 @@ cloudops-tools config [--write-defaults] [subcommand] [options]
 
 ## Opciones de raíz
 
-| Opción | Descripción |
-| ------------------ | -------------------------------------------------------------------------------- |
+| Opción             | Descripción                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
 | `--write-defaults` | Crear/rellenar `config.json` con valores predeterminados razonables (conserva los valores existentes) |
 
 ## Subcomandos
 
-| Subcomando | Descripción |
-| ---------- | -------------------------------- |
-| `set` | Establecer un valor de configuración |
-| `get` | Obtener valores de configuración |
-| `unset` | Eliminar un valor de configuración |
-| `path` | Mostrar la ruta del archivo de configuración |
+| Subcomando | Descripción                                  |
+| ---------- | -------------------------------------------- |
+| `set`      | Establecer un valor de configuración         |
+| `get`      | Obtener valores de configuración             |
+| `unset`    | Eliminar un valor de configuración           |
+| `path`     | Mostrar la ruta del archivo de configuración |
 
 ## Claves de configuración| Clave | Tipo | Descripción |
+
 | ----------------- | -------- | ------------------------------------------------------ |
 | `defaultRegion` | cadena | Región de AWS predeterminada para escaneos |
 | `defaultAccount` | cadena | Cuenta o perfil de AWS predeterminado |
@@ -56,6 +58,7 @@ cloudops-tools config --write-defaults
 ```
 
 ### Valores predeterminados escritos| Clave | Valor |
+
 | --------------- | ----------- |
 | `defaultRegion` | `us-east-1` |
 | `defaultFormat` | `csv` |

@@ -2,6 +2,7 @@
 title: "Códigos de salida"
 description: "Códigos de salida de CLI, comportamiento de error de uso y comportamiento de salida de depuración"
 ---
+
 # Códigos de salida
 
 CloudOps Tools utiliza códigos de salida de procesos estándar para que los scripts y los trabajos de CI puedan distinguir el éxito.
@@ -9,11 +10,11 @@ errores de uso y fallas de tiempo de ejecución.
 
 ## Resumen del código de salida
 
-| Código de salida | Significado | Casos típicos |
-| --------- | ------------------- | -------------------------------------------------------------------------------- |
-| `0` | Éxito | Comando de escaneo/consulta/descripción/config completado, salida de ayuda, salida de versión |
-| `1` | Error de tiempo de ejecución | Fallos de AWS/auth/red, problemas con el sistema de archivos/base de datos, errores inesperados de tiempo de ejecución |
-| `2` | Error de uso/entrada | Banderas no válidas, valores con formato incorrecto, combinaciones de opciones no válidas |
+| Código de salida | Significado                  | Casos típicos                                                                                                          |
+| ---------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `0`              | Éxito                        | Comando de escaneo/consulta/descripción/config completado, salida de ayuda, salida de versión                          |
+| `1`              | Error de tiempo de ejecución | Fallos de AWS/auth/red, problemas con el sistema de archivos/base de datos, errores inesperados de tiempo de ejecución |
+| `2`              | Error de uso/entrada         | Banderas no válidas, valores con formato incorrecto, combinaciones de opciones no válidas                              |
 
 ## Errores de uso (`2`)
 

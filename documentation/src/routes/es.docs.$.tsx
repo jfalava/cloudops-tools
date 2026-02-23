@@ -4,8 +4,8 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
-import { LocaleSwitch } from "@/components/locale-switch";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { LocaleSwitch } from "@/components/locale-switch";
 import { getDocsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
 import {
@@ -60,22 +60,21 @@ const englishDocModules: Record<string, () => Promise<typeof import("*.mdx")>> =
   "sdk/api/credentials": () => import("../../content/docs/sdk/api/credentials.mdx"),
 };
 
-const rawSpanishDocModuleLoaders = import.meta.glob("../../content/docs/es/**/*.{mdx,md}") as Record<
-  string,
-  () => Promise<typeof import("*.mdx")>
->;
+const rawSpanishDocModuleLoaders = import.meta.glob<typeof import("*.mdx")>(
+  "../../content/docs/es/**/*.{mdx,md}",
+);
 
 const rawEnglishDocSources = import.meta.glob("../../content/docs/**/*.{mdx,md}", {
   query: "?raw",
   import: "default",
   eager: true,
-}) as Record<string, unknown>;
+});
 
 const rawSpanishDocSources = import.meta.glob("../../content/docs/es/**/*.{mdx,md}", {
   query: "?raw",
   import: "default",
   eager: true,
-}) as Record<string, unknown>;
+});
 
 type DocFrontmatter = {
   title?: string;
@@ -230,25 +229,31 @@ const buildFrontmatterBySlug = (sources: Record<string, unknown>) => {
 const frontmatterBySlugEn = buildFrontmatterBySlug(rawEnglishDocSources);
 const frontmatterBySlugEs = buildFrontmatterBySlug(rawSpanishDocSources);
 
+const getCanonicalSlug = (slug: string): string => {
+  if (slug === "index") {
+    return "";
+  }
+  if (slug.endsWith("/index")) {
+    return slug.slice(0, -"/index".length);
+  }
+  return slug;
+};
+
+const getFrontmatterForSlug = (slug: string): DocFrontmatter =>
+  frontmatterBySlugEs.get(slug) ??
+  frontmatterBySlugEn.get(slug) ??
+  frontmatterBySlugEs.get("index") ??
+  frontmatterBySlugEn.get("index") ??
+  {};
+
+const getFallbackTitleForSlug = (slug: string): string =>
+  slug ? humanizeSlugSegment(slug.split("/").at(-1) ?? "docs") : "Docs";
+
 const docsSeoForSlug = (slug: string) => {
   const normalizedSlug = slug || "";
-  const canonicalSlug =
-    normalizedSlug === "index"
-      ? ""
-      : normalizedSlug.endsWith("/index")
-        ? normalizedSlug.slice(0, -"/index".length)
-        : normalizedSlug;
-  const frontmatter =
-    frontmatterBySlugEs.get(normalizedSlug) ??
-    frontmatterBySlugEn.get(normalizedSlug) ??
-    frontmatterBySlugEs.get("index") ??
-    frontmatterBySlugEn.get("index") ??
-    {};
-
-  const fallbackTitle = normalizedSlug
-    ? humanizeSlugSegment(normalizedSlug.split("/").at(-1) ?? "docs")
-    : "Docs";
-  const pageTitle = frontmatter.title ?? fallbackTitle;
+  const canonicalSlug = getCanonicalSlug(normalizedSlug);
+  const frontmatter = getFrontmatterForSlug(normalizedSlug);
+  const pageTitle = frontmatter.title ?? getFallbackTitleForSlug(normalizedSlug);
   const title = seoTitle(pageTitle, "es");
   const description = frontmatter.description ?? defaultDocsDescriptionEs ?? defaultDocsDescription;
   const path = canonicalSlug ? `/es/docs/${canonicalSlug}` : "/es/docs";

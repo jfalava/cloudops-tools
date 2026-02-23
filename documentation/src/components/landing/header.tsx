@@ -1,7 +1,6 @@
 import { BookOpen } from "lucide-react";
 
-import type { Locale } from "@/lib/i18n";
-import { localizePath } from "@/lib/i18n";
+import { localizePath, type Locale } from "@/lib/i18n";
 
 export function Header({ locale = "en" }: { locale?: Locale }) {
   const docsHome = localizePath("/docs", locale);

@@ -4,16 +4,11 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
-import { LocaleSwitch } from "@/components/locale-switch";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { LocaleSwitch } from "@/components/locale-switch";
 import { getDocsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
-import {
-  buildCanonicalLink,
-  buildSeoMeta,
-  defaultDocsDescription,
-  seoTitle,
-} from "@/lib/seo";
+import { buildCanonicalLink, buildSeoMeta, defaultDocsDescription, seoTitle } from "@/lib/seo";
 
 const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "": () => import("../../../content/docs/index.mdx"),
@@ -63,7 +58,7 @@ const rawDocSources = import.meta.glob("../../../content/docs/**/*.{mdx,md}", {
   query: "?raw",
   import: "default",
   eager: true,
-}) as Record<string, unknown>;
+});
 
 type DocFrontmatter = {
   title?: string;
