@@ -1,0 +1,53 @@
+---
+title: "Elija el comando correcto"
+description: "Decida rápidamente entre escaneos de comandos raíz, init, describe y config"
+---
+# Elija el comando correcto
+
+Utilice esta página para elegir el camino más corto para su tarea.
+
+## Guía de decisiones
+
+| Si necesitas... | Uso |
+| --------------------------------------------------------- | ---------------------------------------------------- |
+| Ejecute un análisis explícito entre regiones o basado en modo | `cloudops-tools init` |
+| Inspeccionar en profundidad un recurso por ID | `cloudops-tools describe` |
+| Describir todos los recursos de un tipo admitido en una región | `cloudops-tools --describe <type> --region <region>` |
+| Guardar o inspeccionar valores predeterminados persistentes | `cloudops-tools config` |
+| Ejecute escaneos usando el perfil `letme` MFA (requiere configuración TOTP) | `cloudops-tools --use-letme --account <profile>` |
+
+## Flujos típicos
+
+### Inventario rápido
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+### Auditoría de seguridad
+
+```bash
+cloudops-tools init --mode security --export-format xlsx --limit-regions us-east-1,eu-west-1
+```
+
+### Investigación de recursos
+
+```bash
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
+```
+
+### Describir lote
+
+```bash
+cloudops-tools --describe rds --region eu-south-2
+```
+
+## Notas
+
+- El comando raíz y `init` se superponen para los escaneos; use el comando raíz con indicadores de escaneo para ejecuciones rápidas,
+  y `init` para modo explícito y control de región.
+- Ejecutar `cloudops-tools` sin argumentos imprime la ayuda y sale.
+- `describe` y `--describe` son válidos: utilice `describe` para un ID de recurso específico y
+  `--describe <type>` para obtener una instantánea de toda la región de todos los recursos de ese tipo.
+- `--help-examples` y `--version` salen temprano y no ejecutan la lógica de escaneo.
+- `--wizard` es proporcionado por `@effect/cli`; no elude los requisitos de credenciales de AWS.

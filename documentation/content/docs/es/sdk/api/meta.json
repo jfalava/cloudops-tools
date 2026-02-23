@@ -1,0 +1,12 @@
+{
+  "title": "Referencia de API",
+  "pages": [
+    "index",
+    "core",
+    "operations",
+    "services",
+    "lib",
+    "types",
+    "credentials"
+  ]
+}

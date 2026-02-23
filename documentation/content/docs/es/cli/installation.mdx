@@ -1,0 +1,70 @@
+---
+title: "Instalación"
+description: "Cómo instalar y configurar herramientas CloudOps"
+---
+# Instalación
+
+## Requisitos previos
+
+- Node.js 18+ y npm (o Bun)
+- Credenciales de AWS configuradas (`~/.aws/credentials` o variables de entorno)
+
+## Instalar
+
+```bash
+npm install -g @cloudops-tools/cli
+```
+
+Con bollo:
+
+```bash
+bun add -g @cloudops-tools/cli
+```
+
+Si Bun no instala dependencias opcionales para su plataforma, instale el paquete de plataforma
+explícitamente:
+
+```bash
+# macOS arm64
+bun add -g @cloudops-tools/cli-darwin-arm64
+```
+
+## Verificar instalación
+
+```bash
+cloudops-tools --version
+```
+
+## Cómo funciona la instalación
+
+`@cloudops-tools/cli` instala un pequeño lanzador. El binario nativo es proporcionado por plataformas específicas.
+dependencias opcionales:
+
+- `@cloudops-tools/cli-darwin-arm64`
+-`@cloudops-tools/cli-linux-x64`
+-`@cloudops-tools/cli-win32-x64`
+
+Plataformas prediseñadas compatibles:
+
+-Linux x64
+- Windows x64
+- macOS arm64
+
+Si estás en una plataforma no compatible, compila desde el código fuente:
+
+- [Construir CLI binario](/es/docs/cli/build-cli)
+
+## Credenciales de AWS
+
+CloudOps Tools utiliza la resolución de credenciales estándar de AWS:
+
+1. Variables de entorno (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`)
+2. Archivo de credenciales compartido (`~/.aws/credentials`)
+3. Funciones de IAM para EC2/ECS/Lambda
+
+```bash
+# Set environment variables
+export AWS_ACCESS_KEY_ID=your-access-key
+export AWS_SECRET_ACCESS_KEY=your-secret-key
+export AWS_REGION=us-east-1
+```

@@ -16,50 +16,50 @@ import {
 } from "@/lib/seo";
 
 const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
-  "": () => import("../../../content/docs/index.mdx"),
-  index: () => import("../../../content/docs/index.mdx"),
-  cli: () => import("../../../content/docs/cli/index.mdx"),
-  "cli/index": () => import("../../../content/docs/cli/index.mdx"),
-  "cli/installation": () => import("../../../content/docs/cli/installation.mdx"),
-  "cli/build-cli": () => import("../../../content/docs/cli/build-cli.mdx"),
-  "cli/configuration": () => import("../../../content/docs/cli/configuration.mdx"),
-  "cli/choose-command": () => import("../../../content/docs/cli/choose-command.mdx"),
-  "cli/scan-profiles": () => import("../../../content/docs/cli/scan-profiles.mdx"),
-  "cli/exit-codes": () => import("../../../content/docs/cli/exit-codes.mdx"),
-  "cli/troubleshooting": () => import("../../../content/docs/cli/troubleshooting.mdx"),
-  "cli/commands": () => import("../../../content/docs/cli/commands/index.mdx"),
-  "cli/commands/index": () => import("../../../content/docs/cli/commands/index.mdx"),
-  "cli/commands/init": () => import("../../../content/docs/cli/commands/init.mdx"),
-  "cli/commands/describe": () => import("../../../content/docs/cli/commands/describe.mdx"),
-  "cli/commands/query": () => import("../../../content/docs/cli/commands/query.mdx"),
-  "cli/commands/use-letme": () => import("../../../content/docs/cli/commands/use-letme.mdx"),
-  "cli/commands/config": () => import("../../../content/docs/cli/commands/config.mdx"),
-  sdk: () => import("../../../content/docs/sdk/index.mdx"),
-  "sdk/index": () => import("../../../content/docs/sdk/index.mdx"),
-  "sdk/getting-started": () => import("../../../content/docs/sdk/getting-started.mdx"),
-  "sdk/error-model": () => import("../../../content/docs/sdk/error-model.mdx"),
-  "sdk/layers-and-runtime": () => import("../../../content/docs/sdk/layers-and-runtime.mdx"),
-  "sdk/operations": () => import("../../../content/docs/sdk/operations.mdx"),
-  "sdk/examples": () => import("../../../content/docs/sdk/examples.mdx"),
+  "": () => import("../../content/docs/index.mdx"),
+  index: () => import("../../content/docs/index.mdx"),
+  cli: () => import("../../content/docs/cli/index.mdx"),
+  "cli/index": () => import("../../content/docs/cli/index.mdx"),
+  "cli/installation": () => import("../../content/docs/cli/installation.mdx"),
+  "cli/build-cli": () => import("../../content/docs/cli/build-cli.mdx"),
+  "cli/configuration": () => import("../../content/docs/cli/configuration.mdx"),
+  "cli/choose-command": () => import("../../content/docs/cli/choose-command.mdx"),
+  "cli/scan-profiles": () => import("../../content/docs/cli/scan-profiles.mdx"),
+  "cli/exit-codes": () => import("../../content/docs/cli/exit-codes.mdx"),
+  "cli/troubleshooting": () => import("../../content/docs/cli/troubleshooting.mdx"),
+  "cli/commands": () => import("../../content/docs/cli/commands/index.mdx"),
+  "cli/commands/index": () => import("../../content/docs/cli/commands/index.mdx"),
+  "cli/commands/init": () => import("../../content/docs/cli/commands/init.mdx"),
+  "cli/commands/describe": () => import("../../content/docs/cli/commands/describe.mdx"),
+  "cli/commands/query": () => import("../../content/docs/cli/commands/query.mdx"),
+  "cli/commands/use-letme": () => import("../../content/docs/cli/commands/use-letme.mdx"),
+  "cli/commands/config": () => import("../../content/docs/cli/commands/config.mdx"),
+  sdk: () => import("../../content/docs/sdk/index.mdx"),
+  "sdk/index": () => import("../../content/docs/sdk/index.mdx"),
+  "sdk/getting-started": () => import("../../content/docs/sdk/getting-started.mdx"),
+  "sdk/error-model": () => import("../../content/docs/sdk/error-model.mdx"),
+  "sdk/layers-and-runtime": () => import("../../content/docs/sdk/layers-and-runtime.mdx"),
+  "sdk/operations": () => import("../../content/docs/sdk/operations.mdx"),
+  "sdk/examples": () => import("../../content/docs/sdk/examples.mdx"),
   "sdk/services-compute-storage": () =>
-    import("../../../content/docs/sdk/services-compute-storage.mdx"),
+    import("../../content/docs/sdk/services-compute-storage.mdx"),
   "sdk/services-data-networking": () =>
-    import("../../../content/docs/sdk/services-data-networking.mdx"),
+    import("../../content/docs/sdk/services-data-networking.mdx"),
   "sdk/services-security-platform": () =>
-    import("../../../content/docs/sdk/services-security-platform.mdx"),
-  "sdk/utilities": () => import("../../../content/docs/sdk/utilities.mdx"),
-  "sdk/reference-map": () => import("../../../content/docs/sdk/reference-map.mdx"),
-  "sdk/api": () => import("../../../content/docs/sdk/api/index.mdx"),
-  "sdk/api/index": () => import("../../../content/docs/sdk/api/index.mdx"),
-  "sdk/api/core": () => import("../../../content/docs/sdk/api/core.mdx"),
-  "sdk/api/operations": () => import("../../../content/docs/sdk/api/operations.mdx"),
-  "sdk/api/services": () => import("../../../content/docs/sdk/api/services.mdx"),
-  "sdk/api/lib": () => import("../../../content/docs/sdk/api/lib.mdx"),
-  "sdk/api/types": () => import("../../../content/docs/sdk/api/types.mdx"),
-  "sdk/api/credentials": () => import("../../../content/docs/sdk/api/credentials.mdx"),
+    import("../../content/docs/sdk/services-security-platform.mdx"),
+  "sdk/utilities": () => import("../../content/docs/sdk/utilities.mdx"),
+  "sdk/reference-map": () => import("../../content/docs/sdk/reference-map.mdx"),
+  "sdk/api": () => import("../../content/docs/sdk/api/index.mdx"),
+  "sdk/api/index": () => import("../../content/docs/sdk/api/index.mdx"),
+  "sdk/api/core": () => import("../../content/docs/sdk/api/core.mdx"),
+  "sdk/api/operations": () => import("../../content/docs/sdk/api/operations.mdx"),
+  "sdk/api/services": () => import("../../content/docs/sdk/api/services.mdx"),
+  "sdk/api/lib": () => import("../../content/docs/sdk/api/lib.mdx"),
+  "sdk/api/types": () => import("../../content/docs/sdk/api/types.mdx"),
+  "sdk/api/credentials": () => import("../../content/docs/sdk/api/credentials.mdx"),
 };
 
-const rawDocSources = import.meta.glob("../../../content/docs/**/*.{mdx,md}", {
+const rawDocSources = import.meta.glob("../../content/docs/**/*.{mdx,md}", {
   query: "?raw",
   import: "default",
   eager: true,
@@ -210,12 +210,12 @@ const docsSeoForSlug = (slug: string) => {
   const pageTitle = frontmatter.title ?? fallbackTitle;
   const title = seoTitle(pageTitle);
   const description = frontmatter.description ?? defaultDocsDescription;
-  const path = canonicalSlug ? `/docs/${canonicalSlug}` : "/docs";
+  const path = canonicalSlug ? `/en/docs/${canonicalSlug}` : "/en/docs";
 
   return { title, description, path };
 };
 
-export const Route = createFileRoute("/docs/$")({
+export const Route = createFileRoute("/en/docs/$")({
   loader: async ({ params }) => {
     const slug = params["_splat"] || "";
     const docModule = docModules[slug];
@@ -286,7 +286,7 @@ function DocsPageComponent() {
         <DocsPage toc={[]} full={false}>
           <DocsBody>
             <div className="flex items-center justify-end p-4 pb-0">
-              <LocaleSwitch currentLocale="en" path={slug ? `/docs/${slug}` : "/docs"} />
+              <LocaleSwitch currentLocale="en" path={slug ? `/docs/${slug}` : "/en/docs"} />
             </div>
             <div className="p-4 pt-2">Loading...</div>
           </DocsBody>
@@ -310,7 +310,7 @@ function DocsPageComponent() {
       <DocsPage toc={[]} full={false}>
         <DocsBody>
           <div className="mb-4 flex items-center justify-end">
-            <LocaleSwitch currentLocale="en" path={slug ? `/docs/${slug}` : "/docs"} />
+            <LocaleSwitch currentLocale="en" path={slug ? `/docs/${slug}` : "/en/docs"} />
           </div>
           <ErrorBoundary
             fallback={

@@ -1,0 +1,104 @@
+---
+title: "Códigos de salida"
+description: "Códigos de salida de CLI, comportamiento de error de uso y comportamiento de salida de depuración"
+---
+# Códigos de salida
+
+CloudOps Tools utiliza códigos de salida de procesos estándar para que los scripts y los trabajos de CI puedan distinguir el éxito.
+errores de uso y fallas de tiempo de ejecución.
+
+## Resumen del código de salida
+
+| Código de salida | Significado | Casos típicos |
+| --------- | ------------------- | -------------------------------------------------------------------------------- |
+| `0` | Éxito | Comando de escaneo/consulta/descripción/config completado, salida de ayuda, salida de versión |
+| `1` | Error de tiempo de ejecución | Fallos de AWS/auth/red, problemas con el sistema de archivos/base de datos, errores inesperados de tiempo de ejecución |
+| `2` | Error de uso/entrada | Banderas no válidas, valores con formato incorrecto, combinaciones de opciones no válidas |
+
+## Errores de uso (`2`)
+
+Los errores de uso ocurren cuando la CLI puede analizar la invocación del comando pero los valores proporcionados son
+no es válido o cuando el análisis del argumento falla.
+
+Ejemplos:
+
+```bash
+# Parser/type validation error
+cloudops-tools query --days abc
+# stderr: 'abc' is not a integer
+# exit: 2
+```
+
+```bash
+# Semantic validation error (invalid date format)
+cloudops-tools query --from 2026-13-01
+# stderr:
+# Invalid value for --from: "2026-13-01". Expected ISO date format YYYY-MM-DD.
+# Example: cloudops-tools query --from 2026-02-01 --to 2026-02-15
+# exit: 2
+```
+
+```bash
+# Invalid option combination
+cloudops-tools init --skip-global --only-global
+# stderr:
+# Invalid option combination: --skip-global cannot be used with --only-global.
+# Example: cloudops-tools init --only-global
+# exit: 2
+```
+
+```bash
+# Invalid config value
+cloudops-tools config set skipGlobal maybe
+# stderr:
+# Invalid value for skipGlobal: "maybe". Expected true or false.
+# Example: cloudops-tools config set skipGlobal true
+# exit: 2
+```
+
+## Comandos de éxito y salida anticipada (`0`)
+
+Algunos comandos salen exitosamente intencionalmente sin ejecutar la lógica de escaneo:
+
+```bash
+cloudops-tools           # prints help and exits
+cloudops-tools --help    # prints help and exits
+cloudops-tools --version # prints version and exits
+```
+
+## Errores de tiempo de ejecución (`1`)
+
+Los errores de tiempo de ejecución ocurren después de que el análisis de argumentos y la validación se realizan correctamente. Ejemplos comunes:
+
+- Las credenciales de AWS faltan o no son válidas
+- La llamada a la API de AWS falla debido a permisos o problemas de red
+- Las escrituras del sistema de archivos/base de datos local fallan
+- Fallo interno/de tiempo de ejecución inesperado
+
+## `--debug` Comportamiento
+
+De forma predeterminada, los errores de uso de la CLI y los errores conocidos de entrada del usuario se representan como mensajes concisos.
+
+Cuando agregas `--debug`:
+
+- La CLI muestra resultados de error sin procesar/rastros de pila (útil para solucionar problemas)
+- Esto puede incluir estructuras de error de efectos.
+- Los códigos de salida aún indican fallas (por ejemplo `1` para fallas en tiempo de ejecución)
+
+Ejemplos:
+
+```bash
+cloudops-tools init --services EC2 --region us-east-1 --debug
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug
+```
+
+## Consejos para secuencias de comandos
+
+- Trate a `0` como un éxito.
+- Trate a `2` como un error de llamada/entrada (arregle la invocación del comando).
+- Trate a `1` como una falla operativa/de tiempo de ejecución (vuelva a intentarlo, inspeccione los registros o use `--debug`).
+
+Relacionado:
+
+- [Solución de problemas](/es/docs/cli/troubleshooting)
+- [Descripción general de comandos](/es/docs/cli/commands)

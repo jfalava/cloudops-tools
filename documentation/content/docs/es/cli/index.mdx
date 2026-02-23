@@ -1,0 +1,98 @@
+---
+title: "Empezando"
+description: "Instale CloudOps Tools y ejecute su primer escaneo de inventario"
+---
+# Empezando
+
+Utilice esta guía para instalar CloudOps Tools y ejecutar su primer escaneo en unos minutos.
+
+## Qué harás
+
+Las herramientas de CloudOps le ayudan a:
+
+- Inventario de recursos de AWS en todas las regiones y servicios.
+- Exportar informes en CSV, Excel o JSON
+- Describir los recursos en detalle.
+- Ejecute análisis centrados en la seguridad
+
+## 1. Instalar
+
+```bash
+npm install -g @cloudops-tools/cli
+```
+
+Si prefieres pan:
+
+```bash
+bun add -g @cloudops-tools/cli
+```
+
+## 2. Verificar la instalación
+
+```bash
+cloudops-tools --version
+```
+
+Si ejecuta `cloudops-tools` sin argumentos, la CLI imprime la ayuda y sale.
+
+## 3. Ejecute su primer escaneo
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+El comando raíz ejecuta un análisis rápido cuando proporciona opciones de análisis (por ejemplo `--region` o
+`--services`).
+
+## 4. Pruebe una auditoría de seguridad
+
+```bash
+cloudops-tools init --mode security --export-format xlsx
+```
+
+## 5. ¿Necesita más ejemplos?
+
+```bash
+cloudops-tools --help-examples
+```
+
+## 6. Consultar datos históricos
+
+Después de ejecutar análisis, consulte inventarios anteriores sin llamadas a la API de AWS. Todos los datos se almacenan en una base de datos SQLite local (`~/.config/cloudops-tools/inventory.db`):
+
+```bash
+# Find your account ID from scans
+sqlite3 ~/.config/cloudops-tools/inventory.db "SELECT DISTINCT account_id FROM inventory_runs;"
+
+# List past inventory runs (use your account ID)
+cloudops-tools query --runs --account YOUR_ACCOUNT_ID
+
+# Detect infrastructure changes
+cloudops-tools query --changes --account YOUR_ACCOUNT_ID
+
+# Query specific resource types
+cloudops-tools query --type EC2 --days 7 --account YOUR_ACCOUNT_ID
+```
+
+## Comandos principales
+
+Vea los detalles del comando en la referencia del comando:
+
+- [Descripción general de comandos](/es/docs/cli/commands)
+- [init](/es/docs/cli/commands/init) - Ejecutar análisis de inventario
+- [consulta](/es/docs/cli/commands/query) - Consultar datos históricos de inventario
+- [describir](/es/docs/cli/commands/describe) - Profundización en los recursos
+- [config](/es/docs/cli/commands/config) - Administrar configuración
+- [use-letme](/es/docs/cli/commands/use-letme) - Autenticación MFA con letme (incluye configuración TOTP)
+
+## Guías prácticas
+
+- [Elija el comando correcto](/es/docs/cli/choose-command)
+- [Perfiles de escaneo](/es/docs/cli/scan-profiles)
+- [Solución de problemas](/es/docs/cli/troubleshooting)
+
+## Próximos pasos
+
+- [Guía de instalación](/es/docs/cli/installation) - Instrucciones de configuración detalladas
+- [Configuración](/es/docs/cli/configuration) - Configurar valores predeterminados y opciones
+- [Descripción general de comandos](/es/docs/cli/commands) - Referencia completa de comandos y opciones

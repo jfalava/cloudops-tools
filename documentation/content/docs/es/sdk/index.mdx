@@ -1,0 +1,29 @@
+---
+title: "Descripción general del SDK"
+description: "Documentos del SDK de CloudOps Tools para desarrolladores que integran la lógica de generación de informes e inventario de AWS"
+---
+# Descripción general del SDK
+
+El SDK de herramientas de CloudOps (`@cloudops-tools/sdk`) es la base programática utilizada por la CLI.
+
+## Puntos de entrada del paquete SDK
+
+| Ruta de importación | Usar para |
+| --------------------------------- | ----------------------------------------- |
+| `@cloudops-tools/sdk` | Principales exportaciones para la mayoría de las integraciones |
+| `@cloudops-tools/sdk/operations` | Orquestación de inventarios y consultas históricas |
+| `@cloudops-tools/sdk/services` | API de inventario de AWS de nivel de servicio |
+| `@cloudops-tools/sdk/lib` | Ayudantes: configuración, eventos, salida, almacenamiento SQLite |
+| `@cloudops-tools/sdk/types` | Definiciones de tipo compartido |
+| `@cloudops-tools/sdk/credentials` | Ayudante del proveedor de credenciales |
+
+## Características clave
+
+- **Inventario multirregional**: escanee más de 45 servicios de AWS en todas las regiones
+- **Seguimiento histórico**: almacenamiento basado en SQLite para análisis de tendencias y detección de cambios
+- **Operaciones de consulta**: analice inventarios anteriores sin llamadas a la API de AWS
+- **Múltiples formatos de salida**: CSV, XLSX, exportación JSON
+
+## Referencia de API
+
+La referencia de API generada está disponible en [Referencia de API](/es/docs/sdk/api).

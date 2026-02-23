@@ -1,0 +1,66 @@
+---
+title: "Perfiles de escaneo"
+description: "Recetas de comandos reutilizables para flujos de trabajo comunes de CloudOps"
+---
+# Perfiles de escaneo
+
+Utilice estos perfiles de copiar y pegar como puntos de partida.
+Utilice `cloudops-tools` con indicadores de escaneo para escaneos rápidos de comandos raíz y `cloudops-tools init` cuando lo necesite.
+modo de escaneo explícito o controles de selección de región. Ejecutando `cloudops-tools` sin argumentos se imprime
+ayuda y sale.
+
+## Inventario Regional Rápido
+
+```bash
+cloudops-tools --region us-east-1 --export-format csv
+```
+
+Úselo cuando necesite un inventario de referencia rápido para una región.
+
+## Revisión de seguridad
+
+```bash
+cloudops-tools init \
+  --mode security \
+  --export-format xlsx \
+  --limit-regions us-east-1,eu-west-1 \
+  --services EC2,RDS,Lambda,IAM,CloudFront
+```
+
+Utilícelo al preparar artefactos de revisión de seguridad.
+
+## Pase de servicios globales
+
+```bash
+cloudops-tools init --only-global --export-format json
+```
+
+Utilícelo al auditar servicios globales (por ejemplo, IAM, CloudFront, alcance de Route53).
+
+## Pase profundo solo regional
+
+```bash
+cloudops-tools init \
+  --mode detailed \
+  --skip-global \
+  --region us-east-1,us-west-2 \
+  --export-format both
+```
+
+Úselo cuando desee obtener detalles regionales más ricos y desee omitir la enumeración de servicios globales.
+
+## Barrido orientado a costos
+
+```bash
+cloudops-tools init --mode cost --export-format xlsx --limit-regions us-east-1,us-west-2
+```
+
+Úselo para informes centrados en costos.
+
+## Lote Describir Instantánea
+
+```bash
+cloudops-tools --describe ec2 --region us-east-1
+```
+
+Úselo para generar una instantánea de Markdown para un tipo de recurso en una región.

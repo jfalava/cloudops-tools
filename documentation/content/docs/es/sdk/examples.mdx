@@ -1,0 +1,119 @@
+---
+title: "Ejemplos"
+description: "Recetas de copiar y pegar para tareas comunes de integración del SDK de CloudOps"
+---
+# Ejemplos
+
+## Recopile EC2 y RDS, luego cree la carga útil JSON
+
+```ts
+import { Effect } from "effect";
+import {
+  ComputeService,
+  DatabaseService,
+  SDKLive,
+  createWebInventoryJson,
+} from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const compute = yield* _(ComputeService);
+  const database = yield* _(DatabaseService);
+
+  const [ec2, rds] = yield* _(
+    Effect.all([compute.describeEC2("us-east-1"), database.describeRDS("us-east-1")]),
+  );
+
+  return createWebInventoryJson("123456789012", "us-east-1", "20260206", { EC2: ec2, RDS: rds });
+});
+
+const payload = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+```
+
+## Ejecutar inventario solo para regiones y servicios seleccionados
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+await Effect.runPromise(
+  generateInitInventoryEffect(
+    "123456789012",
+    "detailed",
+    "json",
+    ["us-east-1", "us-west-2"],
+    false,
+    {
+      skipGlobal: false,
+      onlyGlobal: false,
+      services: ["EC2", "RDS", "S3", "IAMRole"],
+    },
+  ).pipe(Effect.provide(SDKLive)),
+);
+```
+
+## Consultar datos históricos de inventario
+
+Consultar inventarios anteriores sin volver a escanear AWS:
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, queryInventoryEffect } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  // Get all EC2 instances from the last 7 days
+  const results = yield* _(
+    queryInventoryEffect("123456789012", {
+      type: "EC2",
+      days: 7,
+    }),
+  );
+
+  // Flatten to single resource list
+  const allInstances = results.flatMap((r) => r.resources);
+  console.log(`Found ${allInstances.length} EC2 instances across ${results.length} runs`);
+
+  return allInstances;
+});
+
+const instances = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+```
+
+## Detectar cambios de infraestructura
+
+Compare las dos ejecuciones de inventario más recientes:
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, getInventoryChangesEffect } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const changes = yield* _(getInventoryChangesEffect("123456789012", 7));
+
+  const added = changes.filter((c) => c.change === "added");
+  const removed = changes.filter((c) => c.change === "removed");
+  const modified = changes.filter((c) => c.change === "modified");
+
+  console.log(`Added: ${added.length}, Removed: ${removed.length}, Modified: ${modified.length}`);
+
+  return { added, removed, modified };
+});
+
+const result = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+```
+
+## Transmita eventos de progreso a su registrador
+
+```ts
+import { Effect } from "effect";
+import { progressEmitter, SDKLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+progressEmitter.onProgress((event) => {
+  if (event.type === "progress") {
+    console.error(`[progress] ${event.percentage}% ${event.message}`);
+  }
+});
+
+await Effect.runPromise(
+  generateInitInventoryEffect("123456789012", "basic", "csv").pipe(Effect.provide(SDKLive)),
+);
+```

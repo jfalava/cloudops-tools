@@ -4,6 +4,8 @@ type SeoInput = {
   path: string;
 };
 
+type SeoLocale = "en" | "es";
+
 const SITE_NAME = "CloudOps Tools";
 const SITE_URL = "https://cloudops-tools.jfa.dev";
 const DEFAULT_OG_IMAGE = `${SITE_URL}/android-chrome-512x512.png`;
@@ -40,7 +42,13 @@ export const buildCanonicalLink = (path: string) => ({
   href: toAbsoluteUrl(path),
 });
 
-export const seoTitle = (pageTitle: string): string => `${pageTitle} | CloudOps Tools Docs`;
+export const seoTitle = (pageTitle: string, locale: SeoLocale = "en"): string =>
+  locale === "es"
+    ? `${pageTitle} | Documentación de CloudOps Tools`
+    : `${pageTitle} | CloudOps Tools Docs`;
 
 export const defaultDocsDescription =
   "CloudOps Tools documentation for the CLI and SDK, including setup, commands, and API usage.";
+
+export const defaultDocsDescriptionEs =
+  "Documentación de CloudOps Tools para el CLI y el SDK, incluyendo configuración, comandos y uso de la API.";
