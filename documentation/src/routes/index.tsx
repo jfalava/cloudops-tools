@@ -18,7 +18,7 @@ export const Route = createFileRoute("/")({
 
 function LandingPage() {
   return (
-    <div className="from-background to-muted/20 flex min-h-screen flex-col bg-gradient-to-b">
+    <div className="from-background to-muted/20 flex min-h-screen flex-col bg-linear-to-b">
       <Header />
       <Hero />
       <Footer />
