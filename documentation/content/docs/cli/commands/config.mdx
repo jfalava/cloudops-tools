@@ -10,8 +10,14 @@ Manage persistent configuration settings for CloudOps Tools.
 ## Usage
 
 ```bash
-cloudops-tools config [subcommand] [options]
+cloudops-tools config [--write-defaults] [subcommand] [options]
 ```
+
+## Root Options
+
+| Option             | Description                                                                      |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `--write-defaults` | Create/backfill `config.json` with sensible defaults (preserves existing values) |
 
 ## Subcommands
 
@@ -33,6 +39,41 @@ cloudops-tools config [subcommand] [options]
 | `defaultServices` | string[] | Default services to scan                                     |
 | `skipGlobal`      | boolean  | Skip global services by default                              |
 | `onlyGlobal`      | boolean  | Scan only global services by default                         |
+
+---
+
+## `config --write-defaults`
+
+Create a base configuration file with sensible defaults.
+
+This command:
+
+- creates `~/.config/cloudops-tools/config.json` if it does not exist
+- writes a baseline set of defaults
+- preserves any existing values already present in the file (backfills missing keys)
+
+### Usage
+
+```bash
+cloudops-tools config --write-defaults
+```
+
+### Defaults Written
+
+| Key             | Value       |
+| --------------- | ----------- |
+| `defaultRegion` | `us-east-1` |
+| `defaultFormat` | `csv`       |
+| `defaultMode`   | `basic`     |
+| `skipGlobal`    | `false`     |
+| `onlyGlobal`    | `false`     |
+
+### Example
+
+```bash
+cloudops-tools config --write-defaults
+# Output: Wrote base config defaults to /Users/username/.config/cloudops-tools/config.json
+```
 
 ---
 
@@ -164,4 +205,21 @@ For example:
 ```bash
 # Explicitly choose format at runtime
 cloudops-tools init --export-format json
+```
+
+## Validation Notes
+
+`config set` validates common input errors and returns a usage error (exit code `2`) for malformed
+values.
+
+Examples:
+
+```bash
+cloudops-tools config set skipGlobal maybe
+# Invalid value for skipGlobal: "maybe". Expected true or false.
+```
+
+```bash
+cloudops-tools config set defaultFormat yaml
+# Invalid value for defaultFormat: "yaml". Expected one of: csv, xlsx, json, both, all.
 ```

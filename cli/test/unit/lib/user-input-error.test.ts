@@ -26,11 +26,7 @@ describe("user-input-error", () => {
     });
 
     expect(formatCliUserInputError(error)).toBe(
-      [
-        "Bad input",
-        "Hint: Use a valid value",
-        "Example: cloudops-tools query --days 7",
-      ].join("\n"),
+      ["Bad input", "Hint: Use a valid value", "Example: cloudops-tools query --days 7"].join("\n"),
     );
   });
 

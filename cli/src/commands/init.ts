@@ -1,8 +1,4 @@
-import {
-  generateInitInventoryEffect,
-  SdkLive,
-  UtilService,
-} from "@cloudops-tools/sdk";
+import { generateInitInventoryEffect, SdkLive, UtilService } from "@cloudops-tools/sdk";
 import { Command } from "@effect/cli";
 import { Effect, Option } from "effect";
 
@@ -91,7 +87,8 @@ export const initCommand = Command.make(
 
       const parsedRegions = Option.match(region, {
         onNone: () => undefined,
-        onSome: (raw: string) => parseCsvValues("--region", raw, "cloudops-tools init --region us-east-1,us-west-2"),
+        onSome: (raw: string) =>
+          parseCsvValues("--region", raw, "cloudops-tools init --region us-east-1,us-west-2"),
       });
       if (parsedRegions && !parsedRegions.ok) {
         yield* _(Effect.fail(parsedRegions.error));
@@ -140,7 +137,8 @@ export const initCommand = Command.make(
             onSome: (value) => Effect.succeed(value),
           }),
         );
-        const regions = parsedRegions?.ok === true ? Option.some(parsedRegions.values) : Option.none();
+        const regions =
+          parsedRegions?.ok === true ? Option.some(parsedRegions.values) : Option.none();
         const limited =
           parsedLimitRegions?.ok === true ? Option.some(parsedLimitRegions.values) : Option.none();
         const serviceList = parsedServices.ok ? parsedServices.values : undefined;

@@ -26,4 +26,3 @@ describe("resolveCliVersion", () => {
     expect(resolveCliVersion(`'"'0.5.1'"'`, packageVersion)).toBe("0.5.1");
   });
 });
-

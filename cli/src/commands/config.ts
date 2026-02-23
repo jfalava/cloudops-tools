@@ -1,5 +1,5 @@
 import { ConfigService, type CloudOpsConfig } from "@cloudops-tools/sdk";
-import { Command, Args } from "@effect/cli";
+import { Command, Args, Options } from "@effect/cli";
 import { Effect, Console } from "effect";
 
 import { parseCsvValues } from "@/lib/option-validation";
@@ -10,6 +10,12 @@ const setOptions = {
   key: Args.text({ name: "key" }),
   value: Args.text({ name: "value" }),
 };
+
+const writeDefaultsOption = Options.boolean("write-defaults").pipe(
+  Options.withDescription(
+    "Create/backfill config.json with sensible defaults (preserves existing values)",
+  ),
+);
 
 const VALID_CONFIG_KEYS = [
   "defaultRegion",
@@ -23,6 +29,13 @@ const VALID_CONFIG_KEYS = [
 
 const DEFAULT_FORMAT_VALUES = ["csv", "xlsx", "json", "both", "all"] as const;
 const DEFAULT_MODE_VALUES = ["basic", "detailed", "security", "cost"] as const;
+const BASE_CONFIG_DEFAULTS: CloudOpsConfig = {
+  defaultRegion: "us-east-1",
+  defaultFormat: "csv",
+  defaultMode: "basic",
+  skipGlobal: false,
+  onlyGlobal: false,
+};
 
 const configSetCommand = Command.make("set", setOptions, ({ key, value }) =>
   Effect.gen(function* (_) {
@@ -46,10 +59,9 @@ const configSetCommand = Command.make("set", setOptions, ({ key, value }) =>
       if (normalized !== "true" && normalized !== "false") {
         yield* _(
           Effect.fail(
-            invalidUserInput(
-              `Invalid value for ${key}: "${value}". Expected true or false.`,
-              { example: `cloudops-tools config set ${key} true` },
-            ),
+            invalidUserInput(`Invalid value for ${key}: "${value}". Expected true or false.`, {
+              example: `cloudops-tools config set ${key} true`,
+            }),
           ),
         );
       }
@@ -151,27 +163,61 @@ const configPathCommand = Command.make("path", {}, () =>
   }),
 ).pipe(Command.withDescription("Show the configuration file path"));
 
-export const configCommand = Command.make("config", {}, () =>
-  Effect.gen(function* (_) {
-    const configService = yield* _(ConfigService);
-    const config = yield* _(configService.loadConfig());
+export const configCommand = Command.make(
+  "config",
+  { writeDefaults: writeDefaultsOption },
+  ({ writeDefaults }) =>
+    Effect.gen(function* (_) {
+      const configService = yield* _(ConfigService);
+      const config = yield* _(configService.loadConfig());
+      const configPath = yield* _(configService.getConfigPath());
 
-    yield* _(Console.log(ui.info("Current configuration:")));
-    if (Object.keys(config).length === 0) {
-      yield* _(Console.log("  (no configuration set)"));
-      yield* _(Console.log(""));
-      yield* _(Console.log("Use 'cloudops-tools config set <key> <value>' to set values."));
-      yield* _(
-        Console.log(
-          "Valid keys: defaultRegion, defaultAccount, defaultFormat, defaultMode, defaultServices, skipGlobal, onlyGlobal",
-        ),
-      );
-    } else {
-      for (const [k, v] of Object.entries(config)) {
-        yield* _(Console.log(`  ${k} = ${JSON.stringify(v)}`));
+      if (writeDefaults) {
+        const mergedConfig: CloudOpsConfig = {
+          ...BASE_CONFIG_DEFAULTS,
+          ...config,
+        };
+        yield* _(configService.saveConfig(mergedConfig));
+
+        const hadExistingValues = Object.keys(config).length > 0;
+        yield* _(
+          Console.log(
+            ui.success(
+              hadExistingValues
+                ? `Wrote base config defaults to ${configPath} (preserved existing values)`
+                : `Wrote base config defaults to ${configPath}`,
+            ),
+          ),
+        );
+        yield* _(
+          Console.log(
+            ui.info(
+              "Defaults written: defaultRegion, defaultFormat, defaultMode, skipGlobal, onlyGlobal",
+            ),
+          ),
+        );
+        return;
       }
-    }
-  }),
+
+      yield* _(Console.log(ui.info("Current configuration:")));
+      if (Object.keys(config).length === 0) {
+        yield* _(Console.log("  (no configuration set)"));
+        yield* _(Console.log(""));
+        yield* _(
+          Console.log("Use 'cloudops-tools config --write-defaults' to create a base config file."),
+        );
+        yield* _(Console.log("Use 'cloudops-tools config set <key> <value>' to set values."));
+        yield* _(
+          Console.log(
+            "Valid keys: defaultRegion, defaultAccount, defaultFormat, defaultMode, defaultServices, skipGlobal, onlyGlobal",
+          ),
+        );
+      } else {
+        for (const [k, v] of Object.entries(config)) {
+          yield* _(Console.log(`  ${k} = ${JSON.stringify(v)}`));
+        }
+      }
+    }),
 ).pipe(
   Command.withSubcommands([
     configSetCommand,

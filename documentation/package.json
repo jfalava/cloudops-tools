@@ -18,21 +18,21 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@cloudflare/vite-plugin": "1.25.0",
-    "@tailwindcss/vite": "4.1.18",
-    "@tanstack/react-devtools": "0.9.5",
-    "@tanstack/react-router": "1.159.5",
-    "@tanstack/react-router-devtools": "1.159.5",
-    "@tanstack/react-router-ssr-query": "1.159.5",
-    "@tanstack/react-start": "1.159.5",
-    "@tanstack/router-plugin": "1.159.5",
-    "fumadocs-core": "16.6.0",
-    "fumadocs-mdx": "14.2.7",
-    "fumadocs-ui": "16.6.0",
-    "lucide-react": "0.563.0",
+    "@cloudflare/vite-plugin": "1.25.4",
+    "@tailwindcss/vite": "4.2.1",
+    "@tanstack/react-devtools": "0.9.6",
+    "@tanstack/react-router": "1.162.6",
+    "@tanstack/react-router-devtools": "1.162.6",
+    "@tanstack/react-router-ssr-query": "1.162.6",
+    "@tanstack/react-start": "1.162.7",
+    "@tanstack/router-plugin": "1.162.6",
+    "fumadocs-core": "16.6.5",
+    "fumadocs-mdx": "14.2.8",
+    "fumadocs-ui": "16.6.5",
+    "lucide-react": "0.575.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "tailwindcss": "4.1.18",
+    "tailwindcss": "4.2.1",
     "vite-tsconfig-paths": "6.1.1"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
     "@types/react-dom": "19.2.3",
     "@typescript/native-preview": "catalog:build",
     "@vitejs/plugin-react": "5.1.4",
-    "jsdom": "28.0.0",
+    "jsdom": "28.1.0",
     "oxfmt": "catalog:build",
     "oxlint": "catalog:build",
     "oxlint-tsgolint": "catalog:build",
@@ -56,6 +56,6 @@
     "vite": "8.0.0-beta.13",
     "vitest": "4.0.18",
     "web-vitals": "5.1.0",
-    "wrangler": "4.65.0"
+    "wrangler": "4.68.0"
   }
 }

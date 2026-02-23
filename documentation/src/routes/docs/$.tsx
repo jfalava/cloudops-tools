@@ -18,6 +18,7 @@ const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "cli/configuration": () => import("../../../content/docs/cli/configuration.mdx"),
   "cli/choose-command": () => import("../../../content/docs/cli/choose-command.mdx"),
   "cli/scan-profiles": () => import("../../../content/docs/cli/scan-profiles.mdx"),
+  "cli/exit-codes": () => import("../../../content/docs/cli/exit-codes.mdx"),
   "cli/troubleshooting": () => import("../../../content/docs/cli/troubleshooting.mdx"),
   "cli/commands": () => import("../../../content/docs/cli/commands/index.mdx"),
   "cli/commands/index": () => import("../../../content/docs/cli/commands/index.mdx"),

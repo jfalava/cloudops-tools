@@ -45,6 +45,11 @@ export const docsTree: Root = {
         },
         {
           type: "page",
+          name: "Exit Codes",
+          url: "/docs/cli/exit-codes",
+        },
+        {
+          type: "page",
           name: "Troubleshooting",
           url: "/docs/cli/troubleshooting",
         },

@@ -16,7 +16,9 @@ describe("option-validation", () => {
       const result = parseCsvValues("--region", "us-east-1,,us-west-2", "example");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.error.message).toContain('Invalid value for --region: "us-east-1,,us-west-2"');
+        expect(result.error.message).toContain(
+          'Invalid value for --region: "us-east-1,,us-west-2"',
+        );
         expect(result.error.message).toContain("Empty entries are not allowed");
       }
     });

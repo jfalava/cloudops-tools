@@ -43,9 +43,12 @@ export const parseServicesOption = (
   if (allSelections.length > 0 && values.length > 1) {
     return {
       ok: false,
-      error: invalidUserInput("Invalid value for --services: 'all' cannot be combined with other services.", {
-        example: examples.all,
-      }),
+      error: invalidUserInput(
+        "Invalid value for --services: 'all' cannot be combined with other services.",
+        {
+          example: examples.all,
+        },
+      ),
     };
   }
 

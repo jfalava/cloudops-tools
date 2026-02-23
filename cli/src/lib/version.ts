@@ -10,4 +10,3 @@ export const resolveCliVersion = (
   buildVersion: string | undefined,
   packageVersion: string,
 ): string => normalizeBuildVersion(buildVersion) ?? packageVersion;
-
