@@ -105,6 +105,33 @@ Notes:
 - `--use-letme` requires `--account <profile>` so the CLI knows which profile to activate.
 - If `letme` is missing, install it and restart your shell so `PATH` is updated.
 
+## Invalid Parameters / Usage Errors
+
+CloudOps Tools returns **exit code `2`** for CLI usage errors (invalid flags, malformed values, or
+unsupported option combinations).
+
+Examples:
+
+```bash
+# Invalid date format
+cloudops-tools query --from 2026-13-01
+# Exit: 2
+
+# Conflicting flags
+cloudops-tools init --skip-global --only-global
+# Exit: 2
+
+# Invalid config value
+cloudops-tools config set skipGlobal maybe
+# Exit: 2
+```
+
+If you need the raw stack trace or Effect error output for debugging, re-run the command with
+`--debug`.
+
+For a complete exit-code reference (`0`, `1`, `2`) and more examples, see
+[Exit Codes](/docs/cli/exit-codes).
+
 ## Help and Diagnostics Flags
 
 ```bash
@@ -112,6 +139,8 @@ cloudops-tools --help
 cloudops-tools --help-examples
 cloudops-tools --version
 ```
+
+Note: running `cloudops-tools` with no arguments also prints help and exits.
 
 Use `--debug` on scan or describe commands for full stack traces:
 

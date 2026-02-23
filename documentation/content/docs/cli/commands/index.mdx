@@ -11,7 +11,8 @@ This page is the command reference for CloudOps Tools.
 
 `cloudops-tools` is the CLI entrypoint.
 
-- Run inventory scans with root options
+- With no arguments, `cloudops-tools` prints help and exits
+- Run inventory scans by passing root command scan options (for example `--region`)
 - Use subcommands for advanced workflows
 
 ```bash
@@ -29,7 +30,7 @@ cloudops-tools [options]
 
 ## Root Scan Options
 
-These options control the default root scan behavior:
+These options control root command scan behavior when you use the root command for a scan:
 
 | Option            | Alias | Description                                                                           | Default       |
 | ----------------- | ----- | ------------------------------------------------------------------------------------- | ------------- |
@@ -93,6 +94,7 @@ cloudops-tools --use-letme --account engineering-prod --region us-east-1
 
 ## Behavior Notes
 
+- Running `cloudops-tools` with no arguments prints help and exits (it does not start a scan).
 - `--help-examples` prints curated examples and exits.
 - `--version` prints the installed CLI version and exits.
 - `--wizard` is provided by `@effect/cli`; it helps with command input but does not bypass AWS

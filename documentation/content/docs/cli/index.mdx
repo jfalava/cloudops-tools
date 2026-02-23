@@ -34,11 +34,16 @@ bun add -g @cloudops-tools/cli
 cloudops-tools --version
 ```
 
+If you run `cloudops-tools` with no arguments, the CLI prints help and exits.
+
 ## 3. Run Your First Scan
 
 ```bash
 cloudops-tools --region us-east-1
 ```
+
+The root command runs a quick scan when you provide scan options (for example `--region` or
+`--services`).
 
 ## 4. Try a Security Audit
 

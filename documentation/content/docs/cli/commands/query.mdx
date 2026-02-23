@@ -138,7 +138,9 @@ Modified (2):
 
 ## Notes
 
-- The SQLite database is automatically populated when running `cloudops-tools init` or `cloudops-tools` (root scan)
+- The SQLite database is automatically populated when running `cloudops-tools init` or a root
+  command scan
+  with scan options (for example `cloudops-tools --region us-east-1`)
 - Database location: `~/.config/cloudops-tools/inventory.db`
 - Query operations are instant and don't require AWS credentials
 - Changes are detected by comparing the two most recent runs within the specified time window

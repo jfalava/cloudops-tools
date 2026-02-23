@@ -6,8 +6,25 @@ import {
 import { Command, Options } from "@effect/cli";
 import { Effect, Console, Option } from "effect";
 
+import { invalidUserInput } from "@/lib/user-input-error";
 import { account as accountOption } from "@/options";
 import { ui } from "@/ui";
+
+const ISO_DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+const parseIsoDateOnlyUtc = (value: string): Date | null => {
+  if (!ISO_DATE_ONLY_PATTERN.test(value)) {
+    return null;
+  }
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+  return parsed.toISOString().slice(0, 10) === value ? parsed : null;
+};
+
+const invalidQueryParams = (message: string, example?: string) =>
+  invalidUserInput(message, { example });
 
 const queryType = Options.optional(Options.text("type")).pipe(
   Options.withAlias("t"),
@@ -209,6 +226,88 @@ export const queryCommand = Command.make(
   },
   ({ account, type, region, days, from, to, limit, changes, changesDays, runs }) =>
     Effect.gen(function* (_) {
+      if (runs && changes) {
+        yield* _(
+          Effect.fail(
+            invalidQueryParams(
+              "Invalid option combination: --runs cannot be used with --changes.",
+              "cloudops-tools query --runs --limit 20",
+            ),
+          ),
+        );
+      }
+
+      if (limit <= 0) {
+        yield* _(
+          Effect.fail(
+            invalidQueryParams(
+              `Invalid value for --limit: ${String(limit)}. Expected a positive integer.`,
+              "cloudops-tools query --runs --limit 10",
+            ),
+          ),
+        );
+      }
+
+      if (changesDays <= 0) {
+        yield* _(
+          Effect.fail(
+            invalidQueryParams(
+              `Invalid value for --changes-days: ${String(changesDays)}. Expected a positive integer.`,
+              "cloudops-tools query --changes --changes-days 7",
+            ),
+          ),
+        );
+      }
+
+      if (Option.isSome(days) && days.value <= 0) {
+        yield* _(
+          Effect.fail(
+            invalidQueryParams(
+              `Invalid value for --days: ${String(days.value)}. Expected a positive integer.`,
+              "cloudops-tools query --days 14",
+            ),
+          ),
+        );
+      }
+
+      const fromValue = Option.getOrUndefined(from);
+      const toValue = Option.getOrUndefined(to);
+      const parsedFrom = fromValue ? parseIsoDateOnlyUtc(fromValue) : null;
+      const parsedTo = toValue ? parseIsoDateOnlyUtc(toValue) : null;
+
+      if (fromValue && parsedFrom === null) {
+        yield* _(
+          Effect.fail(
+            invalidQueryParams(
+              `Invalid value for --from: "${fromValue}". Expected ISO date format YYYY-MM-DD.`,
+              "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+            ),
+          ),
+        );
+      }
+
+      if (toValue && parsedTo === null) {
+        yield* _(
+          Effect.fail(
+            invalidQueryParams(
+              `Invalid value for --to: "${toValue}". Expected ISO date format YYYY-MM-DD.`,
+              "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+            ),
+          ),
+        );
+      }
+
+      if (parsedFrom && parsedTo && parsedFrom.getTime() > parsedTo.getTime()) {
+        yield* _(
+          Effect.fail(
+            invalidQueryParams(
+              `Invalid date range: --from (${fromValue}) must be on or before --to (${toValue}).`,
+              "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+            ),
+          ),
+        );
+      }
+
       const accountId = Option.getOrElse(account, () => "default");
 
       if (runs) {
@@ -228,8 +327,8 @@ export const queryCommand = Command.make(
           type: Option.getOrUndefined(type),
           region: Option.getOrUndefined(region),
           days: Option.getOrUndefined(days),
-          from: Option.getOrUndefined(from),
-          to: Option.getOrUndefined(to),
+          from: fromValue,
+          to: toValue,
         }),
       );
 

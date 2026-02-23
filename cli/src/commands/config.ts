@@ -2,6 +2,8 @@ import { ConfigService, type CloudOpsConfig } from "@cloudops-tools/sdk";
 import { Command, Args } from "@effect/cli";
 import { Effect, Console } from "effect";
 
+import { parseCsvValues } from "@/lib/option-validation";
+import { invalidUserInput } from "@/lib/user-input-error";
 import { ui } from "@/ui";
 
 const setOptions = {
@@ -9,32 +11,85 @@ const setOptions = {
   value: Args.text({ name: "value" }),
 };
 
+const VALID_CONFIG_KEYS = [
+  "defaultRegion",
+  "defaultAccount",
+  "defaultFormat",
+  "defaultMode",
+  "defaultServices",
+  "skipGlobal",
+  "onlyGlobal",
+] as const;
+
+const DEFAULT_FORMAT_VALUES = ["csv", "xlsx", "json", "both", "all"] as const;
+const DEFAULT_MODE_VALUES = ["basic", "detailed", "security", "cost"] as const;
+
 const configSetCommand = Command.make("set", setOptions, ({ key, value }) =>
   Effect.gen(function* (_) {
     const configService = yield* _(ConfigService);
     const config = yield* _(configService.loadConfig());
 
-    const validKeys = [
-      "defaultRegion",
-      "defaultAccount",
-      "defaultFormat",
-      "defaultMode",
-      "defaultServices",
-      "skipGlobal",
-      "onlyGlobal",
-    ];
-
-    if (!validKeys.includes(key)) {
-      yield* _(Console.log(ui.error(`Invalid config key: ${key}`)));
-      yield* _(Console.log(ui.info(`Valid keys: ${validKeys.join(", ")}`)));
-      return;
+    if (!VALID_CONFIG_KEYS.includes(key as (typeof VALID_CONFIG_KEYS)[number])) {
+      yield* _(
+        Effect.fail(
+          invalidUserInput(`Invalid config key: ${key}.`, {
+            hint: `Valid keys: ${VALID_CONFIG_KEYS.join(", ")}`,
+            example: "cloudops-tools config set defaultRegion us-east-1",
+          }),
+        ),
+      );
     }
 
     let parsedValue: unknown = value;
     if (key === "skipGlobal" || key === "onlyGlobal") {
-      parsedValue = value.toLowerCase() === "true";
+      const normalized = value.trim().toLowerCase();
+      if (normalized !== "true" && normalized !== "false") {
+        yield* _(
+          Effect.fail(
+            invalidUserInput(
+              `Invalid value for ${key}: "${value}". Expected true or false.`,
+              { example: `cloudops-tools config set ${key} true` },
+            ),
+          ),
+        );
+      }
+      parsedValue = normalized === "true";
+    } else if (key === "defaultFormat") {
+      const normalized = value.trim().toLowerCase();
+      if (!DEFAULT_FORMAT_VALUES.includes(normalized as (typeof DEFAULT_FORMAT_VALUES)[number])) {
+        yield* _(
+          Effect.fail(
+            invalidUserInput(
+              `Invalid value for ${key}: "${value}". Expected one of: ${DEFAULT_FORMAT_VALUES.join(", ")}.`,
+              { example: "cloudops-tools config set defaultFormat xlsx" },
+            ),
+          ),
+        );
+      }
+      parsedValue = normalized;
+    } else if (key === "defaultMode") {
+      const normalized = value.trim().toLowerCase();
+      if (!DEFAULT_MODE_VALUES.includes(normalized as (typeof DEFAULT_MODE_VALUES)[number])) {
+        yield* _(
+          Effect.fail(
+            invalidUserInput(
+              `Invalid value for ${key}: "${value}". Expected one of: ${DEFAULT_MODE_VALUES.join(", ")}.`,
+              { example: "cloudops-tools config set defaultMode security" },
+            ),
+          ),
+        );
+      }
+      parsedValue = normalized;
     } else if (key === "defaultServices") {
-      parsedValue = value.split(",").map((s) => s.trim());
+      const parsed = parseCsvValues(
+        "defaultServices",
+        value,
+        "cloudops-tools config set defaultServices EC2,RDS,S3",
+      );
+      if (!parsed.ok) {
+        yield* _(Effect.fail(parsed.error));
+      }
+      parsedValue = parsed.ok ? parsed.values : undefined;
     }
 
     const updatedConfig: CloudOpsConfig = { ...config, [key]: parsedValue };

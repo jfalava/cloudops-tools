@@ -1,6 +1,6 @@
 ---
 title: Choose the Right Command
-description: Decide quickly between root scan, init, describe, and config
+description: Decide quickly between root command scans, init, describe, and config
 ---
 
 # Choose the Right Command
@@ -45,8 +45,9 @@ cloudops-tools --describe rds --region eu-south-2
 
 ## Notes
 
-- Root command and `init` overlap for scans; use root for quick runs and `init` for explicit mode and
-  region control.
+- Root command and `init` overlap for scans; use the root command with scan flags for quick runs,
+  and `init` for explicit mode and region control.
+- Running `cloudops-tools` with no arguments prints help and exits.
 - `describe` and `--describe` are both valid: use `describe` for one specific resource ID, and
   `--describe <type>` for a region-wide snapshot of all resources of that type.
 - `--help-examples` and `--version` exit early and do not run scan logic.
