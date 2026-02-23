@@ -7,6 +7,12 @@ import { useEffect, useState } from "react";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { docsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
+import {
+  buildCanonicalLink,
+  buildSeoMeta,
+  defaultDocsDescription,
+  seoTitle,
+} from "@/lib/seo";
 
 const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "": () => import("../../../content/docs/index.mdx"),
@@ -52,8 +58,130 @@ const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "sdk/api/credentials": () => import("../../../content/docs/sdk/api/credentials.mdx"),
 };
 
+const rawDocSources = import.meta.glob("../../../content/docs/**/*.{mdx,md}", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, unknown>;
+
+type DocFrontmatter = {
+  title?: string;
+  description?: string;
+};
+
+const readRawDocSource = (value: unknown): string | null => {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  if (
+    value !== null &&
+    typeof value === "object" &&
+    "default" in value &&
+    typeof value.default === "string"
+  ) {
+    return value.default;
+  }
+
+  return null;
+};
+
+const parseFrontmatter = (source: string): DocFrontmatter => {
+  if (!source.startsWith("---\n") && !source.startsWith("---\r\n")) {
+    return {};
+  }
+
+  const lines = source.split(/\r?\n/);
+  if (lines[0] !== "---") {
+    return {};
+  }
+
+  const endIndex = lines.findIndex((line, index) => index > 0 && line === "---");
+  if (endIndex <= 0) {
+    return {};
+  }
+
+  const frontmatterLines = lines.slice(1, endIndex);
+  const entries = frontmatterLines
+    .map((line) => line.match(/^([A-Za-z0-9_-]+):\s*(.+)$/))
+    .filter((match): match is RegExpMatchArray => match !== null);
+
+  const frontmatter: DocFrontmatter = {};
+  for (const match of entries) {
+    const [, key, rawValue] = match;
+    const value = rawValue.trim().replace(/^['"]|['"]$/g, "");
+    if (key === "title") {
+      frontmatter.title = value;
+    } else if (key === "description") {
+      frontmatter.description = value;
+    }
+  }
+
+  return frontmatter;
+};
+
+const pathToDocSlug = (path: string): string | null => {
+  const normalized = path.replace(/\\/g, "/");
+  const marker = "/content/docs/";
+  const markerIndex = normalized.indexOf(marker);
+  if (markerIndex < 0) {
+    return null;
+  }
+
+  const relative = normalized.slice(markerIndex + marker.length).replace(/\.(mdx|md)$/i, "");
+  if (relative === "index") {
+    return "";
+  }
+  if (relative.endsWith("/index")) {
+    return relative.slice(0, -"/index".length);
+  }
+  return relative;
+};
+
+const frontmatterBySlug = (() => {
+  const map = new Map<string, DocFrontmatter>();
+  for (const [path, sourceValue] of Object.entries(rawDocSources)) {
+    const slug = pathToDocSlug(path);
+    if (slug === null) {
+      continue;
+    }
+
+    const source = readRawDocSource(sourceValue);
+    if (source === null) {
+      continue;
+    }
+
+    const frontmatter = parseFrontmatter(source);
+    map.set(slug, frontmatter);
+    if (slug.length > 0) {
+      map.set(`${slug}/index`, frontmatter);
+    } else {
+      map.set("index", frontmatter);
+    }
+  }
+  return map;
+})();
+
+const docsSeoForSlug = (slug: string) => {
+  const normalizedSlug = slug || "";
+  const canonicalSlug =
+    normalizedSlug === "index"
+      ? ""
+      : normalizedSlug.endsWith("/index")
+        ? normalizedSlug.slice(0, -"/index".length)
+        : normalizedSlug;
+  const frontmatter = frontmatterBySlug.get(normalizedSlug) ?? frontmatterBySlug.get("index") ?? {};
+
+  const fallbackTitle = normalizedSlug ? (normalizedSlug.split("/").at(-1) ?? "Docs") : "Docs";
+  const pageTitle = frontmatter.title ?? fallbackTitle;
+  const title = seoTitle(pageTitle);
+  const description = frontmatter.description ?? defaultDocsDescription;
+  const path = canonicalSlug ? `/docs/${canonicalSlug}` : "/docs";
+
+  return { title, description, path };
+};
+
 export const Route = createFileRoute("/docs/$")({
-  component: DocsPageComponent,
   loader: async ({ params }) => {
     const slug = params["_splat"] || "";
     const docModule = docModules[slug];
@@ -68,6 +196,15 @@ export const Route = createFileRoute("/docs/$")({
 
     return { slug };
   },
+  head: ({ params }) => {
+    const slug = params["_splat"] || "";
+    const seo = docsSeoForSlug(slug);
+    return {
+      meta: buildSeoMeta(seo),
+      links: [buildCanonicalLink(seo.path)],
+    };
+  },
+  component: DocsPageComponent,
   staleTime: 0,
 });
 
