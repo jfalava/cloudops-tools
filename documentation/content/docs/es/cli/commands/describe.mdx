@@ -2,39 +2,46 @@
 title: Describir
 description: Describe en detalle un recurso AWS específico con salida en Markdown bien formateada
 ---
+
 # `describe`
+
 Obtén información completa y detallada de un recurso AWS concreto, presentada de forma bonita en Markdown.
 
 ## Uso
+
 ```bash
 cloudops-tools describe <tipo> <región> <id> [opciones]
 ```
 
 ## Argumentos
-| Argumento | Descripción                                      | ¿Obligatorio? |
-|-----------|--------------------------------------------------|---------------|
-| `tipo`    | Tipo de recurso (ej: `ec2`, `rds`, `lambda`, `vpc`) | Sí            |
-| `región`  | Región AWS donde está el recurso                 | Sí            |
+
+| Argumento | Descripción                                                    | ¿Obligatorio? |
+| --------- | -------------------------------------------------------------- | ------------- |
+| `tipo`    | Tipo de recurso (ej: `ec2`, `rds`, `lambda`, `vpc`)            | Sí            |
+| `región`  | Región AWS donde está el recurso                               | Sí            |
 | `id`      | Identificador del recurso (ID de instancia, ARN, nombre, etc.) | Sí            |
 
 ## Opciones
-| Opción       | Descripción                                              | Valor por defecto |
-|--------------|----------------------------------------------------------|-------------------|
-| `--debug`    | Muestra errores completos con trazas de pila             | `false`           |
+
+| Opción       | Descripción                                                | Valor por defecto |
+| ------------ | ---------------------------------------------------------- | ----------------- |
+| `--debug`    | Muestra errores completos con trazas de pila               | `false`           |
 | `--no-cache` | Desactiva la caché y siempre consulta datos frescos de AWS | `false`           |
 
 ## Tipos de recursos más comunes
-| Tipo       | Descripción                     | Formato del ID                     |
-|------------|---------------------------------|------------------------------------|
-| `ec2`      | Instancias EC2                  | `i-xxxxxxxxxxxxxxxxx`              |
-| `rds`      | Instancias de base de datos RDS | Identificador de la instancia DB   |
-| `lambda`   | Funciones Lambda                | Nombre de la función o ARN         |
-| `vpc`      | Redes VPC                       | `vpc-xxxxxxxxxxxxxxxxx`            |
-| `dynamodb` | Tablas DynamoDB                 | Nombre de la tabla                 |
+
+| Tipo       | Descripción                     | Formato del ID                   |
+| ---------- | ------------------------------- | -------------------------------- |
+| `ec2`      | Instancias EC2                  | `i-xxxxxxxxxxxxxxxxx`            |
+| `rds`      | Instancias de base de datos RDS | Identificador de la instancia DB |
+| `lambda`   | Funciones Lambda                | Nombre de la función o ARN       |
+| `vpc`      | Redes VPC                       | `vpc-xxxxxxxxxxxxxxxxx`          |
+| `dynamodb` | Tablas DynamoDB                 | Nombre de la tabla               |
 
 El comando `describe` soporta **muchos más tipos** de recursos (S3, CloudFront, Route53, IAM, KMS, Secrets Manager, y varios más).
 
 ## Ejemplos rápidos
+
 ```bash
 # Ver detalles de una instancia EC2
 cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
@@ -56,7 +63,9 @@ cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug
 ```
 
 ## ¿Qué incluye la salida?
+
 El comando genera un documento Markdown muy completo con:
+
 - Metadatos básicos (ID, ARN, fecha de creación…)
 - Toda la configuración detallada
 - Tags asociados
@@ -65,6 +74,7 @@ El comando genera un documento Markdown muy completo con:
 - Detalles de red (subredes, grupos de seguridad, etc.)
 
 ## Describir varios recursos a la vez (modo batch con `--describe`)
+
 También puedes describir **todos** los recursos de un tipo en una región usando la bandera `--describe` en el comando principal:
 
 Tipos soportados en modo batch (por ahora): `rds`, `ec2`, `lambda`, `vpc`, `dynamodb`
@@ -90,6 +100,7 @@ Esto genera un archivo Markdown en:
 `inventory-output/{id-de-cuenta}/describe-{tipo}-{región}-{fecha-hora}.md`
 
 ## Caché inteligente
+
 Las consultas en modo batch se guardan en caché **durante 5 minutos**.
 Si vuelves a ejecutar el mismo comando en ese tiempo, la respuesta es instantánea:
 

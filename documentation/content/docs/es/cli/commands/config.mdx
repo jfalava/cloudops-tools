@@ -2,77 +2,93 @@
 title: Configuración
 description: Gestiona la configuración persistente de CloudOps Tools
 ---
+
 # `config`
+
 Gestiona las opciones de configuración persistente de CloudOps Tools.
 
 ## Uso
+
 ```bash
 cloudops-tools config [--write-defaults] [subcomando] [opciones]
 ```
 
 ## Opciones principales
-| Opción             | Descripción                                                                |
-|--------------------|----------------------------------------------------------------------------|
+
+| Opción             | Descripción                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
 | `--write-defaults` | Crea o completa `config.json` con valores por defecto razonables (mantiene los valores que ya tenías) |
 
 ## Subcomandos
-| Subcomando | Descripción                        |
-|------------|------------------------------------|
-| `set`      | Establece un valor de configuración |
-| `get`      | Muestra uno o varios valores       |
-| `unset`    | Elimina un valor de configuración  |
+
+| Subcomando | Descripción                                  |
+| ---------- | -------------------------------------------- |
+| `set`      | Establece un valor de configuración          |
+| `get`      | Muestra uno o varios valores                 |
+| `unset`    | Elimina un valor de configuración            |
 | `path`     | Muestra la ruta del archivo de configuración |
 
 ## Claves de configuración disponibles
-| Clave              | Tipo      | Descripción                                          |
-|--------------------|-----------|------------------------------------------------------|
-| `defaultRegion`    | string    | Región AWS por defecto para los escaneos             |
-| `defaultAccount`   | string    | Cuenta o perfil AWS por defecto                      |
-| `defaultFormat`    | string    | Formato de exportación por defecto (`csv`, `xlsx`, `json`, `both`, `all`) |
-| `defaultMode`      | string    | Modo de escaneo por defecto (`basic`, `detailed`, `security`, `cost`) |
-| `defaultServices`  | string[]  | Servicios que se escanean por defecto                |
-| `skipGlobal`       | boolean   | Omitir servicios globales por defecto                |
-| `onlyGlobal`       | boolean   | Escanear solo servicios globales por defecto         |
+
+| Clave             | Tipo     | Descripción                                                               |
+| ----------------- | -------- | ------------------------------------------------------------------------- |
+| `defaultRegion`   | string   | Región AWS por defecto para los escaneos                                  |
+| `defaultAccount`  | string   | Cuenta o perfil AWS por defecto                                           |
+| `defaultFormat`   | string   | Formato de exportación por defecto (`csv`, `xlsx`, `json`, `both`, `all`) |
+| `defaultMode`     | string   | Modo de escaneo por defecto (`basic`, `detailed`, `security`, `cost`)     |
+| `defaultServices` | string[] | Servicios que se escanean por defecto                                     |
+| `skipGlobal`      | boolean  | Omitir servicios globales por defecto                                     |
+| `onlyGlobal`      | boolean  | Escanear solo servicios globales por defecto                              |
 
 ---
+
 ## `config --write-defaults`
+
 Crea un archivo de configuración base con valores sensatos.
 
 Este comando:
+
 - crea `~/.config/cloudops-tools/config.json` si no existe
 - escribe un conjunto básico de valores por defecto
 - conserva los valores que ya tenías (completa solo lo que falta)
 
 ### Uso
+
 ```bash
 cloudops-tools config --write-defaults
 ```
 
 ### Valores que se escriben por defecto
-| Clave            | Valor       |
-|------------------|-------------|
-| `defaultRegion`  | `us-east-1` |
-| `defaultFormat`  | `csv`       |
-| `defaultMode`    | `basic`     |
-| `skipGlobal`     | `false`     |
-| `onlyGlobal`     | `false`     |
+
+| Clave           | Valor       |
+| --------------- | ----------- |
+| `defaultRegion` | `us-east-1` |
+| `defaultFormat` | `csv`       |
+| `defaultMode`   | `basic`     |
+| `skipGlobal`    | `false`     |
+| `onlyGlobal`    | `false`     |
 
 ### Ejemplo
+
 ```bash
 cloudops-tools config --write-defaults
 # Salida: Escribí la configuración base en /Users/tuusuario/.config/cloudops-tools/config.json
 ```
 
 ---
+
 ## config set
+
 Establece un valor de configuración.
 
 ### Uso
+
 ```bash
 cloudops-tools config set <clave> <valor>
 ```
 
 ### Ejemplos
+
 ```bash
 # Cambiar la región por defecto
 cloudops-tools config set defaultRegion eu-west-1
@@ -94,10 +110,13 @@ cloudops-tools config set defaultAccount produccion
 ```
 
 ---
+
 ## config get
+
 Muestra uno o todos los valores de configuración.
 
 ### Uso
+
 ```bash
 # Ver toda la configuración
 cloudops-tools config get
@@ -107,6 +126,7 @@ cloudops-tools config get <clave>
 ```
 
 ### Ejemplos
+
 ```bash
 cloudops-tools config get
 cloudops-tools config get defaultRegion
@@ -114,37 +134,47 @@ cloudops-tools config get defaultFormat
 ```
 
 ---
+
 ## config unset
+
 Elimina un valor de configuración.
 
 ### Uso
+
 ```bash
 cloudops-tools config unset <clave>
 ```
 
 ### Ejemplos
+
 ```bash
 cloudops-tools config unset defaultRegion
 cloudops-tools config unset defaultServices
 ```
 
 ---
+
 ## config path
+
 Te muestra dónde está guardado el archivo de configuración.
 
 ### Uso
+
 ```bash
 cloudops-tools config path
 ```
 
 ### Ejemplo
+
 ```bash
 cloudops-tools config path
 # Salida: /Users/tuusuario/.config/cloudops-tools/config.json
 ```
 
 ---
+
 ## Archivo de configuración
+
 Todo se guarda en formato JSON. Ejemplo de cómo queda:
 
 ```json
@@ -159,6 +189,7 @@ Todo se guarda en formato JSON. Ejemplo de cómo queda:
 ```
 
 ## Importante (precedencia)
+
 Por ahora los comandos de escaneo (`init`, etc.) **no** leen automáticamente estos valores.
 Todavía tienes que pasar las opciones manualmente cuando corres el comando:
 
@@ -167,6 +198,7 @@ cloudops-tools init --export-format json
 ```
 
 ## Validación
+
 El comando `set` revisa que los valores tengan sentido y te avisa si algo está mal:
 
 ```bash

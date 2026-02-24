@@ -2,24 +2,31 @@
 title: use-letme
 description: Usa el flujo MFA de letme con el perfil de --account antes de lanzar escaneos
 ---
+
 # `use-letme`
+
 Con la bandera `--use-letme` puedes obtener credenciales AWS temporales a través de `letme` de forma automática antes de ejecutar cualquier comando de escaneo.
 
 ## Requisitos previos
+
 Para que `--use-letme` funcione, primero debes configurar tu secreto TOTP (el código MFA que genera tu app como Google Authenticator, Authy, etc.).
 
 ### Configurar TOTP (solo una vez)
+
 Ejecuta este comando interactivo:
+
 ```bash
 cloudops-tools setup-totp
 ```
 
 Qué hace:
+
 1. Te pide que pegues la clave secreta TOTP (la cadena base32 que obtuviste al configurar MFA)
 2. La guarda de forma segura usando el almacén de credenciales de tu sistema operativo
 3. Genera un código de prueba para validar que todo está bien
 
 **Dónde se guarda de forma segura:**
+
 - **macOS** → Keychain
 - **Windows** → Administrador de Credenciales
 - **Linux** → libsecret
@@ -27,13 +34,16 @@ Qué hace:
 **Nota para usuarios de WSL**: En WSL a veces los secretos no sobreviven reinicios por limitaciones del sistema. Si usas WSL, tenlo en cuenta.
 
 ## Uso
+
 ```bash
 cloudops-tools --use-letme --account <nombre-perfil> [opciones]
 cloudops-tools init --use-letme --account <nombre-perfil> [opciones]
 ```
 
 ## ¿Cómo funciona internamente?
+
 Cuando activas `--use-letme`, CloudOps Tools hace esto por ti:
+
 1. Necesita que indiques `--account <nombre-perfil>` (el perfil que tienes configurado en letme)
 2. Carga el secreto TOTP que guardaste con `setup-totp`
 3. Genera automáticamente el código MFA del momento
@@ -42,6 +52,7 @@ Cuando activas `--use-letme`, CloudOps Tools hace esto por ti:
 6. Continúa ejecutando el comando (init, escaneo raíz, etc.) con las credenciales temporales ya asumidas
 
 ## Requisitos obligatorios
+
 - Tener `letme` instalado y disponible en tu `PATH`
   - Sitio oficial: [getletme.com](https://getletme.com/)
 - Haber ejecutado `cloudops-tools setup-totp` al menos una vez
@@ -49,22 +60,26 @@ Cuando activas `--use-letme`, CloudOps Tools hace esto por ti:
 ## Ejemplos prácticos
 
 ### 1. Configuración inicial (solo una vez)
+
 ```bash
 cloudops-tools setup-totp
 # Pega tu secreto TOTP cuando te lo pida
 ```
 
 ### 2. Escaneo raíz usando letme
+
 ```bash
 cloudops-tools --use-letme --account engineering-prod --region us-east-1
 ```
 
 ### 3. Escaneo con `init` + letme
+
 ```bash
 cloudops-tools init --use-letme --account engineering-prod --mode security --export-format xlsx
 ```
 
 ### 4. Flujo completo típico
+
 ```bash
 # Paso 1: Configura TOTP (solo la primera vez)
 cloudops-tools setup-totp
@@ -74,6 +89,7 @@ cloudops-tools --region eu-south-2 --account cuenta-dynamodb-letme --use-letme
 ```
 
 ## Errores comunes y mensajes
+
 - Olvidaste `--account` →
   `Missing required --account <profile> with --use-letme`
 
@@ -87,6 +103,7 @@ cloudops-tools --region eu-south-2 --account cuenta-dynamodb-letme --use-letme
   `Unable to read stored TOTP secret: ...`
 
 ## Seguridad
+
 - El secreto TOTP **nunca** se guarda en `config.json` ni en texto plano
 - Usa el almacén seguro nativo de tu sistema operativo
 - En entornos de equipo, considera AWS IAM Identity Center (SSO) como alternativa más cómoda y centralizada

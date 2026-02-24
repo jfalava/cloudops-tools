@@ -2,42 +2,50 @@
 title: Query
 description: Consulta datos históricos de inventario desde la base SQLite local
 ---
+
 # `query`
+
 Consulta y analiza el historial de inventarios que ya tienes guardado en la base de datos local, sin necesidad de volver a escanear AWS.
 
 ## Uso
+
 ```bash
 cloudops-tools query [opciones]
 ```
 
 ## Descripción
+
 Con `query` puedes explorar todos los escaneos anteriores que se guardaron automáticamente en
 `~/.config/cloudops-tools/inventory.db`.
 Ideal para ver tendencias, detectar cambios o generar reportes históricos… ¡todo sin tocar la API de AWS!
 
 ## Opciones principales
-| Opción           | Alias | Descripción                                          | Valor por defecto |
-|------------------|-------|------------------------------------------------------|-------------------|
-| `--account`      | `-a`  | Cuenta AWS a consultar                               | `default`         |
-| `--type`         | `-t`  | Filtrar por tipo de recurso (EC2, RDS, Lambda…)      | Todos los tipos   |
-| `--region`       | `-r`  | Filtrar por región AWS                               | Todas las regiones|
-| `--days`         | `-d`  | Recursos de los últimos N días                       | Todo el historial |
-| `--from`         |       | Fecha desde (formato ISO: YYYY-MM-DD)                | —                 |
-| `--to`           |       | Fecha hasta (formato ISO: YYYY-MM-DD)                | —                 |
-| `--limit`        | `-l`  | Límite de corridas a mostrar                         | `10`              |
-| `--runs`         |       | Listar todas las corridas de inventario              | `false`           |
-| `--changes`      | `-c`  | Mostrar cambios desde la última corrida              | `false`           |
-| `--changes-days` |       | Días hacia atrás para comparar cambios               | `7`               |
+
+| Opción           | Alias | Descripción                                     | Valor por defecto  |
+| ---------------- | ----- | ----------------------------------------------- | ------------------ |
+| `--account`      | `-a`  | Cuenta AWS a consultar                          | `default`          |
+| `--type`         | `-t`  | Filtrar por tipo de recurso (EC2, RDS, Lambda…) | Todos los tipos    |
+| `--region`       | `-r`  | Filtrar por región AWS                          | Todas las regiones |
+| `--days`         | `-d`  | Recursos de los últimos N días                  | Todo el historial  |
+| `--from`         |       | Fecha desde (formato ISO: YYYY-MM-DD)           | —                  |
+| `--to`           |       | Fecha hasta (formato ISO: YYYY-MM-DD)           | —                  |
+| `--limit`        | `-l`  | Límite de corridas a mostrar                    | `10`               |
+| `--runs`         |       | Listar todas las corridas de inventario         | `false`            |
+| `--changes`      | `-c`  | Mostrar cambios desde la última corrida         | `false`            |
+| `--changes-days` |       | Días hacia atrás para comparar cambios          | `7`                |
 
 ## Modos principales
 
 ### 1. Listar corridas históricas
+
 ```bash
 cloudops-tools query --runs
 ```
+
 Muestra ID, fecha, modo y cantidad de recursos de cada escaneo.
 
 ### 2. Consultar recursos con filtros
+
 ```bash
 # Todas las instancias EC2 de los últimos 7 días
 cloudops-tools query --type EC2 --days 7
@@ -53,7 +61,9 @@ cloudops-tools query --limit 5
 ```
 
 ### 3. Detectar cambios
+
 Compara las dos corridas más recientes dentro de una ventana de tiempo:
+
 ```bash
 # Cambios desde la última corrida (últimos 7 días por defecto)
 cloudops-tools query --changes
@@ -63,11 +73,13 @@ cloudops-tools query --changes --changes-days 30
 ```
 
 Tipos de cambios que verás:
+
 - **Added** → recursos nuevos
 - **Removed** → recursos que ya no existen
 - **Modified** → recursos que cambiaron de estado (ej: instancia parada)
 
 ## Ejemplos prácticos
+
 ```bash
 # Ver las últimas 20 corridas
 cloudops-tools query --runs --limit 20
@@ -91,6 +103,7 @@ cloudops-tools query --type EC2
 ## Ejemplos de salida
 
 ### Listado de corridas
+
 ```
 ID  Timestamp             Run At              Mode     Resources
 ----------------------------------------------------------------------
@@ -99,6 +112,7 @@ ID  Timestamp             Run At              Mode     Resources
 ```
 
 ### Recursos encontrados
+
 ```
 Type  Name         Region     State
 ------------------------------------------------------------------------------------------
@@ -107,6 +121,7 @@ RDS   db-1         us-east-1  available
 ```
 
 ### Cambios detectados
+
 ```
 Changes detected (7 day(s)):
 Added (3):
@@ -119,6 +134,7 @@ Modified (2):
 ```
 
 ## Notas importantes
+
 - La base se llena automáticamente cada vez que corres `init` o un escaneo raíz con opciones
   (ej: `cloudops-tools --region us-east-1`)
 - Ubicación: `~/.config/cloudops-tools/inventory.db`
@@ -126,6 +142,7 @@ Modified (2):
 - Los cambios se calculan comparando las dos corridas más recientes dentro del período indicado
 
 ### El parámetro `--account` es clave
+
 Por defecto usa `default`, pero casi siempre debes especificar el ID real de tu cuenta:
 
 ```bash
@@ -142,6 +159,7 @@ cloudops-tools query --runs
 ```
 
 Para saber qué cuentas tienes guardadas:
+
 ```bash
 sqlite3 ~/.config/cloudops-tools/inventory.db "SELECT DISTINCT account_id FROM inventory_runs;"
 ```

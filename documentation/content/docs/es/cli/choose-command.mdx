@@ -8,37 +8,43 @@ description: Decide rápido entre el comando raíz, init, describe y config
 Encuentra la vía más corta según lo que quieras hacer.
 
 ## Guía rápida de decisión
-| Si quieres...                                             | Usa esto                                             |
-|-----------------------------------------------------------|------------------------------------------------------|
-| Hacer un escaneo explícito multi-región o con modo específico | `cloudops-tools init`                                |
-| Inspeccionar en detalle **un solo recurso** por su ID     | `cloudops-tools describe`                            |
-| Describir **todos** los recursos de un tipo en una región | `cloudops-tools --describe <tipo> --region <región>` |
-| Guardar o ver/modificar valores por defecto persistentes  | `cloudops-tools config`                              |
+
+| Si quieres...                                                             | Usa esto                                             |
+| ------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Hacer un escaneo explícito multi-región o con modo específico             | `cloudops-tools init`                                |
+| Inspeccionar en detalle **un solo recurso** por su ID                     | `cloudops-tools describe`                            |
+| Describir **todos** los recursos de un tipo en una región                 | `cloudops-tools --describe <tipo> --region <región>` |
+| Guardar o ver/modificar valores por defecto persistentes                  | `cloudops-tools config`                              |
 | Escanear usando un perfil con MFA vía `letme` (requiere TOTP configurado) | `cloudops-tools --use-letme --account <perfil>`      |
 
 ## Flujos típicos (ejemplos listos para copiar)
 
 ### Inventario rápido (una región)
+
 ```bash
 cloudops-tools --region us-east-1
 ```
 
 ### Auditoría de seguridad (varias regiones + Excel)
+
 ```bash
 cloudops-tools init --mode security --export-format xlsx --limit-regions us-east-1,eu-west-1
 ```
 
 ### Investigar un recurso concreto
+
 ```bash
 cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
 ```
 
 ### Describir todos los recursos de un tipo en una región
+
 ```bash
 cloudops-tools --describe rds --region eu-south-2
 ```
 
 ## Notas importantes
+
 - El **comando raíz** (`cloudops-tools`) y **`init`** se solapan en escaneos:
   - Usa el comando raíz con flags para corridas rápidas y simples
   - Usa `init` cuando necesites controlar bien el modo (`security`, `cost`…) o limitar regiones con precisión
