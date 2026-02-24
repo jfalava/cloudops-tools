@@ -1,30 +1,42 @@
 ---
-title: "Descripción general del SDK"
-description: "Documentos del SDK de CloudOps Tools para desarrolladores que integran la lógica de generación de informes e inventario de AWS"
+title: Visión General del SDK
+description: Documentación del SDK de CloudOps Tools para builders que integran lógica de inventario y reportes AWS
 ---
+# Visión General del SDK
+El SDK de CloudOps Tools (`@cloudops-tools/sdk`) es la base programática que utiliza el CLI internamente.
+Está diseñado para que puedas construir integraciones personalizadas, automatizaciones, reportes avanzados o herramientas propias sobre el mismo motor de inventario y almacenamiento histórico.
 
-# Descripción general del SDK
+## Puntos de entrada principales del paquete
+| Ruta de importación                        | Uso recomendado                                                                 |
+|--------------------------------------------|----------------------------------------------------------------------------------|
+| `@cloudops-tools/sdk`                      | Exportaciones principales → la mayoría de integraciones empiezan aquí           |
+| `@cloudops-tools/sdk/operations`           | Orquestación de inventarios y consultas históricas                              |
+| `@cloudops-tools/sdk/services`             | APIs de inventario AWS por servicio (EC2, RDS, Lambda, IAM, S3, etc.)           |
+| `@cloudops-tools/sdk/lib`                  | Helpers útiles: configuración, eventos, formateo de salida, almacenamiento SQLite |
+| `@cloudops-tools/sdk/types`                | Definiciones de tipos compartidos (TypeScript)                                   |
+| `@cloudops-tools/sdk/credentials`          | Helpers para proveedores de credenciales (perfiles, MFA, letme, etc.)           |
 
-El SDK de CloudOps Tools (`@cloudops-tools/sdk`) es la base programática utilizada por la CLI.
-
-## Puntos de entrada del paquete SDK
-
-| Ruta de importación               | Usar para                                                        |
-| --------------------------------- | ---------------------------------------------------------------- |
-| `@cloudops-tools/sdk`             | Principales exportaciones para la mayoría de las integraciones   |
-| `@cloudops-tools/sdk/operations`  | Orquestación de inventarios y consultas históricas               |
-| `@cloudops-tools/sdk/services`    | API de inventario de AWS de nivel de servicio                    |
-| `@cloudops-tools/sdk/lib`         | Ayudantes: configuración, eventos, salida, almacenamiento SQLite |
-| `@cloudops-tools/sdk/types`       | Definiciones de tipo compartido                                  |
-| `@cloudops-tools/sdk/credentials` | Ayudante del proveedor de credenciales                           |
-
-## Características clave
-
-- **Inventario multirregional**: escanee más de 45 servicios de AWS en todas las regiones
-- **Seguimiento histórico**: almacenamiento basado en SQLite para análisis de tendencias y detección de cambios
-- **Operaciones de consulta**: analice inventarios anteriores sin llamadas a la API de AWS
-- **Múltiples formatos de salida**: CSV, XLSX, exportación JSON
+## Características principales
+- **Inventario multi-región** — Escanea más de 45 servicios AWS en todas las regiones disponibles
+- **Seguimiento histórico** — Almacenamiento persistente en SQLite para análisis de tendencias y detección de cambios
+- **Consultas sin AWS** — Analiza inventarios pasados sin consumir llamadas a la API de AWS
+- **Múltiples formatos de salida** — Exportación nativa a CSV, XLSX y JSON
+- **Manejo estructurado de errores** — Errores tipados (`AwsError`, `CredentialError`, `ValidationError`, etc.) con patrones de retry y recuperación
+- **Integración con Effect** — Toda la lógica es programada con `Effect` para composición segura, manejo de errores y efectos secundarios predecibles
 
 ## Referencia de API
+La documentación generada automáticamente de la API está disponible en:
+[Referencia de API](/docs/sdk/api)
 
-La referencia de API generada está disponible en [Referencia de API](/es/docs/sdk/api).
+Allí encontrarás:
+- Firmas completas de cada servicio y operación
+- Tipos de entrada/salida
+- Ejemplos de uso con `Effect.gen` y pipes
+- Detalles sobre errores específicos por operación
+
+## Próximos pasos recomendados
+- Empieza importando desde `@cloudops-tools/sdk` para la mayoría de casos
+- Usa `@cloudops-tools/sdk/operations` cuando necesites orquestar escaneos completos o consultas históricas
+- Revisa el [modelo de errores](/docs/sdk/error-model) para entender cómo capturar y manejar fallos de forma robusta
+
+Con el SDK puedes construir desde scripts simples de inventario diario hasta dashboards personalizados, alertas de cambios o integraciones con otras herramientas.

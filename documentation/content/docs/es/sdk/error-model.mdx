@@ -1,35 +1,30 @@
 ---
-title: "Modelo de error"
-description: "Taxonomía de errores y patrones de manejo para efectos del SDK de CloudOps"
+title: Modelo de Errores
+description: Taxonomía de errores y patrones de manejo en los Effects del SDK de CloudOps
 ---
+# Modelo de Errores
+Las operaciones y servicios del SDK están modeladas como valores `Effect`, por lo que los errores son valores que puedes clasificar, inspeccionar y manejar de forma estructurada.
 
-# Modelo de error
+## Tipos de error exportados
+| Tipo de error       | Origen típico                          | Notas                                                                 |
+|---------------------|----------------------------------------|-----------------------------------------------------------------------|
+| `AwsError`          | Respuestas del AWS SDK / servicios    | Incluye `service`, `region`, `code`, `statusCode` y helpers como `isRetryable` |
+| `CredentialError`   | Fallos al cargar credenciales / auth  | Suele resolverse corrigiendo entorno o perfil de autenticación       |
+| `ValidationError`   | Entradas u opciones inválidas         | El llamador debe corregir los datos antes de reintentar              |
+| `FileSystemError`   | Operaciones de lectura/escritura de archivos | Muy común en flujos de generación de reportes / salida               |
 
-Las operaciones y servicios del SDK son valores `Effect`, por lo que los errores son valores que puedes clasificar y manejar.
+## Escenarios de fallo frecuentes
+| Escenario                                  | Señal típica                              | Recomendación de manejo                                      |
+|--------------------------------------------|-------------------------------------------|--------------------------------------------------------------|
+| Throttling o fallo transitorio en AWS     | `AwsError` con código/status retryable    | Reintentar con backoff exponencial y límite de intentos      |
+| Credenciales inválidas o expiradas         | `CredentialError` o `AwsError.isCredentialError` | Refrescar sesión/perfil y reintentar                        |
+| Región, servicio o filtro inválido         | `ValidationError`                         | Fallar rápido y mostrar mensaje accionable al usuario        |
+| Fallo al escribir archivo de salida        | `FileSystemError`                         | Registrar ruta destino y abortar la fase de salida           |
 
-## Tipos de errores exportados
-
-| Tipo de error     | Fuente típica                                            | Notas                                                                            |
-| ----------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `AwsError`        | Respuestas del servicio/SDK de AWS                       | Incluye `service`, `region`, `code`, `statusCode` y ayudantes como `isRetryable` |
-| `CredentialError` | Errores de carga/autenticación de credenciales           | Generalmente se recupera arreglando el entorno/perfil de autenticación           |
-| `ValidationError` | Entradas/opciones no válidas                             | La persona que llama debe corregir los datos antes de volver a intentarlo        |
-| `FileSystemError` | Operaciones de lectura/escritura/eliminación de archivos | Común en flujos de trabajo de informes/salida                                    |
-
-## Escenarios de falla comunes
-
-| Escenario                                          | Señal típica                                     | Manejo recomendado                                       |
-| -------------------------------------------------- | ------------------------------------------------ | -------------------------------------------------------- |
-| Problema de limitación de API/servicio transitorio | `AwsError` con código/estado reintentable        | Reintentar con intentos de retroceso y límite            |
-| Credenciales no válidas/caducadas                  | `CredentialError` o `AwsError.isCredentialError` | Actualizar perfil/sesión y volver a intentarlo           |
-| Valores de región/servicio/filtro no válidos       | `ValidationError`                                | Falla rápido y muestra un mensaje procesable             |
-| Fallo de escritura de salida                       | `FileSystemError`                                | Registrar la ruta de destino y detener el paso de salida |
-
-## Patrón de reintento para errores de AWS
-
+## Patrón de reintento para errores AWS
 ```ts
 import { Duration, Effect, Schedule } from "effect";
-import { AwsError, ComputeService, SDKLive } from "@cloudops-tools/sdk";
+import { AwsError, ComputeService, SdkLive } from "@cloudops-tools/sdk";
 
 const program = Effect.gen(function* (_) {
   const compute = yield* _(ComputeService);
@@ -43,23 +38,40 @@ const program = Effect.gen(function* (_) {
   ),
 );
 
-await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+await Effect.runPromise(program.pipe(Effect.provide(SdkLive)));
 ```
 
-## Coincidir etiquetas de error específicas
+Este patrón:
+- Usa backoff exponencial empezando en 250 ms
+- Limita a 4 reintentos adicionales (5 intentos totales)
+- Solo reintenta si el error es marcado como `retryable`
 
+## Manejo específico por tag de error
 ```ts
 import { Effect } from "effect";
-import { CredentialError, UtilService, SDKLive } from "@cloudops-tools/sdk";
+import { CredentialError, UtilService, SdkLive } from "@cloudops-tools/sdk";
 
 const accountIdProgram = Effect.gen(function* (_) {
   const util = yield* _(UtilService);
   return yield* _(util.getAccountId());
 }).pipe(
   Effect.catchTag("CredentialError", (error: CredentialError) =>
-    Effect.fail(new Error(`Credentials issue: ${error.message}`)),
+    Effect.fail(new Error(`Problema de credenciales: ${error.message}`)),
   ),
 );
 
-await Effect.runPromise(accountIdProgram.pipe(Effect.provide(SDKLive)));
+await Effect.runPromise(accountIdProgram.pipe(Effect.provide(SdkLive)));
 ```
+
+### Ventajas del enfoque con `catchTag`
+- Tipado seguro: TypeScript sabe exactamente qué tipo de error estás manejando
+- Evita chequeos manuales con `instanceof` en muchos casos
+- Permite propagar o transformar errores de forma declarativa
+
+## Resumen rápido de recomendaciones
+- **Transient / throttling** → `Effect.retry` + `Schedule` con `isRetryable`
+- **Credenciales** → `catchTag("CredentialError")` → refrescar sesión
+- **Validación** → fallar rápido con mensaje claro al usuario
+- **Sistema de archivos** → capturar `FileSystemError` y loguear ruta + contexto
+
+Con este modelo de errores estructurado puedes crear flujos robustos, predecibles y fáciles de depurar en tus integraciones con el SDK de CloudOps.
