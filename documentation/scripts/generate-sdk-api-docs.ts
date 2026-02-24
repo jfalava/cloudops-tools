@@ -467,14 +467,21 @@ function renderModuleSection(
   return lines.join("\n");
 }
 
-function renderModulePage(
-  pageTitle: string,
-  importPath: string,
-  generatedAt: string,
-  symbols: ReflectionShape[],
-  locale: LocaleStrings,
-  translatedSummaries?: ReadonlyMap<string, string>,
-): string {
+function renderModulePage({
+  pageTitle,
+  importPath,
+  generatedAt,
+  symbols,
+  locale,
+  translatedSummaries,
+}: {
+  readonly pageTitle: string;
+  readonly importPath: string;
+  readonly generatedAt: string;
+  readonly symbols: ReflectionShape[];
+  readonly locale: LocaleStrings;
+  readonly translatedSummaries?: ReadonlyMap<string, string>;
+}): string {
   const lines: string[] = [
     "---",
     `title: ${yamlString(locale.moduleFrontmatterTitle(pageTitle))}`,
@@ -612,12 +619,10 @@ function main() {
     );
   }
 
-  const locales: Array<{ readonly code: LocaleCode; readonly apiDir: string }> = [
-    { code: "en", apiDir: enApiDir },
-    { code: "es", apiDir: esApiDir },
-  ];
-
-  for (const localeTarget of locales) {
+  for (const localeTarget of [
+    { code: "en" as const, apiDir: enApiDir },
+    { code: "es" as const, apiDir: esApiDir },
+  ]) {
     const locale = localeStrings[localeTarget.code];
 
     const localizedModules = modules.map((module) => ({
@@ -634,14 +639,14 @@ function main() {
     for (const module of localizedModules) {
       const translatedSummaries =
         locale.code === "es" ? existingSpanishSummariesBySlug.get(module.slug) : undefined;
-      const content = renderModulePage(
-        module.pageTitle,
-        module.importPath,
+      const content = renderModulePage({
+        pageTitle: module.pageTitle,
+        importPath: module.importPath,
         generatedAt,
-        module.symbols,
+        symbols: module.symbols,
         locale,
         translatedSummaries,
-      );
+      });
       writeFileSync(resolve(localeTarget.apiDir, `${module.slug}.mdx`), content, "utf8");
     }
   }
