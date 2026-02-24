@@ -1,0 +1,63 @@
+---
+title: "Capas y tiempo de ejecución"
+description: "Cómo SdkLive compone servicios y cómo ejecutar o anular capas"
+---
+
+# Capas y tiempo de ejecución
+
+El SDK utiliza capas de efectos para la inyección de dependencias. La mayoría de las aplicaciones pueden usar `SDKLive` directamente.
+
+## Qué proporciona `SDKLive`
+
+`SDKLive` compone:
+
+- Capa de configuración de AWS (`AwsConfigLive`)
+- Capa de utilidad central (`UtilServiceLive`)
+- Todas las capas de servicios (cómputo, almacenamiento, base de datos, redes, seguridad, plataforma, informes)
+- Capa de servicio de configuración (`ConfigServiceLive`)
+- Capa de base de datos de inventario (`InventoryDbServiceLive`) para almacenamiento histórico de SQLite
+
+## Patrón de tiempo de ejecución estándar
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, UtilService } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const util = yield* _(UtilService);
+  return yield* _(util.getAllRegions());
+});
+
+const regions = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+```
+
+## Proporcionar una anulación del servicio de prueba
+
+Para pruebas enfocadas, proporciona solo el servicio que tu programa necesita.
+
+```ts
+import { Effect, Layer } from "effect";
+import { SDKLive, UtilService, type UtilService as UtilServiceType } from "@cloudops-tools/sdk";
+
+const UtilServiceTest = Layer.succeed(
+  UtilService,
+  UtilService.of({
+    getAccountId: () => Effect.succeed("000000000000"),
+    getAllRegions: () => Effect.succeed(["us-east-1"]),
+  }) satisfies UtilServiceType,
+);
+
+const program = Effect.gen(function* (_) {
+  const util = yield* _(UtilService);
+  return yield* _(util.getAccountId());
+});
+
+const accountId = await Effect.runPromise(program.pipe(Effect.provide(UtilServiceTest)));
+```
+
+## Orientación
+
+- Usa `SDKLive` para tiradas de producción a menos que necesites cableado especial.
+- Anulación limitada (un servicio a la vez) con capas de prueba para pruebas deterministas.
+- Mantenga la construcción de capas cerca del inicio de la aplicación, no dentro de la lógica empresarial.
+- Las operaciones de consulta utilizan automáticamente la base de datos SQLite almacenada en `~/.config/cloudops-tools/inventory.db`.

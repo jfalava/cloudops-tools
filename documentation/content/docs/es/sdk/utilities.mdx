@@ -1,0 +1,101 @@
+---
+title: "Utilidades"
+description: "Módulos de utilidad para eventos de progreso, formato de salida, configuración, comprobaciones de versión, TOTP y almacenamiento SQLite"
+---
+
+# Utilidades
+
+Los ayudantes de la utilidad SDK viven bajo `@cloudops-tools/sdk/lib`.
+
+## Eventos de progreso
+
+`progressEmitter` emite eventos de ciclo de vida durante las ejecuciones de inventario.
+
+Las familias de eventos incluyen:
+
+-`started` -`service_started`
+
+- `service_completed`
+- `service_failed` -`progress` -`file_written` -`completed`
+- `failed`
+
+```ts
+import { progressEmitter, type InventoryProgressEvent } from "@cloudops-tools/sdk";
+
+progressEmitter.onProgress((event: InventoryProgressEvent) => {
+  if (event.type === "progress") {
+    console.log(`${event.percentage}% - ${event.message}`);
+  }
+});
+```
+
+## Base de datos de inventario
+
+`InventoryDbService` proporciona almacenamiento de inventario histórico basado en SQLite. Los datos se almacenan en `~/.config/cloudops-tools/inventory.db`.
+
+```ts
+import { Effect } from "effect";
+import { InventoryDbService, InventoryDbServiceLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* () {
+  const db = yield* InventoryDbService;
+  yield* db.initialize();
+
+  // Save an inventory run
+  const runId = yield* db.saveRun("123456789012", "basic", [
+    { type: "EC2", name: "instance-1", region: "us-east-1", arn: "arn:aws:ec2:..." },
+  ]);
+
+  // Query past runs
+  const runs = yield* db.getRuns("123456789012", 30);
+
+  // Get resources from a specific run
+  const resources = yield* db.getResources(runId, { type: "EC2" });
+
+  // Detect changes between runs
+  const changes = yield* db.getChanges("123456789012", 7);
+});
+
+await Effect.runPromise(program.pipe(Effect.provide(InventoryDbServiceLive)));
+```
+
+### Métodos de InventoryDbService
+
+| Método                  | Propósito                                                               |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `initialize`            | Cree un esquema de base de datos si es necesario                        |
+| `saveRun`               | Inventario de la tienda ejecutado con todos los recursos                |
+| `getRuns`               | Listar ejecuciones anteriores para una cuenta                           |
+| `getResources`          | Obtener recursos de una ejecución específica (con filtros)              |
+| `queryResources`        | Consultar recursos en ejecuciones con filtros                           |
+| `getChanges`            | Compare las dos ejecuciones más recientes para ver los cambios          |
+| `getIncrementalChanges` | Comparar nuevos recursos con huellas dactilares almacenadas             |
+| `updateFingerprints`    | Actualizar huellas digitales de recursos para escaneo incremental       |
+| `getDescribeCache`      | Obtener datos de descripción almacenados en caché si no están caducados |
+| `setDescribeCache`      | Almacenar describir datos en caché con TTL                              |
+| `checkRecentScan`       | Compruebe si existe un análisis reciente dentro del intervalo           |
+| `close`                 | Cerrar conexión de base de datos                                        |
+
+## Ayudantes de salida
+
+| Ayudante                 | Propósito                                 |
+| ------------------------ | ----------------------------------------- |
+| `writeInventoryFile`     | Escribir inventario como CSV/XLSX         |
+| `csvToXlsx`              | Convertir CSV existente a XLSX            |
+| `createWebInventoryJson` | Cree una forma JSON compatible con la web |
+| `writeJsonInventoryFile` | Escribir salida de inventario JSON        |
+
+## Ayudantes de configuración
+
+| Ayudante                | Propósito                                                                       |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| `ConfigService`         | Cargar/guardar configuración persistente de CloudOps                            |
+| `getConfigWithDefaults` | Fusionar valores predeterminados con valores de opciones de tiempo de ejecución |
+
+## Ayudantes de validación y tiempo de ejecución
+
+| Ayudante                                                                                                    | Propósito                                      |
+| ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `findAwsCLIPath`, `isAwsCLIAvailable`, `getAwsCLIVersion`                                                   | Comprobaciones del entorno de AWS CLI          |
+| `getEKSVersionStatus`, `getLambdaRuntimeStatus`, `getRDSEngineVersionStatus`, `getElastiCacheVersionStatus` | Clasificación del ciclo de vida de la versión  |
+| `storeTOTPSecret`, `getTOTPSecret`, `generateTOTPToken`, `setupTOTP`                                        | Manejo de secretos TOTP y generación de tokens |

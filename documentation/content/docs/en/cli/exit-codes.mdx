@@ -1,0 +1,105 @@
+---
+title: Exit Codes
+description: CLI exit codes, usage error behavior, and --debug output behavior
+---
+
+# Exit Codes
+
+CloudOps Tools uses standard process exit codes so scripts and CI jobs can distinguish success,
+usage errors, and runtime failures.
+
+## Exit Code Summary
+
+| Exit code | Meaning             | Typical cases                                                                    |
+| --------- | ------------------- | -------------------------------------------------------------------------------- |
+| `0`       | Success             | Completed scan/query/describe/config command, help output, version output        |
+| `1`       | Runtime error       | AWS/auth/network failures, filesystem/database issues, unexpected runtime errors |
+| `2`       | Usage / input error | Invalid flags, malformed values, invalid option combinations                     |
+
+## Usage Errors (`2`)
+
+Usage errors happen when the CLI can parse the command invocation but the provided values are
+invalid, or when argument parsing itself fails.
+
+Examples:
+
+```bash
+# Parser/type validation error
+cloudops-tools query --days abc
+# stderr: 'abc' is not a integer
+# exit: 2
+```
+
+```bash
+# Semantic validation error (invalid date format)
+cloudops-tools query --from 2026-13-01
+# stderr:
+# Invalid value for --from: "2026-13-01". Expected ISO date format YYYY-MM-DD.
+# Example: cloudops-tools query --from 2026-02-01 --to 2026-02-15
+# exit: 2
+```
+
+```bash
+# Invalid option combination
+cloudops-tools init --skip-global --only-global
+# stderr:
+# Invalid option combination: --skip-global cannot be used with --only-global.
+# Example: cloudops-tools init --only-global
+# exit: 2
+```
+
+```bash
+# Invalid config value
+cloudops-tools config set skipGlobal maybe
+# stderr:
+# Invalid value for skipGlobal: "maybe". Expected true or false.
+# Example: cloudops-tools config set skipGlobal true
+# exit: 2
+```
+
+## Success and Early-Exit Commands (`0`)
+
+Some commands intentionally exit successfully without running scan logic:
+
+```bash
+cloudops-tools           # prints help and exits
+cloudops-tools --help    # prints help and exits
+cloudops-tools --version # prints version and exits
+```
+
+## Runtime Errors (`1`)
+
+Runtime errors occur after argument parsing and validation succeeds. Common examples:
+
+- AWS credentials are missing or invalid
+- AWS API call fails due to permissions or network issues
+- Local filesystem/database writes fail
+- Unexpected internal/runtime failure
+
+## `--debug` Behavior
+
+By default, CLI usage errors and known user-input errors are rendered as concise messages.
+
+When you add `--debug`:
+
+- The CLI shows raw error output / stack traces (useful for troubleshooting)
+- This may include Effect error structures
+- Exit codes still indicate failure (for example `1` for runtime failures)
+
+Examples:
+
+```bash
+cloudops-tools init --services EC2 --region us-east-1 --debug
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug
+```
+
+## Scripting Tips
+
+- Treat `0` as success.
+- Treat `2` as a caller/input bug (fix the command invocation).
+- Treat `1` as an operational/runtime failure (retry, inspect logs, or use `--debug`).
+
+Related:
+
+- [Troubleshooting](/docs/cli/troubleshooting)
+- [Commands Overview](/docs/cli/commands)

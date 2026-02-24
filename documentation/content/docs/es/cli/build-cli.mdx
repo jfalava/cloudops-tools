@@ -1,0 +1,76 @@
+---
+title: Compilar el binario del CLI
+description: Compila binarios nativos de CloudOps Tools desde el código fuente
+---
+
+# Compilar desde código fuente
+
+Sigue esta guía si prefieres compilar los binarios tú mismo en lugar de instalarlos desde `npm`.
+
+## Requisitos previos
+
+- [Bun](https://bun.sh) versión **1.3.8** o superior
+- Git instalado
+
+## Clonar e instalar dependencias
+
+```bash
+git clone https://github.com/jfalava/cloudops-tools-draft.git
+cd cloudops-tools-draft
+bun install
+```
+
+## Comandos de compilación
+
+Ejecuta estos comandos desde la raíz del repositorio.
+
+### Compilar para la plataforma actual (la que estás usando ahora)
+
+```bash
+bun run cli:build:linux     # para Linux (x64)
+bun run cli:build:windows   # para Windows (x64)
+bun run cli:build:macos     # para macOS (arm64 o x64 según tu máquina)
+```
+
+### Compilar para **todas** las plataformas configuradas
+
+```bash
+bun run cli:build:all
+```
+
+## Personalizar la versión del build
+
+Puedes indicar manualmente la versión que aparecerá en `--version`:
+
+```bash
+BUILD_VERSION=v0.1.1 bun run cli:build:linux
+```
+
+Si no lo especificas, los scripts usan por defecto: `0.5`
+
+## Archivos generados
+
+Los binarios y paquetes comprimidos se guardan en la carpeta:
+`cli/dist/`
+
+Ejemplos de archivos que encontrarás:
+
+- `cloudops-tools-linux-x64.zip`
+- `cloudops-tools-windows-x64.zip`
+- `cloudops-tools-macos-arm.zip`
+- (y sus equivalentes según las plataformas que compiles)
+
+## Ejecutar el CLI directamente desde el código (modo desarrollo)
+
+No necesitas compilar el binario final para probar cambios. Puedes ejecutarlo directamente así:
+
+```bash
+bun run cli -- --help
+```
+
+O con cualquier otro comando:
+
+```bash
+bun run cli --region us-east-1
+bun run cli init --mode security
+```

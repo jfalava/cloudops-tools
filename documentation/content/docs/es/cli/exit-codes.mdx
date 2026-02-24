@@ -1,0 +1,105 @@
+---
+title: Códigos de Salida
+description: Códigos de salida del CLI, comportamiento en errores de uso y salida con --debug
+---
+
+# Códigos de Salida
+
+CloudOps Tools utiliza códigos de salida estándar para que scripts, pipelines CI/CD y automatizaciones puedan distinguir fácilmente entre éxito, errores de uso y fallos en tiempo de ejecución.
+
+## Resumen de códigos de salida
+
+| Código | Significado                  | Casos típicos                                                                                |
+| ------ | ---------------------------- | -------------------------------------------------------------------------------------------- |
+| `0`    | Éxito                        | Escaneo, consulta, describe o config completado correctamente; ayuda o versión mostrada      |
+| `1`    | Error en tiempo de ejecución | Fallos de autenticación AWS, problemas de red, permisos, base de datos o errores inesperados |
+| `2`    | Error de uso / entrada       | Flags inválidos, valores mal formados, combinaciones de opciones no permitidas               |
+
+## Errores de uso (código 2)
+
+Ocurren cuando el CLI entiende el comando, pero los valores o combinaciones no son válidos.
+
+Ejemplos comunes:
+
+```bash
+# Valor no numérico donde se espera número
+cloudops-tools query --days abc
+# Salida de error:
+# 'abc' no es un número entero
+# Código de salida: 2
+```
+
+```bash
+# Fecha con formato inválido
+cloudops-tools query --from 2026-13-01
+# Salida de error:
+# Valor inválido para --from: "2026-13-01". Se esperaba formato ISO YYYY-MM-DD.
+# Ejemplo: cloudops-tools query --from 2026-02-01 --to 2026-02-15
+# Código de salida: 2
+```
+
+```bash
+# Combinación incompatible de flags
+cloudops-tools init --skip-global --only-global
+# Salida de error:
+# Combinación inválida: --skip-global no se puede usar junto con --only-global.
+# Ejemplo correcto: cloudops-tools init --only-global
+# Código de salida: 2
+```
+
+```bash
+# Valor incorrecto en config
+cloudops-tools config set skipGlobal maybe
+# Salida de error:
+# Valor inválido para skipGlobal: "maybe". Se esperaba true o false.
+# Ejemplo: cloudops-tools config set skipGlobal true
+# Código de salida: 2
+```
+
+## Comandos que terminan con éxito (código 0) sin ejecutar lógica principal
+
+```bash
+cloudops-tools              # muestra ayuda y termina → código 0
+cloudops-tools --help       # muestra ayuda y termina → código 0
+cloudops-tools --version    # muestra versión y termina → código 0
+cloudops-tools --help-examples  # muestra ejemplos y termina → código 0
+```
+
+## Errores en tiempo de ejecución (código 1)
+
+Ocurren **después** de que los argumentos se hayan validado correctamente.
+Ejemplos típicos:
+
+- No hay credenciales AWS válidas o el perfil no existe
+- Error de permisos en una llamada AWS (AccessDenied, UnauthorizedOperation…)
+- Problemas de red o timeouts al contactar con AWS
+- Fallo al escribir en disco o en la base SQLite local
+- Errores internos inesperados
+
+## Comportamiento con `--debug`
+
+Por defecto, los errores de uso y validación se muestran de forma limpia y breve.
+
+Cuando añades `--debug`:
+
+- Se muestra la salida completa del error (incluyendo trazas de pila / stack traces)
+- Aparecen detalles internos (incluyendo estructuras de error de Effect, si aplica)
+- **El código de salida no cambia** (sigue siendo 1 para errores runtime o 2 para uso)
+
+Útil para reportar bugs o depurar problemas complejos:
+
+```bash
+cloudops-tools init --services EC2 --region us-east-1 --debug
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug
+```
+
+## Consejos para scripts y automatización
+
+- `0` → todo bien, puedes continuar
+- `2` → error en cómo se llamó el comando (corrige flags, valores o sintaxis)
+- `1` → problema operacional o de entorno (reintenta, revisa credenciales, permisos, red, usa `--debug`)
+
+Relacionado:
+
+- [Solución de problemas](/docs/cli/troubleshooting)
+- [Resumen de comandos](/docs/cli/commands)

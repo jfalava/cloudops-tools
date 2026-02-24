@@ -1,6 +1,8 @@
 import { Terminal, Code2 } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 
+import { localizePath, type Locale } from "@/lib/i18n";
+
 function DocCard({
   href,
   icon: Icon,
@@ -38,43 +40,81 @@ function QuickLink({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
-export function Hero() {
+export function Hero({ locale = "en" }: { locale?: Locale }) {
+  const copy =
+    locale === "es"
+      ? {
+          title: "CloudOps Tools",
+          description:
+            "Kit de herramientas de operaciones en AWS con un CLI potente y un SDK en TypeScript para inventario, descubrimiento de recursos y automatización.",
+          cliTitle: "Documentación del CLI",
+          cliDescription:
+            "Herramientas de línea de comandos para inventario de AWS, descripción de recursos y operaciones cloud. Empieza con instalación y referencia de comandos.",
+          sdkTitle: "Documentación del SDK",
+          sdkDescription:
+            "SDK de TypeScript construido con Effect para operaciones funcionales en AWS. Aprende sobre servicios, operaciones, manejo de errores y más.",
+          quickLinks: "Enlaces rápidos",
+          installation: "Instalación",
+          cliCommands: "Comandos CLI",
+          sdkGettingStarted: "SDK: Primeros pasos",
+          apiReference: "Referencia API",
+        }
+      : {
+          title: "CloudOps Tools",
+          description:
+            "AWS cloud operations toolkit with a powerful CLI and TypeScript SDK for inventory management, resource discovery, and automation.",
+          cliTitle: "CLI Documentation",
+          cliDescription:
+            "Command-line tools for AWS inventory scanning, resource description, and cloud operations. Get started with installation and command references.",
+          sdkTitle: "SDK Documentation",
+          sdkDescription:
+            "TypeScript SDK built with Effect for functional AWS operations. Learn about services, operations, error handling, and more.",
+          quickLinks: "Quick Links",
+          installation: "Installation",
+          cliCommands: "CLI Commands",
+          sdkGettingStarted: "SDK Getting Started",
+          apiReference: "API Reference",
+        };
+
   return (
     <main className="flex-1 px-6 py-16">
       <div className="mx-auto max-w-3xl text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">CloudOps Tools</h1>
-        <p className="text-muted-foreground mt-6 text-lg">
-          AWS cloud operations toolkit with a powerful CLI and TypeScript SDK for inventory
-          management, resource discovery, and automation.
-        </p>
+        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{copy.title}</h1>
+        <p className="text-muted-foreground mt-6 text-lg">{copy.description}</p>
 
         {/* Documentation Cards */}
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           <DocCard
-            href="/docs/cli"
+            href={localizePath("/docs/cli", locale)}
             icon={Terminal}
-            title="CLI Documentation"
-            description="Command-line tools for AWS inventory scanning, resource description, and cloud operations. Get started with installation and command references."
+            title={copy.cliTitle}
+            description={copy.cliDescription}
           />
           <DocCard
-            href="/docs/sdk"
+            href={localizePath("/docs/sdk", locale)}
             icon={Code2}
-            title="SDK Documentation"
-            description="TypeScript SDK built with Effect for functional AWS operations. Learn about services, operations, error handling, and more."
+            title={copy.sdkTitle}
+            description={copy.sdkDescription}
           />
         </div>
 
         {/* Quick Links */}
         <div className="mt-12 border-t pt-8">
-          <p className="text-muted-foreground text-sm">Quick Links</p>
+          <p className="text-muted-foreground text-sm">{copy.quickLinks}</p>
           <div className="mt-4 flex flex-wrap justify-center gap-4">
-            <QuickLink href="/docs/cli/installation">Installation</QuickLink>
+            <QuickLink href={localizePath("/docs/cli/installation", locale)}>
+              {copy.installation}
+            </QuickLink>
             <span className="text-muted-foreground">·</span>
-            <QuickLink href="/docs/cli/commands">CLI Commands</QuickLink>
+            <QuickLink href={localizePath("/docs/cli/commands", locale)}>
+              {copy.cliCommands}
+            </QuickLink>
             <span className="text-muted-foreground">·</span>
-            <QuickLink href="/docs/sdk/getting-started">SDK Getting Started</QuickLink>
+            <QuickLink href={localizePath("/docs/sdk/getting-started", locale)}>
+              {copy.sdkGettingStarted}
+            </QuickLink>
             <span className="text-muted-foreground">·</span>
-            <QuickLink href="/docs/sdk/api">API Reference</QuickLink>
+            <QuickLink href={localizePath("/docs/sdk/api", locale)}>{copy.apiReference}</QuickLink>
           </div>
         </div>
       </div>

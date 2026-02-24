@@ -14,6 +14,7 @@ import {
   setupTotpCommand,
   queryCommand,
 } from "@/commands";
+import { formatCliUserInputError, isCliUserInputError } from "@/lib/user-input-error";
 import { resolveCliVersion } from "@/lib/version";
 
 declare const BUILD_VERSION: string | undefined;
@@ -117,7 +118,16 @@ const withErrorHandling = <R>(effect: Effect.Effect<void, unknown, R>) =>
     : effect.pipe(
         Effect.catchAll((error) => {
           if (ValidationError.isValidationError(error)) {
-            return Effect.succeed(undefined);
+            return Effect.sync(() => {
+              // @effect/cli already prints validation/help text; preserve correct exit semantics.
+              process.exitCode = ValidationError.isHelpRequested(error) ? 0 : 2;
+            });
+          }
+          if (isCliUserInputError(error)) {
+            return Effect.sync(() => {
+              console.error(formatCliUserInputError(error));
+              process.exitCode = 2;
+            });
           }
           return Effect.sync(() => {
             console.error(formatError(error));

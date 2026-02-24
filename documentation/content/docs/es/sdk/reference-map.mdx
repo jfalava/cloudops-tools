@@ -1,0 +1,36 @@
+---
+title: "Mapa de referencia"
+description: "Puntos de entrada del SDK público asignados a tus responsabilidades"
+---
+
+# Mapa de referencia
+
+Usa esta página como mapa rápido antes de saltar a las referencias o fuentes de API generadas.
+
+Página API generada: [Referencia API](/es/docs/sdk/api).
+
+## Mapa del punto de entrada
+
+| Ruta de importación               | Exportaciones primarias                                                                                                                                                                                                                          | Usar para                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| `@cloudops-tools/sdk`             | Reexportaciones principales (`SDKLive`, servicios, operaciones, utilidades, tipos)                                                                                                                                                               | Importación predeterminada para la mayoría de las integraciones  |
+| `@cloudops-tools/sdk/operations`  | `generateInitInventoryEffect`, modo de inventario/tipos de servicio                                                                                                                                                                              | Orquestación de alto nivel                                       |
+| `@cloudops-tools/sdk/services`    | `ComputeService`, `StorageService`, `DatabaseService`, `NetworkingService`, `SecurityService`, `ManagementService`, `GovernanceService`, `DeveloperToolsService`, `AnalyticsService`, `AppIntegrationService`, `ReportingService`, `UtilService` | Recopilación de servicios dirigidos y orquestación personalizada |
+| `@cloudops-tools/sdk/lib`         | Ayudantes de configuración, ayudantes de salida, eventos de progreso, comprobaciones de versión                                                                                                                                                  | Ayudantes de servicios públicos compartidos                      |
+| `@cloudops-tools/sdk/types`       | Tipos de recursos y tipos de errores compartidos de AWS                                                                                                                                                                                          | Escritura de dominio/aplicación compartida                       |
+| `@cloudops-tools/sdk/credentials` | Ayudante del proveedor de credenciales                                                                                                                                                                                                           | Integración explícita del proveedor de credenciales              |
+
+## Reglas prácticas de selección
+
+- Elige `operations` cuando necesites generación de inventario de un extremo a otro con manejo de salida.
+- Elige `services` cuando necesites una orquestación personalizada y llamadas selectivas.
+- Elige `lib` cuando integres ayudantes de progreso/salida/configuración en tu propio tiempo de ejecución.
+
+## Referencia cruzada de fuentes
+
+| Preocupación                  | Ruta de origen                         |
+| ----------------------------- | -------------------------------------- |
+| Cableado de capas             | `sdk/src/lib/layers.ts`                |
+| Orquestación de inventario    | `sdk/src/operations/init-inventory.ts` |
+| Implementaciones de servicios | `sdk/src/services/*.ts`                |
+| Tipos de errores              | `sdk/src/types/effect-errors.ts`       |

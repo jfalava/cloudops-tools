@@ -1,0 +1,57 @@
+---
+title: "Servicios: Datos y Redes"
+description: "Servicios de bases de datos, análisis, integración y redes en el SDK de CloudOps"
+---
+
+# Servicios: Datos y Redes
+
+## Elige esta página cuando
+
+- Necesitas un inventario de almacén de datos específico (RDS, DynamoDB, Redshift, OpenSearch y sistemas relacionados)
+- Necesitas primitivas de mensajería o integración como SQS/SNS
+- Necesitas un inventario de topología de red (VPC, subredes, puertas de enlace, puntos finales y servicios perimetrales)
+
+## Servicio de base de datos
+
+Úsalo para inventario de bases de datos y almacenes de datos.
+
+Ejemplos: RDS, DynamoDB, Redshift, OpenSearch, ElastiCache, DAX, DocDB, Neptune, MemoryDB,
+Timestream, Keyspaces, Redshift Serverless, OpenSearch Serverless.
+
+## Servicio de análisis
+
+Úsalo para cargas de trabajo orientadas a análisis.
+
+Ejemplos: Kinesis, grupos de trabajo de Athena, inventario de análisis de EMR.
+
+## Servicio de integración de aplicaciones
+
+Úsalo para primitivas de mensajería/integración.
+
+Ejemplos: SQS, SNS.
+
+## Servicio de redes
+
+Úsalo para topología de red y conectividad perimetral.
+
+Ejemplos: VPC, subredes, grupos de seguridad, balanceadores de carga, puertas de enlace, puntos finales,
+Conexión directa, Acelerador global, VPC Lattice.
+
+## Ejemplo
+
+```ts
+import { Effect } from "effect";
+import { DatabaseService, NetworkingService, SDKLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const db = yield* _(DatabaseService);
+  const net = yield* _(NetworkingService);
+
+  const rds = yield* _(db.describeRDS("us-east-1"));
+  const vpcs = yield* _(net.describeVPCs("us-east-1"));
+
+  return { rds, vpcs };
+});
+
+await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+```

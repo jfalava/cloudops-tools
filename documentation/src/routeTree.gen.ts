@@ -9,10 +9,24 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as EsRouteImport } from './routes/es'
+import { Route as EnRouteImport } from './routes/en'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as ApiSearchRouteImport } from './routes/api.search'
+import { Route as EsDocsSplatRouteImport } from './routes/es.docs.$'
+import { Route as EnDocsSplatRouteImport } from './routes/en.docs.$'
 
+const EsRoute = EsRouteImport.update({
+  id: '/es',
+  path: '/es',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EnRoute = EnRouteImport.update({
+  id: '/en',
+  path: '/en',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -28,39 +42,99 @@ const ApiSearchRoute = ApiSearchRouteImport.update({
   path: '/api/search',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EsDocsSplatRoute = EsDocsSplatRouteImport.update({
+  id: '/docs/$',
+  path: '/docs/$',
+  getParentRoute: () => EsRoute,
+} as any)
+const EnDocsSplatRoute = EnDocsSplatRouteImport.update({
+  id: '/docs/$',
+  path: '/docs/$',
+  getParentRoute: () => EnRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/en': typeof EnRouteWithChildren
+  '/es': typeof EsRouteWithChildren
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
+  '/en/docs/$': typeof EnDocsSplatRoute
+  '/es/docs/$': typeof EsDocsSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/en': typeof EnRouteWithChildren
+  '/es': typeof EsRouteWithChildren
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
+  '/en/docs/$': typeof EnDocsSplatRoute
+  '/es/docs/$': typeof EsDocsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/en': typeof EnRouteWithChildren
+  '/es': typeof EsRouteWithChildren
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
+  '/en/docs/$': typeof EnDocsSplatRoute
+  '/es/docs/$': typeof EsDocsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/search' | '/docs/$'
+  fullPaths:
+    | '/'
+    | '/en'
+    | '/es'
+    | '/api/search'
+    | '/docs/$'
+    | '/en/docs/$'
+    | '/es/docs/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/search' | '/docs/$'
-  id: '__root__' | '/' | '/api/search' | '/docs/$'
+  to:
+    | '/'
+    | '/en'
+    | '/es'
+    | '/api/search'
+    | '/docs/$'
+    | '/en/docs/$'
+    | '/es/docs/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/en'
+    | '/es'
+    | '/api/search'
+    | '/docs/$'
+    | '/en/docs/$'
+    | '/es/docs/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  EnRoute: typeof EnRouteWithChildren
+  EsRoute: typeof EsRouteWithChildren
   ApiSearchRoute: typeof ApiSearchRoute
   DocsSplatRoute: typeof DocsSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/es': {
+      id: '/es'
+      path: '/es'
+      fullPath: '/es'
+      preLoaderRoute: typeof EsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/en': {
+      id: '/en'
+      path: '/en'
+      fullPath: '/en'
+      preLoaderRoute: typeof EnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,11 +156,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/es/docs/$': {
+      id: '/es/docs/$'
+      path: '/docs/$'
+      fullPath: '/es/docs/$'
+      preLoaderRoute: typeof EsDocsSplatRouteImport
+      parentRoute: typeof EsRoute
+    }
+    '/en/docs/$': {
+      id: '/en/docs/$'
+      path: '/docs/$'
+      fullPath: '/en/docs/$'
+      preLoaderRoute: typeof EnDocsSplatRouteImport
+      parentRoute: typeof EnRoute
+    }
   }
 }
 
+interface EnRouteChildren {
+  EnDocsSplatRoute: typeof EnDocsSplatRoute
+}
+
+const EnRouteChildren: EnRouteChildren = {
+  EnDocsSplatRoute: EnDocsSplatRoute,
+}
+
+const EnRouteWithChildren = EnRoute._addFileChildren(EnRouteChildren)
+
+interface EsRouteChildren {
+  EsDocsSplatRoute: typeof EsDocsSplatRoute
+}
+
+const EsRouteChildren: EsRouteChildren = {
+  EsDocsSplatRoute: EsDocsSplatRoute,
+}
+
+const EsRouteWithChildren = EsRoute._addFileChildren(EsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  EnRoute: EnRouteWithChildren,
+  EsRoute: EsRouteWithChildren,
   ApiSearchRoute: ApiSearchRoute,
   DocsSplatRoute: DocsSplatRoute,
 }

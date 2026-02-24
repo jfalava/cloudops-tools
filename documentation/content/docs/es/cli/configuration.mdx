@@ -1,0 +1,85 @@
+---
+title: Configuración
+description: Configura valores por defecto persistentes y comportamiento en tiempo de ejecución de CloudOps Tools
+---
+
+# Configuración
+
+Con el comando `cloudops-tools config` puedes guardar valores por defecto que se usarán en tus escaneos futuros: región preferida, formato de salida, modo de escaneo, servicios habituales, etc.
+
+Esta página es una **guía rápida de inicio**. La referencia completa y detallada de todos los subcomandos está en:
+[`Referencia del comando config`](/docs/cli/commands/config)
+
+## Inicio rápido (lo primero que deberías probar)
+
+```bash
+cloudops-tools config --write-defaults
+```
+
+Este comando:
+
+- Crea el archivo `~/.config/cloudops-tools/config.json` si no existe
+- Añade valores razonables a las claves que faltan
+- **Conserva intactos** los valores que ya tenías configurados (no los sobreescribe)
+
+## Valores por defecto que establece `--write-defaults`
+
+| Clave           | Valor por defecto |
+| --------------- | ----------------- |
+| `defaultRegion` | `us-east-1`       |
+| `defaultFormat` | `csv`             |
+| `defaultMode`   | `basic`           |
+| `skipGlobal`    | `false`           |
+| `onlyGlobal`    | `false`           |
+
+## Tareas más habituales
+
+### Crear o completar el archivo de configuración base
+
+```bash
+cloudops-tools config --write-defaults
+```
+
+### Establecer valores personalizados
+
+```bash
+# Cambiar la región por defecto
+cloudops-tools config set defaultRegion eu-west-1
+
+# Preferir siempre Excel como formato de salida
+cloudops-tools config set defaultFormat xlsx
+
+# Modo de escaneo por defecto más enfocado en seguridad
+cloudops-tools config set defaultMode security
+
+# Servicios que más usas (lista separada por comas)
+cloudops-tools config set defaultServices EC2,RDS,Lambda,S3
+
+# Omitir servicios globales por defecto (acelera los escaneos regionales)
+cloudops-tools config set skipGlobal true
+```
+
+### Ver la configuración actual
+
+```bash
+# Mostrar TODA la configuración guardada
+cloudops-tools config get
+
+# Ver solo un valor concreto
+cloudops-tools config get defaultRegion
+cloudops-tools config get defaultFormat
+```
+
+### Eliminar un valor (volver al comportamiento por defecto)
+
+```bash
+cloudops-tools config unset defaultServices
+cloudops-tools config unset defaultRegion
+```
+
+### Saber exactamente dónde está el archivo
+
+```bash
+cloudops-tools config path
+# Ejemplo de salida: /home/usuario/.config/cloudops-tools/config.json
+```

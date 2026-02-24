@@ -1,0 +1,117 @@
+---
+title: "Operaciones"
+description: "API de orquestación de inventario de alto nivel en el SDK"
+---
+
+# Operaciones
+
+Las operaciones proporcionan flujos de trabajo de alto nivel que componen muchos servicios.
+
+## Generación de inventario
+
+`generateInitInventoryEffect` ejecuta la generación de inventario entre regiones con soporte para:
+
+- Modos: `basic`, `detailed`, `security`, `cost`
+- Formatos de salida: `csv`, `xlsx`, `json`, `both`, `all`
+- Limitación de regiones y alternancia de servicios globales.
+- Filtrado de servicios
+- Emisión de eventos de progreso.
+- Almacenamiento automático de SQLite para consultas históricas.
+- Escaneo incremental para generar solo recursos modificados
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+await Effect.runPromise(
+  generateInitInventoryEffect(
+    "123456789012",
+    "security",
+    "all",
+    ["us-east-1", "eu-west-1"],
+    false,
+    {
+      skipGlobal: false,
+      onlyGlobal: false,
+      services: ["EC2", "RDS", "S3"],
+    },
+  ).pipe(Effect.provide(SDKLive)),
+);
+```
+
+### Escaneo incremental
+
+Habilita el modo incremental para generar solo los recursos que hayan cambiado desde el último análisis:
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, generateInitInventoryEffect } from "@cloudops-tools/sdk";
+
+await Effect.runPromise(
+  generateInitInventoryEffect("123456789012", "basic", "csv", ["us-east-1"], false, {
+    incremental: true, // Only output new/changed resources
+  }).pipe(Effect.provide(SDKLive)),
+);
+```
+
+El modo incremental utiliza huellas digitales de recursos almacenadas en SQLite para detectar cambios. El evento de finalización incluye estadísticas sobre recursos nuevos, modificados, sin cambios y eliminados.
+
+## Operaciones de consulta
+
+Consulta datos de inventario históricos de la base de datos SQLite local sin volver a escanear AWS.
+
+### Consultar recursos
+
+`queryInventoryEffect` recupera recursos de ejecuciones de inventario anteriores:
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, queryInventoryEffect } from "@cloudops-tools/sdk";
+
+const results = await Effect.runPromise(
+  queryInventoryEffect("123456789012", {
+    type: "EC2", // Filter by resource type
+    region: "us-east-1", // Filter by region
+    days: 7, // Last 7 days
+  }).pipe(Effect.provide(SDKLive)),
+);
+
+// results: Array<{ runAt: string; resources: ResourceRecord[] }>
+```
+
+### Listar ejecuciones de inventario
+
+`listInventoryRunsEffect` muestra ejecuciones de inventario pasadas:
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, listInventoryRunsEffect } from "@cloudops-tools/sdk";
+
+const runs = await Effect.runPromise(
+  listInventoryRunsEffect("123456789012", 30).pipe(Effect.provide(SDKLive)),
+);
+
+// runs: Array<{ id, accountId, timestamp, runAt, mode, totalResources }>
+```
+
+### Detectar cambios
+
+`getInventoryChangesEffect` compara las dos ejecuciones más recientes:
+
+```ts
+import { Effect } from "effect";
+import { SDKLive, getInventoryChangesEffect } from "@cloudops-tools/sdk";
+
+const changes = await Effect.runPromise(
+  getInventoryChangesEffect("123456789012", 7).pipe(Effect.provide(SDKLive)),
+);
+
+// changes: Array<{ type, name, region, change, oldValue, newValue }>
+// change: "added" | "removed" | "modified"
+```
+
+## Cuándo utilizar operaciones frente a servicios
+
+- Usa `operations` cuando quieras una orquestación y manejo de salida administrados por el SDK.
+- Usa `services` cuando quieras una orquestación personalizada o una recopilación de datos específica.
+- Usa `query operations` para analizar datos históricos sin llamadas a la API de AWS.

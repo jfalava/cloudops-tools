@@ -1,0 +1,74 @@
+---
+title: Configuration
+description: Configure persistent defaults and runtime behavior for CloudOps Tools
+---
+
+# Configuration
+
+Use `cloudops-tools config` to store persistent defaults such as region, mode, format, and service
+filters.
+
+This page is a **quick-start guide**. The full command reference lives at
+[`config` command reference](/docs/cli/commands/config).
+
+## Quick Start
+
+```bash
+cloudops-tools config --write-defaults
+```
+
+This creates (or backfills) `~/.config/cloudops-tools/config.json` with sensible defaults while
+preserving any existing values.
+
+## Sensible Defaults Written by `--write-defaults`
+
+| Key             | Value       |
+| --------------- | ----------- |
+| `defaultRegion` | `us-east-1` |
+| `defaultFormat` | `csv`       |
+| `defaultMode`   | `basic`     |
+| `skipGlobal`    | `false`     |
+| `onlyGlobal`    | `false`     |
+
+## Common Tasks
+
+### Create a Base Config File
+
+```bash
+cloudops-tools config --write-defaults
+```
+
+### Set Values
+
+```bash
+cloudops-tools config set defaultRegion eu-west-1
+cloudops-tools config set defaultFormat xlsx
+cloudops-tools config set defaultMode security
+cloudops-tools config set defaultServices EC2,RDS,Lambda
+cloudops-tools config set skipGlobal true
+```
+
+### Read Values
+
+```bash
+cloudops-tools config get
+cloudops-tools config get defaultRegion
+```
+
+### Remove Values
+
+```bash
+cloudops-tools config unset defaultServices
+```
+
+### Show the Config File Path
+
+```bash
+cloudops-tools config path
+```
+
+## Full Reference
+
+For all subcommands, key definitions, examples, validation rules, and config file details, see:
+
+- [`config` command reference](/docs/cli/commands/config)

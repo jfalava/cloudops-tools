@@ -1,0 +1,128 @@
+---
+title: Primeros Pasos
+description: Instala CloudOps Tools y ejecuta tu primer escaneo de inventario en pocos minutos
+---
+
+# Primeros Pasos
+
+Sigue esta guía rápida para instalar CloudOps Tools y lanzar tu primer inventario AWS en menos de 5 minutos.
+
+## ¿Qué vas a conseguir con CloudOps Tools?
+
+- Inventario completo de recursos AWS en varias regiones y servicios
+- Exportar reportes en CSV, Excel (XLSX) o JSON
+- Describir recursos con muchísimo detalle (seguridad, red, tags, etc.)
+- Ejecutar escaneos enfocados en seguridad o costos
+
+## 1. Instalar el CLI
+
+Con npm (la forma más común):
+
+```bash
+npm install -g @cloudops-tools/cli
+```
+
+O si prefieres Bun (más rápido en muchos casos):
+
+```bash
+bun add -g @cloudops-tools/cli
+```
+
+## 2. Verificar que se instaló correctamente
+
+```bash
+cloudops-tools --version
+```
+
+Si ejecutas simplemente:
+
+```bash
+cloudops-tools
+```
+
+verás la ayuda completa y el programa termina (es el comportamiento normal).
+
+## 3. Ejecuta tu primer escaneo rápido
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+Con solo pasar `--region` (o `--services`, `--export-format`, etc.) el comando raíz lanza un escaneo básico e inmediato.
+
+Los resultados aparecerán en la carpeta:
+`inventory-output/<tu-account-id>/`
+
+## 4. Prueba un escaneo de auditoría de seguridad
+
+```bash
+cloudops-tools init --mode security --export-format xlsx
+```
+
+Este comando:
+
+- Usa el modo `security` (revisa grupos de seguridad, accesos públicos, cifrado, IAM, etc.)
+- Exporta todo en formato Excel para que sea fácil de revisar
+
+## 5. ¿Quieres ver más ejemplos prácticos?
+
+Ejecuta:
+
+```bash
+cloudops-tools --help-examples
+```
+
+Te mostrará una lista seleccionada de comandos útiles listos para copiar y pegar.
+
+## 6. Consulta datos históricos (sin volver a llamar a AWS)
+
+Después de hacer algunos escaneos, toda la información queda guardada localmente en una base SQLite:
+`~/.config/cloudops-tools/inventory.db`
+
+Primero, averigua tu ID de cuenta AWS (si no lo sabes):
+
+```bash
+sqlite3 ~/.config/cloudops-tools/inventory.db "SELECT DISTINCT account_id FROM inventory_runs;"
+```
+
+Luego puedes hacer consultas como estas:
+
+```bash
+# Ver todas las corridas de inventario
+cloudops-tools query --runs --account 123456789012
+
+# Detectar qué cambió desde la última vez
+cloudops-tools query --changes --account 123456789012
+
+# Recursos EC2 de los últimos 7 días
+cloudops-tools query --type EC2 --days 7 --account 123456789012
+```
+
+¡Todo esto sin gastar ni una llamada a la API de AWS!
+
+## Comandos principales
+
+Más detalles en la sección de referencia:
+
+- [Resumen de comandos](/docs/cli/commands)
+- [init](/docs/cli/commands/init) – Escaneos de inventario completos
+- [query](/docs/cli/commands/query) – Consultar historial local
+- [describe](/docs/cli/commands/describe) – Detalle profundo de un recurso
+- [config](/docs/cli/commands/config) – Configurar valores por defecto
+- [use-letme](/docs/cli/commands/use-letme) – Autenticación MFA con letme
+
+## Guías prácticas recomendadas
+
+- [Elige el comando correcto](/docs/cli/choose-command)
+- [Perfiles de escaneo](/docs/cli/scan-profiles)
+- [Solución de problemas](/docs/cli/troubleshooting)
+
+## Próximos pasos recomendados
+
+- [Guía de instalación detallada](/docs/cli/installation)
+- [Configuración](/docs/cli/configuration) – Personaliza región, formato, modo…
+- [Resumen de comandos](/docs/cli/commands) – Todas las opciones y flags
+
+¡Ya estás listo para empezar a mapear tu infraestructura AWS de forma cómoda y potente! 🚀
+
+Si algo no funciona a la primera, mira la sección de [Solución de problemas](/docs/cli/troubleshooting) o prueba con `--debug` en el comando.

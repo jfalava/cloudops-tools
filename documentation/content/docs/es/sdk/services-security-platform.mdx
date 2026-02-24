@@ -1,0 +1,69 @@
+---
+title: "Servicios: Seguridad y Plataforma"
+description: "Servicios de seguridad, gobernanza, gestión y generación de informes en el SDK de CloudOps"
+---
+
+# Servicios: Seguridad y Plataforma
+
+## Elige esta página cuando
+
+- Necesitas información sobre el inventario de identidad/seguridad y los informes de postura.
+- Necesitas controles organizativos/de gobierno (SCP, Config, Control Tower)
+- Necesitas servicios de plano de gestión (CloudWatch, CloudTrail, API Gateway, SSM, Route53, CloudFront)
+- Necesitas rebajas/generación de informes a partir de los recursos recopilados
+
+## Servicio de seguridad
+
+Úsalo para el inventario de posturas de seguridad.
+
+Ejemplos: usuarios/roles de IAM, claves KMS, Secrets Manager, WAF, GuardDuty, Cognito.
+
+## Servicio de Gobernanza
+
+Úsalo para controles organizacionales y cumplimiento.
+
+Ejemplos: barreras de seguridad de la torre de control, políticas de control de servicios (SCP), reglas de AWS Config.
+
+## Servicio de gestión
+
+Úsalo para recursos de gestión del plano de control.
+
+Ejemplos: alarmas de CloudWatch, CloudFormation, API Gateway, Step Functions, EventBridge,
+CloudTrail, SSM, Ruta 53, CloudFront.
+
+## Servicio de herramientas de desarrollador
+
+Úsalo para recursos de herramientas de desarrollador/plataforma.
+
+Ejemplos: repositorios ECR, trabajos de Glue.
+
+## Servicio utilitario
+
+Úsalo para contexto operativo compartido.
+
+Ejemplos: búsqueda de ID de cuenta y descubrimiento de todas las regiones.
+
+## Servicio de informes
+
+Úsalo para resultados legibles por humanos.
+
+- `generateMarkdownReport(...)` -`describeResourceHarder(type, region, id)`
+
+## Ejemplo
+
+```ts
+import { Effect } from "effect";
+import { ReportingService, SecurityService, SDKLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const security = yield* _(SecurityService);
+  const reporting = yield* _(ReportingService);
+
+  const roles = yield* _(security.describeIAMRoles());
+  const markdown = yield* _(reporting.generateMarkdownReport("IAM Roles", roles));
+
+  return markdown;
+});
+
+const markdown = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+```

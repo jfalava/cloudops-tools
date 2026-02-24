@@ -1,0 +1,175 @@
+---
+title: Init
+description: Genera un escaneo completo de inventario multi-región con opciones avanzadas
+---
+
+# `init`
+
+Lanza un escaneo completo de inventario AWS en varias regiones con muchas opciones para personalizarlo según lo que necesites.
+
+## Uso
+
+```bash
+cloudops-tools init [opciones]
+```
+
+## Descripción
+
+El comando `init` realiza un inventario detallado cruzando múltiples regiones AWS. A diferencia del escaneo básico, te permite elegir diferentes **modos** optimizados (seguridad, costos, detalle máximo, etc.).
+
+## Opciones principales
+
+| Opción            | Alias | Descripción                                                          | Valor por defecto         |
+| ----------------- | ----- | -------------------------------------------------------------------- | ------------------------- |
+| `--account`       | `-a`  | Perfil o cuenta AWS                                                  | Detectado automáticamente |
+| `--region`        | `-r`  | Región(es) a escanear (separadas por coma)                           | Todas las regiones        |
+| `--limit-regions` |       | Limita el escaneo solo a estas regiones                              | —                         |
+| `--export-format` | `-f`  | Formato de salida (`csv`, `xlsx`, `json`, `both`, `all`)             | `csv`                     |
+| `--mode`          |       | Modo de escaneo (`basic`, `detailed`, `security`, `cost`)            | `basic`                   |
+| `--services`      | `-s`  | Servicios específicos (separados por coma)                           | Todos los servicios       |
+| `--incremental`   |       | Solo exporta recursos nuevos o que cambiaron desde el último escaneo | `false`                   |
+| `--min-interval`  |       | Omite el escaneo si ya hubo uno en los últimos N minutos             | —                         |
+| `--skip-global`   |       | Omite servicios globales (S3, IAM, CloudFront, etc.)                 | `false`                   |
+| `--only-global`   |       | Escanea **solo** servicios globales                                  | `false`                   |
+| `--debug`         |       | Muestra errores completos con trazas                                 | `false`                   |
+
+## Modos de escaneo disponibles
+
+- **basic**
+  Inventario estándar con la información esencial de cada recurso.
+
+- **detailed**
+  Escaneo extendido: más metadatos, relaciones entre recursos, configuraciones completas.
+
+- **security**
+  Enfocado en auditoría de seguridad:
+  - Grupos de seguridad y NACLs
+  - Políticas y roles IAM
+  - Configuraciones de cifrado
+  - Recursos accesibles desde internet
+
+- **cost**
+  Orientado a optimización de costos:
+  - Métricas de uso de recursos
+  - Cobertura de instancias reservadas
+  - Oportunidades de ahorro
+
+## Ejemplos prácticos
+
+```bash
+# Escaneo completo en todas las regiones
+cloudops-tools init
+
+# Escaneo enfocado en seguridad + exportar a Excel
+cloudops-tools init --mode security --export-format xlsx
+
+# Solo algunos servicios en todas las regiones
+cloudops-tools init --services Lambda,DynamoDB,SQS
+
+# Limitar a ciertas regiones
+cloudops-tools init --limit-regions us-east-1,us-west-2,eu-west-1
+
+# Análisis de costos con Excel
+cloudops-tools init --mode cost --export-format xlsx
+
+# Escaneo rápido solo regional (sin globales)
+cloudops-tools init --skip-global --region us-east-1
+
+# Solo servicios globales
+cloudops-tools init --only-global
+
+# Escaneo incremental (solo cambios)
+cloudops-tools init --incremental
+```
+
+## Escaneo incremental (`--incremental`)
+
+Con esta bandera solo se exportan los recursos que son **nuevos** o que **cambiaron** desde el último escaneo:
+
+```bash
+# Primera vez → todo se exporta
+cloudops-tools init
+
+# Siguientes veces → solo lo que cambió
+cloudops-tools init --incremental
+```
+
+### ¿Cómo funciona?
+
+1. Se guarda una “huella digital” (hash) de los atributos clave de cada recurso
+2. En el siguiente escaneo se comparan las huellas
+3. Solo los recursos con huella diferente se escriben en los archivos de salida
+4. Al final ves un resumen: nuevos, modificados, sin cambios, eliminados
+
+### Beneficios
+
+- Archivos mucho más pequeños
+- Revisión más rápida
+- Ves exactamente qué cambió
+
+### Ejemplo de salida
+
+```
+Incremental: 5 nuevos, 3 modificados, 142 sin cambios
+Archivo generado: inventory-output/123456789012/init-incremental-20240215.csv
+```
+
+## Evitar escaneos repetidos (`--min-interval`)
+
+Evita lanzar escaneos innecesarios (ideal para cron jobs):
+
+```bash
+# No escanear si ya hubo uno en los últimos 60 minutos
+cloudops-tools init --min-interval 60
+
+# No repetir en 24 horas
+cloudops-tools init --min-interval 1440
+```
+
+## Salida generada
+
+Los archivos se guardan en:
+`inventory-output/{id-de-tu-cuenta}/`
+
+Ejemplos de nombres:
+
+- `inventory-20260224-1430.csv`
+- `inventory-20260224-1430.xlsx`
+
+## Almacenamiento histórico
+
+Todo se guarda automáticamente en una base SQLite local:
+`~/.config/cloudops-tools/inventory.db`
+
+Esto te permite:
+
+- Consultar escaneos anteriores sin volver a llamar a AWS
+- Detectar cambios entre corridas
+- Hacer escaneos incrementales
+- Evitar duplicados
+
+### Tablas principales que se usan
+
+| Tabla                   | Para qué sirve                                   |
+| ----------------------- | ------------------------------------------------ |
+| `inventory_runs`        | Metadatos de cada escaneo (cuenta, modo, fecha…) |
+| `resources`             | Detalle completo de cada recurso en cada corrida |
+| `resource_fingerprints` | Huellas para detectar cambios                    |
+| `describe_cache`        | Caché de consultas describe (con tiempo de vida) |
+
+### Consultar datos históricos
+
+Usa el comando `query`:
+
+```bash
+# Ver todos los escaneos de una cuenta
+cloudops-tools query --runs --account 123456789012
+
+# Ver qué cambió desde el último escaneo
+cloudops-tools query --changes --account 123456789012
+
+# Recursos EC2 de los últimos 7 días
+cloudops-tools query --type EC2 --days 7 --account 123456789012
+```
+
+**Importante:** Siempre usa `--account` con el mismo ID que usaste en `init` para ver tus datos.

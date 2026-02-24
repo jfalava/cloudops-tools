@@ -1,0 +1,109 @@
+---
+title: use-letme
+description: Use letme MFA flow with profile from --account before running scans
+---
+
+# use-letme
+
+Use `--use-letme` to obtain temporary AWS credentials through `letme` before running scan commands.
+
+## Prerequisites
+
+Before using `--use-letme`, you must first configure a TOTP secret. The `--use-letme` flag requires TOTP authentication to automatically generate MFA codes when assuming roles through `letme`.
+
+### Setting up TOTP
+
+Configure your TOTP secret using the interactive setup command:
+
+```bash
+cloudops-tools setup-totp
+```
+
+This command will:
+
+1. Accept your TOTP secret key (the base32-encoded secret from your MFA device setup)
+2. Store it securely using OS-backed secret storage
+3. Validate the configuration by generating a test token
+
+The TOTP secret is stored locally via Bun secrets using platform-specific secure storage:
+
+- **macOS**: [Keychain](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
+- **Windows**: [Credential Manager](https://support.microsoft.com/en-us/windows/credential-manager-in-windows-1b5c916a-6a16-889f-8581-fc16e8165ac0)
+- **Linux**: [libsecret](https://github.com/GNOME/libsecret)
+
+**Note for WSL users**: WSL environments may not persist secrets across reboots due to limitations in secret storage mechanisms.
+
+## Usage
+
+```bash
+cloudops-tools --use-letme --account <profile-name> [options]
+cloudops-tools init --use-letme --account <profile-name> [options]
+```
+
+## How It Works
+
+When `--use-letme` is enabled, CloudOps Tools:
+
+1. Requires `--account <profile-name>` to specify which letme profile to use
+2. Loads the TOTP secret stored by `setup-totp`
+3. Generates a time-based OTP code
+4. Runs `letme obtain <profile-name>` and pipes the OTP automatically
+5. Sets `AWS_PROFILE=<profile-name>` for the current process
+6. Continues normal command execution using the assumed role credentials
+
+## Requirements
+
+- `letme` must be installed and available on your `PATH`
+  - Official docs: [getletme.com](https://getletme.com/)
+- You must run `setup-totp` at least once before using `--use-letme`
+
+## Examples
+
+### Configure TOTP (one-time setup)
+
+```bash
+cloudops-tools setup-totp
+# Enter your TOTP secret when prompted
+```
+
+### Root scan with letme
+
+```bash
+cloudops-tools --use-letme --account engineering-prod --region us-east-1
+```
+
+### init scan with letme
+
+```bash
+cloudops-tools init --use-letme --account engineering-prod --mode security --export-format xlsx
+```
+
+### Complete example flow
+
+```bash
+# 1. Configure TOTP once
+cloudops-tools setup-totp
+
+# 2. Use letme with your MFA profile for any scan
+cloudops-tools --region eu-south-2 --account account-in-letme-dynamodb --use-letme
+```
+
+## Error Cases
+
+- **Missing `--account` with `--use-letme`**:
+  `Missing required --account <profile> with --use-letme`
+
+- **`letme` not installed**:
+  `letme binary not found in PATH. Install letme and try again.`
+
+- **TOTP secret not configured**:
+  Run `setup-totp` first before using `--use-letme`
+
+- **TOTP secret retrieval failed**:
+  `Unable to read stored TOTP secret: ...`
+
+## Security Considerations
+
+- The TOTP secret is never stored in `config.json` or any plain text file
+- Secrets are managed by the operating system's secure credential store
+- Consider using AWS IAM Identity Center (SSO) for team environments as an alternative to individual TOTP setups

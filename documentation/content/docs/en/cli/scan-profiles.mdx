@@ -1,0 +1,67 @@
+---
+title: Scan Profiles
+description: Reusable command recipes for common CloudOps workflows
+---
+
+# Scan Profiles
+
+Use these copy-paste profiles as starting points.
+Use `cloudops-tools` with scan flags for quick root command scans, and `cloudops-tools init` when you need
+explicit scan mode or region-selection controls. Running `cloudops-tools` with no arguments prints
+help and exits.
+
+## Quick Regional Inventory
+
+```bash
+cloudops-tools --region us-east-1 --export-format csv
+```
+
+Use when you need a fast baseline inventory for one region.
+
+## Security Review
+
+```bash
+cloudops-tools init \
+  --mode security \
+  --export-format xlsx \
+  --limit-regions us-east-1,eu-west-1 \
+  --services EC2,RDS,Lambda,IAM,CloudFront
+```
+
+Use when preparing security review artifacts.
+
+## Global Services Pass
+
+```bash
+cloudops-tools init --only-global --export-format json
+```
+
+Use when auditing global services (for example IAM, CloudFront, Route53 scope).
+
+## Regional-Only Deep Pass
+
+```bash
+cloudops-tools init \
+  --mode detailed \
+  --skip-global \
+  --region us-east-1,us-west-2 \
+  --export-format both
+```
+
+Use when you want richer regional detail and want to skip global service enumeration.
+
+## Cost-Oriented Sweep
+
+```bash
+cloudops-tools init --mode cost --export-format xlsx --limit-regions us-east-1,us-west-2
+```
+
+Use for cost-focused reporting.
+
+## Batch Describe Snapshot
+
+```bash
+cloudops-tools --describe ec2 --region us-east-1
+```
+
+Use to generate a Markdown snapshot for one resource type across a region.

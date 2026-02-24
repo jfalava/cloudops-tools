@@ -1,0 +1,117 @@
+---
+title: Describe
+description: Deeply describe a specific AWS resource with detailed Markdown output
+---
+
+# `describe`
+
+Get detailed information about a specific AWS resource, formatted as Markdown.
+
+## Usage
+
+```bash
+cloudops-tools describe <type> <region> <id> [options]
+```
+
+## Arguments
+
+| Argument | Description                                         | Required |
+| -------- | --------------------------------------------------- | -------- |
+| `type`   | Resource type (e.g., `ec2`, `rds`, `lambda`, `vpc`) | Yes      |
+| `region` | AWS region where the resource exists                | Yes      |
+| `id`     | Resource identifier (instance ID, ARN, etc.)        | Yes      |
+
+## Options
+
+| Option       | Description                                       | Default |
+| ------------ | ------------------------------------------------- | ------- |
+| `--debug`    | Show raw error output with stack traces           | `false` |
+| `--no-cache` | Disable caching, always fetch fresh data from AWS | `false` |
+
+## Common Resource Types
+
+| Type       | Description            | ID Format               |
+| ---------- | ---------------------- | ----------------------- |
+| `ec2`      | EC2 instances          | `i-xxxxxxxxxxxxxxxxx`   |
+| `rds`      | RDS database instances | DB instance identifier  |
+| `lambda`   | Lambda functions       | Function name or ARN    |
+| `vpc`      | VPC networks           | `vpc-xxxxxxxxxxxxxxxxx` |
+| `dynamodb` | DynamoDB tables        | Table name              |
+
+The `describe` command supports additional resource types beyond this quick list (for example S3,
+CloudFront, Route53, IAM, KMS, Secrets Manager, and more).
+
+## Examples
+
+```bash
+# Describe an EC2 instance
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
+
+# Describe an RDS database
+cloudops-tools describe rds eu-west-1 my-database
+
+# Describe a Lambda function
+cloudops-tools describe lambda us-west-2 my-function
+
+# Describe a VPC
+cloudops-tools describe vpc us-east-1 vpc-0123456789abcdef0
+
+# Describe a DynamoDB table
+cloudops-tools describe dynamodb eu-central-1 my-table
+
+# With debug output
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug
+```
+
+## Output
+
+The command outputs detailed resource information in Markdown format, including:
+
+- Resource metadata (ID, ARN, creation date)
+- Configuration details
+- Tags
+- Associated resources
+- Security settings
+- Network configuration
+
+## Batch Describe with --describe Flag
+
+You can also describe all resources of a type in a region using the main command's `--describe` flag:
+
+Batch `--describe` currently supports: `rds`, `ec2`, `lambda`, `vpc`, `dynamodb`.
+
+```bash
+# Describe all RDS instances in eu-south-2
+cloudops-tools --describe rds --region eu-south-2
+
+# Describe all EC2 instances
+cloudops-tools --describe ec2 --region us-east-1
+
+# Describe all Lambda functions
+cloudops-tools --describe lambda --region eu-west-1
+
+# Describe all VPCs
+cloudops-tools --describe vpc --region ap-southeast-1
+
+# Describe all DynamoDB tables
+cloudops-tools --describe dynamodb --region us-west-2
+```
+
+This writes a Markdown file to `inventory-output/{account-id}/describe-{type}-{region}-{timestamp}.md`
+
+## Caching
+
+Batch `--describe` operations are automatically cached for 5 minutes. Repeated describe calls within this window return cached results instantly:
+
+```bash
+# First call - fetches from AWS (5+ seconds)
+cloudops-tools --describe ec2 --region us-east-1
+
+# Second call within 5 minutes - returns cached data (instant)
+cloudops-tools --describe ec2 --region us-east-1
+
+# Bypass cache to get fresh data
+cloudops-tools --describe ec2 --region us-east-1 --no-cache
+```
+
+Cache is stored in `~/.config/cloudops-tools/inventory.db`

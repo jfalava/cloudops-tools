@@ -1,0 +1,99 @@
+---
+title: Getting Started
+description: Install CloudOps Tools and run your first inventory scan
+---
+
+# Getting Started
+
+Use this guide to install CloudOps Tools and run your first scan in a few minutes.
+
+## What You'll Do
+
+CloudOps Tools helps you:
+
+- Inventory AWS resources across regions and services
+- Export reports in CSV, Excel, or JSON
+- Describe resources in detail
+- Run security-focused scans
+
+## 1. Install
+
+```bash
+npm install -g @cloudops-tools/cli
+```
+
+If you prefer Bun:
+
+```bash
+bun add -g @cloudops-tools/cli
+```
+
+## 2. Verify Installation
+
+```bash
+cloudops-tools --version
+```
+
+If you run `cloudops-tools` with no arguments, the CLI prints help and exits.
+
+## 3. Run Your First Scan
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+The root command runs a quick scan when you provide scan options (for example `--region` or
+`--services`).
+
+## 4. Try a Security Audit
+
+```bash
+cloudops-tools init --mode security --export-format xlsx
+```
+
+## 5. Need More Examples?
+
+```bash
+cloudops-tools --help-examples
+```
+
+## 6. Query Historical Data
+
+After running scans, query past inventories without AWS API calls. All data is stored in a local SQLite database (`~/.config/cloudops-tools/inventory.db`):
+
+```bash
+# Find your account ID from scans
+sqlite3 ~/.config/cloudops-tools/inventory.db "SELECT DISTINCT account_id FROM inventory_runs;"
+
+# List past inventory runs (use your account ID)
+cloudops-tools query --runs --account YOUR_ACCOUNT_ID
+
+# Detect infrastructure changes
+cloudops-tools query --changes --account YOUR_ACCOUNT_ID
+
+# Query specific resource types
+cloudops-tools query --type EC2 --days 7 --account YOUR_ACCOUNT_ID
+```
+
+## Core Commands
+
+See command details in the command reference:
+
+- [Commands Overview](/docs/cli/commands)
+- [init](/docs/cli/commands/init) - Run inventory scans
+- [query](/docs/cli/commands/query) - Query historical inventory data
+- [describe](/docs/cli/commands/describe) - Deep dive into resources
+- [config](/docs/cli/commands/config) - Manage configuration
+- [use-letme](/docs/cli/commands/use-letme) - MFA authentication with letme (includes TOTP setup)
+
+## Practical Guides
+
+- [Choose the Right Command](/docs/cli/choose-command)
+- [Scan Profiles](/docs/cli/scan-profiles)
+- [Troubleshooting](/docs/cli/troubleshooting)
+
+## Next Steps
+
+- [Installation Guide](/docs/cli/installation) - Detailed setup instructions
+- [Configuration](/docs/cli/configuration) - Configure defaults and options
+- [Commands Overview](/docs/cli/commands) - Full command and option reference

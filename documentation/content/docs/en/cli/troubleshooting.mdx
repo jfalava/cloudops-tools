@@ -1,0 +1,161 @@
+---
+title: Solución de Problemas
+description: Resuelve rápidamente los fallos más comunes en CloudOps Tools CLI
+---
+
+# Solución de Problemas
+
+Guía rápida para diagnosticar y arreglar los errores más frecuentes al usar CloudOps Tools.
+
+## 1. No hay credenciales AWS configuradas
+
+**Síntoma**:
+Errores tipo “credential provider chain failed”, “No credentials”, “Unable to locate credentials”, etc.
+
+**Qué comprobar**:
+
+```bash
+aws sts get-caller-identity
+```
+
+Si falla → configura credenciales primero:
+
+```bash
+# Opción rápida (variables de entorno)
+export AWS_ACCESS_KEY_ID=AKIA...
+export AWS_SECRET_ACCESS_KEY=tu-clave-secreta
+export AWS_REGION=us-east-1
+```
+
+O mejor aún, usa el archivo estándar:
+
+- Edita o crea `~/.aws/credentials` con tu perfil
+- O usa un perfil con MFA y `--account nombre-perfil`
+
+## 2. Access Denied / UnauthorizedOperation
+
+**Síntoma**:
+Errores `AccessDenied` en servicios concretos (EC2, RDS, IAM, etc.).
+
+**Qué hacer**:
+
+- Verifica que la identidad activa (usuario/rol) tenga permisos de **lectura** (`Describe*`, `List*`, `Get*`) para los servicios que estás escaneando.
+- Reduce el alcance para aislar el problema:
+
+```bash
+cloudops-tools init --services EC2 --region us-east-1 --debug
+```
+
+Prueba servicio por servicio hasta encontrar cuál falla.
+
+## 3. Errores de región
+
+**Síntoma**:
+“Invalid region”, servicios que no aparecen, o resultados vacíos en ciertas regiones.
+
+**Qué hacer**:
+
+- Revisa el formato: regiones separadas por coma **sin espacios**
+  Correcto: `--region us-east-1,eu-west-1`
+  Incorrecto: `--region us-east-1, eu-west-1`
+- Empieza con una sola región conocida:
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+## 4. Escaneos muy lentos o demasiado ruidosos
+
+**Qué hacer**:
+
+- Limita servicios y regiones para depurar más rápido:
+
+```bash
+cloudops-tools init --services EC2,RDS --limit-regions us-east-1
+```
+
+- Omite servicios globales si no los necesitas:
+
+```bash
+cloudops-tools init --skip-global
+```
+
+- O escanea **solo** globales cuando sea el objetivo:
+
+```bash
+cloudops-tools init --only-global
+```
+
+## 5. Problemas con `letme` / `--use-letme`
+
+**Síntomas frecuentes**:
+
+- `letme binary not found in PATH`
+- `Unable to read stored TOTP secret`
+- `Missing required --account <profile> with --use-letme`
+- El comando se cuelga o timeout en letme
+
+**Pasos para solucionar**:
+
+1. Confirma que `letme` está instalado y accesible:
+
+```bash
+letme --version
+```
+
+Si no existe → instálalo desde https://getletme.com y reinicia la terminal.
+
+2. Si aún no configuraste TOTP → hazlo **antes** de usar `--use-letme`:
+
+```bash
+cloudops-tools setup-totp
+```
+
+Sigue las instrucciones para pegar tu secreto TOTP.
+
+3. Siempre usa **ambas** banderas juntas:
+
+```bash
+cloudops-tools --use-letme --account engineering-prod --region us-east-1
+```
+
+Más detalles completos → [`Guía use-letme`](/docs/cli/commands/use-letme)
+
+## 6. Errores de parámetros / uso incorrecto
+
+CloudOps Tools devuelve **código de salida 2** cuando detecta errores de sintaxis o valores inválidos.
+
+Ejemplos típicos:
+
+```bash
+# Fecha mal formada
+cloudops-tools query --from 2026-13-01
+# → Exit: 2
+
+# Flags contradictorios
+cloudops-tools init --skip-global --only-global
+# → Exit: 2
+
+# Valor inválido en config
+cloudops-tools config set skipGlobal maybe
+# → Exit: 2
+```
+
+**Consejo**: Añade `--debug` para ver el error completo + traza:
+
+```bash
+cloudops-tools init --services EC2 --region us-east-1 --debug
+```
+
+Toda la referencia de códigos de salida (0, 1, 2) → [Códigos de salida](/docs/cli/exit-codes)
+
+## Comandos de ayuda y diagnóstico rápidos
+
+```bash
+cloudops-tools --help               # Ayuda completa
+cloudops-tools --help-examples      # Ejemplos prácticos
+cloudops-tools --version            # Versión instalada
+cloudops-tools describe ... --debug # Traza completa en caso de fallo
+```
+
+Ejecutar `cloudops-tools` sin argumentos también muestra ayuda y termina.

@@ -1,0 +1,54 @@
+---
+title: Choose the Right Command
+description: Decide quickly between root command scans, init, describe, and config
+---
+
+# Choose the Right Command
+
+Use this page to choose the shortest path for your task.
+
+## Decision Guide
+
+| If you need to...                                         | Use                                                  |
+| --------------------------------------------------------- | ---------------------------------------------------- |
+| Run an explicit cross-region or mode-driven scan          | `cloudops-tools init`                                |
+| Deep-inspect one resource by ID                           | `cloudops-tools describe`                            |
+| Describe all resources of one supported type in a region  | `cloudops-tools --describe <type> --region <region>` |
+| Save or inspect persistent defaults                       | `cloudops-tools config`                              |
+| Run scans using `letme` MFA profile (requires TOTP setup) | `cloudops-tools --use-letme --account <profile>`     |
+
+## Typical Flows
+
+### Fast Inventory
+
+```bash
+cloudops-tools --region us-east-1
+```
+
+### Security Audit
+
+```bash
+cloudops-tools init --mode security --export-format xlsx --limit-regions us-east-1,eu-west-1
+```
+
+### Resource Investigation
+
+```bash
+cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
+```
+
+### Batch Describe
+
+```bash
+cloudops-tools --describe rds --region eu-south-2
+```
+
+## Notes
+
+- Root command and `init` overlap for scans; use the root command with scan flags for quick runs,
+  and `init` for explicit mode and region control.
+- Running `cloudops-tools` with no arguments prints help and exits.
+- `describe` and `--describe` are both valid: use `describe` for one specific resource ID, and
+  `--describe <type>` for a region-wide snapshot of all resources of that type.
+- `--help-examples` and `--version` exit early and do not run scan logic.
+- `--wizard` is provided by `@effect/cli`; it does not bypass AWS credential requirements.

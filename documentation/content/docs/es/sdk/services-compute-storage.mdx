@@ -1,0 +1,52 @@
+---
+title: "Servicios: Computación y Almacenamiento"
+description: "Servicios de inventario de computación y almacenamiento en el SDK de CloudOps"
+---
+
+# Servicios: Computación y almacenamiento
+
+## Elige esta página cuando
+
+- Necesitas un inventario de infraestructura para EC2, Lambda, ECS, EKS y servicios informáticos relacionados.
+- Necesitas un inventario de almacenamiento para S3, EBS, EFS, FSx, respaldo o recursos de archivo
+- Quieres control de nivel de servicio en lugar de una orquestación completa de `operations`
+
+## Servicio informático
+
+Úsalo para cargas de trabajo informáticas y de contenedores.
+
+| Área                      | Ejemplos                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| Computación central       | EC2, escalado automático                                                        |
+| Sin servidor              | lambda                                                                          |
+| Contenedores              | ECS, EKS                                                                        |
+| Computación de plataforma | App Runner, Batch, EMR, EMR Serverless, Lightsail, Elastic Beanstalk, SageMaker |
+
+## Servicio de almacenamiento
+
+Úsalo para recursos de almacenamiento y respaldo.
+
+| Área                       | Ejemplos                                                         |
+| -------------------------- | ---------------------------------------------------------------- |
+| Objeto/bloque/archivo      | S3, EBS, EFS, FSx                                                |
+| Copia de seguridad/archivo | Bóveda de respaldo, Glaciar, Rbin                                |
+| Aparatos de almacenamiento | Puerta de enlace de almacenamiento, puerta de enlace de respaldo |
+
+## Ejemplo
+
+```ts
+import { Effect } from "effect";
+import { ComputeService, StorageService, SDKLive } from "@cloudops-tools/sdk";
+
+const program = Effect.gen(function* (_) {
+  const compute = yield* _(ComputeService);
+  const storage = yield* _(StorageService);
+
+  const ec2 = yield* _(compute.describeEC2("us-east-1"));
+  const s3 = yield* _(storage.describeS3());
+
+  return { ec2Count: ec2.length, s3Count: s3.length };
+});
+
+const result = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
+```

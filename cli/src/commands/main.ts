@@ -20,6 +20,8 @@ import { initCommand } from "@/commands/init";
 import { queryCommand } from "@/commands/query";
 import { setupTotpCommand } from "@/commands/setup-totp";
 import { requireLetmeActivation } from "@/lib/letme";
+import { parseCsvValues, parseServicesOption } from "@/lib/option-validation";
+import { invalidUserInput } from "@/lib/user-input-error";
 import {
   account as accountOption,
   region as regionOption,
@@ -106,6 +108,36 @@ export const mainCommand = Command.make(
         return;
       }
 
+      if (skipGlobal && onlyGlobal) {
+        yield* Effect.fail(
+          invalidUserInput(
+            "Invalid option combination: --skip-global cannot be used with --only-global.",
+            { example: "cloudops-tools --only-global" },
+          ),
+        );
+      }
+
+      const parsedRegions = parseCsvValues(
+        "--region",
+        region,
+        "cloudops-tools --region us-east-1,us-west-2",
+      );
+      if (!parsedRegions.ok) {
+        yield* Effect.fail(parsedRegions.error);
+      }
+
+      const parsedServices = Option.match(services, {
+        onNone: () => ({ ok: true as const, values: undefined }),
+        onSome: (raw: string) =>
+          parseServicesOption(raw, {
+            list: "cloudops-tools --services EC2,RDS,S3 --region us-east-1",
+            all: "cloudops-tools --services all",
+          }),
+      });
+      if (!parsedServices.ok) {
+        yield* Effect.fail(parsedServices.error);
+      }
+
       if (useLetme) {
         yield* requireLetmeActivation(
           account,
@@ -119,7 +151,7 @@ export const mainCommand = Command.make(
           onNone: () => util.getAccountId(),
           onSome: (value) => Effect.succeed(value),
         });
-        const regions = region.split(",").map((r) => r.trim());
+        const regions = parsedRegions.ok ? parsedRegions.values : [];
 
         const describeType = Option.getOrUndefined(describeSelection);
         if (describeType) {
@@ -170,11 +202,7 @@ export const mainCommand = Command.make(
           return;
         }
 
-        const serviceList = Option.match(services, {
-          onNone: () => undefined,
-          onSome: (s: string) =>
-            s.toLowerCase() === "all" ? undefined : s.split(",").map((svc) => svc.trim()),
-        });
+        const serviceList = parsedServices.ok ? parsedServices.values : undefined;
 
         const progress = yield* Effect.sync(() => startProgressRenderer({ debug }));
         yield* generateInitInventoryEffect(id, "basic", format, regions, debug, {

@@ -1,6 +1,41 @@
 import type { Root } from "fumadocs-core/page-tree";
 
-export const docsTree: Root = {
+import { localizePath, type Locale } from "@/lib/i18n";
+
+const TRANSLATIONS_ES = new Map<string, string>([
+  ["Documentation", "Documentación"],
+  ["CLI", "CLI"],
+  ["Command-line instructions", "Guía de línea de comandos"],
+  ["Getting Started", "Primeros pasos"],
+  ["Installation", "Instalación"],
+  ["Build CLI Binary", "Compilar desde código fuente"],
+  ["Configuration", "Configuración"],
+  ["Guides", "Guías"],
+  ["Choose Command", "Elegir comando"],
+  ["Scan Profiles", "Perfiles de escaneo"],
+  ["Exit Codes", "Códigos de salida"],
+  ["Troubleshooting", "Solución de problemas"],
+  ["Commands", "Comandos"],
+  ["Overview", "Resumen"],
+  ["SDK", "SDK"],
+  ["Build on top of the SDK", "Construye sobre el SDK"],
+  ["Error Model", "Modelo de errores"],
+  ["Layers and Runtime", "Capas y runtime"],
+  ["Operations", "Operaciones"],
+  ["Examples", "Ejemplos"],
+  ["Services: Compute & Storage", "Servicios: Cómputo y almacenamiento"],
+  ["Services: Data & Networking", "Servicios: Datos y redes"],
+  ["Services: Security & Platform", "Servicios: Seguridad y plataforma"],
+  ["Utilities", "Utilidades"],
+  ["Reference Map", "Mapa de referencia"],
+  ["API", "API"],
+  ["Core", "Core"],
+  ["Services", "Servicios"],
+  ["Types", "Tipos"],
+  ["Credentials", "Credenciales"],
+]);
+
+const baseDocsTree: Root = {
   name: "Documentation",
   children: [
     {
@@ -45,6 +80,11 @@ export const docsTree: Root = {
         },
         {
           type: "page",
+          name: "Exit Codes",
+          url: "/docs/cli/exit-codes",
+        },
+        {
+          type: "page",
           name: "Troubleshooting",
           url: "/docs/cli/troubleshooting",
         },
@@ -66,6 +106,11 @@ export const docsTree: Root = {
           type: "page",
           name: "describe",
           url: "/docs/cli/commands/describe",
+        },
+        {
+          type: "page",
+          name: "query",
+          url: "/docs/cli/commands/query",
         },
         {
           type: "page",
@@ -183,3 +228,43 @@ export const docsTree: Root = {
     },
   ],
 };
+
+const localizeString = (value: string, locale: Locale): string => {
+  if (locale !== "es") {
+    return value;
+  }
+
+  return TRANSLATIONS_ES.get(value) ?? value;
+};
+
+function localizeTreeValue(value: Root, locale: Locale): Root;
+function localizeTreeValue(value: unknown, locale: Locale): unknown;
+function localizeTreeValue(value: unknown, locale: Locale): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => localizeTreeValue(item, locale));
+  }
+
+  if (value !== null && typeof value === "object") {
+    const result: Record<string, unknown> = {};
+    for (const [key, child] of Object.entries(value)) {
+      if (key === "url" && typeof child === "string") {
+        result[key] = localizePath(child, locale);
+        continue;
+      }
+
+      if ((key === "name" || key === "description") && typeof child === "string") {
+        result[key] = localizeString(child, locale);
+        continue;
+      }
+
+      result[key] = localizeTreeValue(child, locale);
+    }
+    return result;
+  }
+
+  return value;
+}
+
+export const getDocsTree = (locale: Locale): Root => localizeTreeValue(baseDocsTree, locale);
+
+export const docsTree: Root = getDocsTree("en");

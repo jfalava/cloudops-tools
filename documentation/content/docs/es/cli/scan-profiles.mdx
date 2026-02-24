@@ -1,0 +1,82 @@
+---
+title: Perfiles de Escaneo
+description: Recetas de comandos reutilizables para flujos comunes en CloudOps Tools
+---
+
+# Perfiles de Escaneo
+
+Aquí tienes una colección de comandos listos para copiar y pegar. Úsalos como base y ajústalos según necesites.
+
+- Usa `cloudops-tools` (comando raíz) + flags cuando busques rapidez y simplicidad
+- Usa `cloudops-tools init` cuando quieras controlar explícitamente el **modo** de escaneo o limitar regiones con precisión
+
+Si ejecutas `cloudops-tools` sin argumentos, solo muestra la ayuda y termina (comportamiento normal).
+
+## 1. Inventario rápido de una sola región
+
+```bash
+cloudops-tools --region us-east-1 --export-format csv
+```
+
+**Cuándo usarlo**: Necesitas un inventario básico y veloz de una región concreta.
+
+## 2. Revisión de seguridad (ideal para auditorías)
+
+```bash
+cloudops-tools init \
+  --mode security \
+  --export-format xlsx \
+  --limit-regions us-east-1,eu-west-1 \
+  --services EC2,RDS,Lambda,IAM,CloudFront
+```
+
+**Cuándo usarlo**: Preparando un reporte o revisión de seguridad.
+Enfocado en grupos de seguridad, accesos públicos, cifrado, políticas IAM, etc.
+
+## 3. Escaneo solo de servicios globales
+
+```bash
+cloudops-tools init --only-global --export-format json
+```
+
+**Cuándo usarlo**: Quieres auditar servicios que no dependen de región (IAM, CloudFront, Route53, S3 global, etc.).
+
+## 4. Escaneo profundo solo regional (sin globales)
+
+```bash
+cloudops-tools init \
+  --mode detailed \
+  --skip-global \
+  --region us-east-1,us-west-2 \
+  --export-format both
+```
+
+**Cuándo usarlo**: Buscas detalle máximo (metadatos, relaciones, configuraciones completas) en regiones específicas, sin perder tiempo en servicios globales.
+
+## 5. Barrido orientado a costos
+
+```bash
+cloudops-tools init --mode cost --export-format xlsx --limit-regions us-east-1,us-west-2
+```
+
+**Cuándo usarlo**: Quieres identificar oportunidades de ahorro, revisar uso de recursos, cobertura de instancias reservadas, etc.
+
+## 6. Snapshot descriptivo masivo de un tipo de recurso
+
+```bash
+cloudops-tools --describe ec2 --region us-east-1
+```
+
+**Cuándo usarlo**: Necesitas un documento Markdown detallado con **todos** los recursos de un tipo concreto en una región (EC2, RDS, Lambda, VPC, DynamoDB, etc.).
+
+### Variaciones rápidas del snapshot
+
+```bash
+cloudops-tools --describe rds --region eu-west-1
+cloudops-tools --describe lambda --region ap-southeast-1
+cloudops-tools --describe vpc --region us-west-2
+```
+
+Todos estos perfiles son puntos de partida. Puedes combinarlos, añadir `--account`, `--use-letme`, `--no-cache`, `--incremental`, etc., según tu caso.
+
+¡Guárdalos en tus notas, en un alias o en un script y tendrás tus escaneos favoritos siempre a un copy-paste! 📋🚀
