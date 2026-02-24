@@ -210,6 +210,156 @@ const displayResources = (
     }
   });
 
+type QueryCommandArgs = {
+  readonly account: Option.Option<string>;
+  readonly type: Option.Option<string>;
+  readonly region: Option.Option<string>;
+  readonly days: Option.Option<number>;
+  readonly from: Option.Option<string>;
+  readonly to: Option.Option<string>;
+  readonly limit: number;
+  readonly changes: boolean;
+  readonly changesDays: number;
+  readonly runs: boolean;
+};
+
+const validateQueryNumericAndModeOptions = ({
+  runs,
+  changes,
+  limit,
+  changesDays,
+  days,
+}: Pick<QueryCommandArgs, "runs" | "changes" | "limit" | "changesDays" | "days">) =>
+  Effect.gen(function* (_) {
+    if (runs && changes) {
+      yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            "Invalid option combination: --runs cannot be used with --changes.",
+            "cloudops-tools query --runs --limit 20",
+          ),
+        ),
+      );
+    }
+
+    if (limit <= 0) {
+      yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid value for --limit: ${String(limit)}. Expected a positive integer.`,
+            "cloudops-tools query --runs --limit 10",
+          ),
+        ),
+      );
+    }
+
+    if (changesDays <= 0) {
+      yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid value for --changes-days: ${String(changesDays)}. Expected a positive integer.`,
+            "cloudops-tools query --changes --changes-days 7",
+          ),
+        ),
+      );
+    }
+
+    if (Option.isSome(days) && days.value <= 0) {
+      yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid value for --days: ${String(days.value)}. Expected a positive integer.`,
+            "cloudops-tools query --days 14",
+          ),
+        ),
+      );
+    }
+  });
+
+const validateQueryDateRange = (from: Option.Option<string>, to: Option.Option<string>) =>
+  Effect.gen(function* (_) {
+    const fromValue = Option.getOrUndefined(from);
+    const toValue = Option.getOrUndefined(to);
+    const parsedFrom = fromValue ? parseIsoDateOnlyUtc(fromValue) : null;
+    const parsedTo = toValue ? parseIsoDateOnlyUtc(toValue) : null;
+
+    if (fromValue && parsedFrom === null) {
+      return yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid value for --from: "${fromValue}". Expected ISO date format YYYY-MM-DD.`,
+            "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+          ),
+        ),
+      );
+    }
+
+    if (toValue && parsedTo === null) {
+      return yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid value for --to: "${toValue}". Expected ISO date format YYYY-MM-DD.`,
+            "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+          ),
+        ),
+      );
+    }
+
+    if (parsedFrom && parsedTo && parsedFrom.getTime() > parsedTo.getTime()) {
+      return yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid date range: --from (${fromValue}) must be on or before --to (${toValue}).`,
+            "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+          ),
+        ),
+      );
+    }
+
+    return { fromValue, toValue } as const;
+  });
+
+const executeQueryCommand = (
+  {
+    account,
+    type,
+    region,
+    days,
+    limit,
+    changes,
+    changesDays,
+    runs,
+  }: Omit<QueryCommandArgs, "from" | "to">,
+  dateRange: { readonly fromValue: string | undefined; readonly toValue: string | undefined },
+) =>
+  Effect.gen(function* (_) {
+    const accountId = Option.getOrElse(account, () => "default");
+
+    if (runs) {
+      const runList = yield* _(listInventoryRunsEffect(accountId, limit));
+      yield* _(displayRuns(runList));
+      return;
+    }
+
+    if (changes) {
+      const changesList = yield* _(getInventoryChangesEffect(accountId, changesDays));
+      yield* _(displayChanges(changesList, changesDays));
+      return;
+    }
+
+    const results = yield* _(
+      queryInventoryEffect(accountId, {
+        type: Option.getOrUndefined(type),
+        region: Option.getOrUndefined(region),
+        days: Option.getOrUndefined(days),
+        from: dateRange.fromValue,
+        to: dateRange.toValue,
+      }),
+    );
+
+    yield* _(displayResources(results));
+  });
+
 export const queryCommand = Command.make(
   "query",
   {
@@ -224,114 +374,11 @@ export const queryCommand = Command.make(
     changesDays: queryChangesDays,
     runs: queryRuns,
   },
-  ({ account, type, region, days, from, to, limit, changes, changesDays, runs }) =>
+  (args) =>
     Effect.gen(function* (_) {
-      if (runs && changes) {
-        yield* _(
-          Effect.fail(
-            invalidQueryParams(
-              "Invalid option combination: --runs cannot be used with --changes.",
-              "cloudops-tools query --runs --limit 20",
-            ),
-          ),
-        );
-      }
+      yield* _(validateQueryNumericAndModeOptions(args));
 
-      if (limit <= 0) {
-        yield* _(
-          Effect.fail(
-            invalidQueryParams(
-              `Invalid value for --limit: ${String(limit)}. Expected a positive integer.`,
-              "cloudops-tools query --runs --limit 10",
-            ),
-          ),
-        );
-      }
-
-      if (changesDays <= 0) {
-        yield* _(
-          Effect.fail(
-            invalidQueryParams(
-              `Invalid value for --changes-days: ${String(changesDays)}. Expected a positive integer.`,
-              "cloudops-tools query --changes --changes-days 7",
-            ),
-          ),
-        );
-      }
-
-      if (Option.isSome(days) && days.value <= 0) {
-        yield* _(
-          Effect.fail(
-            invalidQueryParams(
-              `Invalid value for --days: ${String(days.value)}. Expected a positive integer.`,
-              "cloudops-tools query --days 14",
-            ),
-          ),
-        );
-      }
-
-      const fromValue = Option.getOrUndefined(from);
-      const toValue = Option.getOrUndefined(to);
-      const parsedFrom = fromValue ? parseIsoDateOnlyUtc(fromValue) : null;
-      const parsedTo = toValue ? parseIsoDateOnlyUtc(toValue) : null;
-
-      if (fromValue && parsedFrom === null) {
-        yield* _(
-          Effect.fail(
-            invalidQueryParams(
-              `Invalid value for --from: "${fromValue}". Expected ISO date format YYYY-MM-DD.`,
-              "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
-            ),
-          ),
-        );
-      }
-
-      if (toValue && parsedTo === null) {
-        yield* _(
-          Effect.fail(
-            invalidQueryParams(
-              `Invalid value for --to: "${toValue}". Expected ISO date format YYYY-MM-DD.`,
-              "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
-            ),
-          ),
-        );
-      }
-
-      if (parsedFrom && parsedTo && parsedFrom.getTime() > parsedTo.getTime()) {
-        yield* _(
-          Effect.fail(
-            invalidQueryParams(
-              `Invalid date range: --from (${fromValue}) must be on or before --to (${toValue}).`,
-              "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
-            ),
-          ),
-        );
-      }
-
-      const accountId = Option.getOrElse(account, () => "default");
-
-      if (runs) {
-        const runList = yield* _(listInventoryRunsEffect(accountId, limit));
-        yield* _(displayRuns(runList));
-        return;
-      }
-
-      if (changes) {
-        const changesList = yield* _(getInventoryChangesEffect(accountId, changesDays));
-        yield* _(displayChanges(changesList, changesDays));
-        return;
-      }
-
-      const results = yield* _(
-        queryInventoryEffect(accountId, {
-          type: Option.getOrUndefined(type),
-          region: Option.getOrUndefined(region),
-          days: Option.getOrUndefined(days),
-          from: fromValue,
-          to: toValue,
-        }),
-      );
-
-      yield* _(displayResources(results));
+      const dateRange = yield* _(validateQueryDateRange(args.from, args.to));
+      yield* _(executeQueryCommand(args, dateRange));
     }),
 ).pipe(Command.withDescription("Query historical inventory data from local SQLite database"));

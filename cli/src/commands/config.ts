@@ -26,6 +26,7 @@ const VALID_CONFIG_KEYS = [
   "skipGlobal",
   "onlyGlobal",
 ] as const;
+type ValidConfigKey = (typeof VALID_CONFIG_KEYS)[number];
 
 const DEFAULT_FORMAT_VALUES = ["csv", "xlsx", "json", "both", "all"] as const;
 const DEFAULT_MODE_VALUES = ["basic", "detailed", "security", "cost"] as const;
@@ -37,13 +38,141 @@ const BASE_CONFIG_DEFAULTS: CloudOpsConfig = {
   onlyGlobal: false,
 };
 
+type ConfigParseResult<T> =
+  | { readonly ok: true; readonly value: T }
+  | { readonly ok: false; readonly error: Error };
+
+const isValidConfigKey = (key: string): key is ValidConfigKey =>
+  VALID_CONFIG_KEYS.includes(key as ValidConfigKey);
+
+const parseBooleanConfigValue = (
+  key: "skipGlobal" | "onlyGlobal",
+  value: string,
+): ConfigParseResult<boolean> => {
+  const normalized = value.trim().toLowerCase();
+  if (normalized !== "true" && normalized !== "false") {
+    return {
+      ok: false as const,
+      error: invalidUserInput(`Invalid value for ${key}: "${value}". Expected true or false.`, {
+        example: `cloudops-tools config set ${key} true`,
+      }),
+    };
+  }
+
+  return { ok: true as const, value: normalized === "true" };
+};
+
+const parseDefaultFormatConfigValue = (
+  value: string,
+): ConfigParseResult<CloudOpsConfig["defaultFormat"]> => {
+  const normalized = value.trim().toLowerCase();
+  if (!DEFAULT_FORMAT_VALUES.includes(normalized as (typeof DEFAULT_FORMAT_VALUES)[number])) {
+    return {
+      ok: false,
+      error: invalidUserInput(
+        `Invalid value for defaultFormat: "${value}". Expected one of: ${DEFAULT_FORMAT_VALUES.join(", ")}.`,
+        { example: "cloudops-tools config set defaultFormat xlsx" },
+      ),
+    };
+  }
+  return { ok: true, value: normalized as CloudOpsConfig["defaultFormat"] };
+};
+
+const parseDefaultModeConfigValue = (
+  value: string,
+): ConfigParseResult<CloudOpsConfig["defaultMode"]> => {
+  const normalized = value.trim().toLowerCase();
+  if (!DEFAULT_MODE_VALUES.includes(normalized as (typeof DEFAULT_MODE_VALUES)[number])) {
+    return {
+      ok: false,
+      error: invalidUserInput(
+        `Invalid value for defaultMode: "${value}". Expected one of: ${DEFAULT_MODE_VALUES.join(", ")}.`,
+        { example: "cloudops-tools config set defaultMode security" },
+      ),
+    };
+  }
+  return { ok: true, value: normalized as CloudOpsConfig["defaultMode"] };
+};
+
+const parseDefaultServicesConfigValue = (value: string): ConfigParseResult<string[]> => {
+  const parsed = parseCsvValues(
+    "defaultServices",
+    value,
+    "cloudops-tools config set defaultServices EC2,RDS,S3",
+  );
+  if (!parsed.ok) {
+    return { ok: false, error: parsed.error };
+  }
+  return { ok: true, value: parsed.values };
+};
+
+type ConfigSetUpdateResult =
+  | { readonly ok: true; readonly config: CloudOpsConfig }
+  | { readonly ok: false; readonly error: Error };
+
+const toConfigSetSuccess = (config: CloudOpsConfig): ConfigSetUpdateResult => ({
+  ok: true,
+  config,
+});
+
+const configSetHandlers = {
+  defaultRegion: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult =>
+    toConfigSetSuccess({ ...config, defaultRegion: value }),
+  defaultAccount: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult =>
+    toConfigSetSuccess({ ...config, defaultAccount: value }),
+  defaultFormat: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult => {
+    const parsed = parseDefaultFormatConfigValue(value);
+    if (!parsed.ok) {
+      return parsed;
+    }
+    return toConfigSetSuccess({ ...config, defaultFormat: parsed.value });
+  },
+  defaultMode: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult => {
+    const parsed = parseDefaultModeConfigValue(value);
+    if (!parsed.ok) {
+      return parsed;
+    }
+    return toConfigSetSuccess({ ...config, defaultMode: parsed.value });
+  },
+  defaultServices: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult => {
+    const parsed = parseDefaultServicesConfigValue(value);
+    if (!parsed.ok) {
+      return parsed;
+    }
+    return toConfigSetSuccess({ ...config, defaultServices: parsed.value });
+  },
+  skipGlobal: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult => {
+    const parsed = parseBooleanConfigValue("skipGlobal", value);
+    if (!parsed.ok) {
+      return parsed;
+    }
+    return toConfigSetSuccess({ ...config, skipGlobal: parsed.value });
+  },
+  onlyGlobal: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult => {
+    const parsed = parseBooleanConfigValue("onlyGlobal", value);
+    if (!parsed.ok) {
+      return parsed;
+    }
+    return toConfigSetSuccess({ ...config, onlyGlobal: parsed.value });
+  },
+} satisfies Record<
+  ValidConfigKey,
+  (config: CloudOpsConfig, value: string) => ConfigSetUpdateResult
+>;
+
+const buildUpdatedConfigForSet = (
+  config: CloudOpsConfig,
+  key: ValidConfigKey,
+  value: string,
+): ConfigSetUpdateResult => configSetHandlers[key](config, value);
+
 const configSetCommand = Command.make("set", setOptions, ({ key, value }) =>
   Effect.gen(function* (_) {
     const configService = yield* _(ConfigService);
     const config = yield* _(configService.loadConfig());
 
-    if (!VALID_CONFIG_KEYS.includes(key as (typeof VALID_CONFIG_KEYS)[number])) {
-      yield* _(
+    if (!isValidConfigKey(key)) {
+      return yield* _(
         Effect.fail(
           invalidUserInput(`Invalid config key: ${key}.`, {
             hint: `Valid keys: ${VALID_CONFIG_KEYS.join(", ")}`,
@@ -53,59 +182,11 @@ const configSetCommand = Command.make("set", setOptions, ({ key, value }) =>
       );
     }
 
-    let parsedValue: unknown = value;
-    if (key === "skipGlobal" || key === "onlyGlobal") {
-      const normalized = value.trim().toLowerCase();
-      if (normalized !== "true" && normalized !== "false") {
-        yield* _(
-          Effect.fail(
-            invalidUserInput(`Invalid value for ${key}: "${value}". Expected true or false.`, {
-              example: `cloudops-tools config set ${key} true`,
-            }),
-          ),
-        );
-      }
-      parsedValue = normalized === "true";
-    } else if (key === "defaultFormat") {
-      const normalized = value.trim().toLowerCase();
-      if (!DEFAULT_FORMAT_VALUES.includes(normalized as (typeof DEFAULT_FORMAT_VALUES)[number])) {
-        yield* _(
-          Effect.fail(
-            invalidUserInput(
-              `Invalid value for ${key}: "${value}". Expected one of: ${DEFAULT_FORMAT_VALUES.join(", ")}.`,
-              { example: "cloudops-tools config set defaultFormat xlsx" },
-            ),
-          ),
-        );
-      }
-      parsedValue = normalized;
-    } else if (key === "defaultMode") {
-      const normalized = value.trim().toLowerCase();
-      if (!DEFAULT_MODE_VALUES.includes(normalized as (typeof DEFAULT_MODE_VALUES)[number])) {
-        yield* _(
-          Effect.fail(
-            invalidUserInput(
-              `Invalid value for ${key}: "${value}". Expected one of: ${DEFAULT_MODE_VALUES.join(", ")}.`,
-              { example: "cloudops-tools config set defaultMode security" },
-            ),
-          ),
-        );
-      }
-      parsedValue = normalized;
-    } else if (key === "defaultServices") {
-      const parsed = parseCsvValues(
-        "defaultServices",
-        value,
-        "cloudops-tools config set defaultServices EC2,RDS,S3",
-      );
-      if (!parsed.ok) {
-        yield* _(Effect.fail(parsed.error));
-      }
-      parsedValue = parsed.ok ? parsed.values : undefined;
+    const updated = buildUpdatedConfigForSet(config, key, value);
+    if (!updated.ok) {
+      return yield* _(Effect.fail(updated.error));
     }
-
-    const updatedConfig: CloudOpsConfig = { ...config, [key]: parsedValue };
-    yield* _(configService.saveConfig(updatedConfig));
+    yield* _(configService.saveConfig(updated.config));
     yield* _(Console.log(ui.success(`Set ${key} = ${value}`)));
   }),
 ).pipe(Command.withDescription("Set a configuration value"));
@@ -119,7 +200,12 @@ const configGetCommand = Command.make(
       const config = yield* _(configService.loadConfig());
 
       if (key._tag === "Some") {
-        const value = config[key.value as keyof CloudOpsConfig];
+        if (!isValidConfigKey(key.value)) {
+          yield* _(Console.log(ui.error(`${key.value} is not a valid config key`)));
+          return;
+        }
+
+        const value = config[key.value];
         if (value === undefined) {
           yield* _(Console.log(ui.info(`${key.value} is not set`)));
         } else {
@@ -143,13 +229,18 @@ const configUnsetCommand = Command.make("unset", { key: Args.text({ name: "key" 
     const configService = yield* _(ConfigService);
     const config = yield* _(configService.loadConfig());
 
+    if (!isValidConfigKey(key)) {
+      yield* _(Console.log(ui.error(`${key} is not a valid config key`)));
+      return;
+    }
+
     if (!(key in config)) {
       yield* _(Console.log(ui.info(`${key} is not set`)));
       return;
     }
 
     const updatedConfig = { ...config };
-    delete updatedConfig[key as keyof CloudOpsConfig];
+    delete updatedConfig[key];
     yield* _(configService.saveConfig(updatedConfig));
     yield* _(Console.log(ui.success(`Unset ${key}`)));
   }),
