@@ -76,6 +76,6 @@
     "typecheck:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/documentation typecheck"
   },
   "devDependencies": {
-    "oxfmt": "^0.32.0"
+    "oxfmt": "catalog:build"
   }
 }

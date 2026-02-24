@@ -65,31 +65,31 @@ Estos son proporcionados por `@effect/cli` y aparecen en la salida de ayuda:
 ## Ejemplos rápidos
 
 ```bash
-# Show help
+# Mostrar ayuda
 cloudops-tools --help
 
-# Show examples
+# Mostrar ejemplos
 cloudops-tools --help-examples
 
-# Show version
+# Mostrar versión
 cloudops-tools --version
 
-# Basic inventory for us-east-1
+# Inventario básico para us-east-1
 cloudops-tools --region us-east-1
 
-# Inventory for multiple regions
+# Inventario para varias regiones
 cloudops-tools --region us-east-1,eu-west-1
 
-# Scan specific services only
+# Escanear solo servicios específicos
 cloudops-tools --services EC2,RDS,S3 --region us-east-1
 
-# Export to Excel format
+# Exportar a formato Excel
 cloudops-tools --export-format xlsx
 
-# Describe all RDS instances in a region
+# Describir todas las instancias RDS en una región
 cloudops-tools --describe rds --region eu-south-2
 
-# Use `letme` with MFA profile from --account
+# Usar `letme` con perfil MFA desde --account
 cloudops-tools --use-letme --account engineering-prod --region us-east-1
 ```
 

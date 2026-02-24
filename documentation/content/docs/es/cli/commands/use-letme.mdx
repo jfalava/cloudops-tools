@@ -1,9 +1,9 @@
 ---
-title: "uso-déjame"
-description: "Utilice letme MFA flow con el perfil de --cuenta antes de ejecutar análisis"
+title: "--use-letme"
+description: "Utilice el flujo MFA de letme con el perfil de --account antes de ejecutar análisis"
 ---
 
-# uso-déjame
+# --use-letme
 
 Utilice `--use-letme` para obtener credenciales temporales de AWS a través de `letme` antes de ejecutar los comandos de escaneo.
 
@@ -23,7 +23,7 @@ Este comando:
 
 1. Acepte su clave secreta TOTP (el secreto codificado en base32 de la configuración de su dispositivo MFA)
 2. Guárdelo de forma segura utilizando un almacenamiento secreto respaldado por el sistema operativo.
-3. Validar la configuración generando un token de prueba.
+3. Valide la configuración generando un token de prueba.
 
 El secreto TOTP se almacena localmente a través de secretos Bun utilizando un almacenamiento seguro específico de la plataforma:
 
@@ -53,8 +53,8 @@ Cuando `--use-letme` está habilitado, Herramientas de CloudOps:
 
 ## Requisitos
 
-- `letme` documentos oficiales: [getletme.com](https://getletme.com/)
-- `letme` código fuente: [github.com/lockedinspace/letme](https://github.com/lockedinspace/letme)
+- Documentación oficial de `letme`: [getletme.com](https://getletme.com/)
+- Código fuente de `letme`: [github.com/lockedinspace/letme](https://github.com/lockedinspace/letme)
 - `letme` debe estar instalado y disponible en tu `PATH`
 - Debes ejecutar `setup-totp` al menos una vez antes de usar `--use-letme`
 
@@ -73,7 +73,7 @@ cloudops-tools setup-totp
 cloudops-tools --use-letme --account engineering-prod --region us-east-1
 ```
 
-### iniciar escaneo con letme
+### Iniciar escaneo con letme
 
 ```bash
 cloudops-tools init --use-letme --account engineering-prod --mode security --export-format xlsx
