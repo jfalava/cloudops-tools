@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cloudfront": "catalog:aws-sdk",
+    "@aws-sdk/client-docdb": "catalog:aws-sdk",
     "@aws-sdk/client-elastic-beanstalk": "catalog:aws-sdk",
     "@aws-sdk/client-elasticache": "catalog:aws-sdk",
     "@aws-sdk/client-global-accelerator": "catalog:aws-sdk",
