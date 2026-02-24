@@ -17,23 +17,26 @@ cloudops-tools query [options]
 
 El comando `query` le permite analizar ejecuciones de inventario anteriores almacenadas localmente en `~/.config/cloudops-tools/inventory.db`. Esto permite el análisis de tendencias, la detección de cambios y la generación de informes históricos sin realizar llamadas a la API de AWS.
 
-## Opciones| Opción | Alias ​​| Descripción | Predeterminado |
+## Opciones
 
-| ---------------- | ----- | ------------------------------------------------ | ----------- |
-| `--account` | `-a` | Cuenta de AWS para consultar | `default` |
-| `--type` | `-t` | Filtrar por tipo de recurso (por ejemplo, EC2, RDS, Lambda) | Todos los tipos |
-| `--region` | `-r` | Filtrar por región de AWS | Todas las regiones |
-| `--days` | `-d` | Consultar recursos de los últimos N días | Todo el tiempo |
-| `--from` | | Consulta desde fecha (formato ISO: AAAA-MM-DD) | - |
-| `--to` | | Consulta hasta la fecha (formato ISO: AAAA-MM-DD) | - |
-| `--limit` | `-l` | Limitar el número de ejecuciones para mostrar | `10` |
-| `--runs` | | Listar todas las ejecuciones de inventario | `false` |
-| `--changes` | `-c` | Mostrar cambios desde la última ejecución | `false` |
-| `--changes-days` | | Días para comparar cambios | `7` |
+| Opción           | Alias ​​ | Descripción                                                 | Predeterminado     |
+| ---------------- | -------- | ----------------------------------------------------------- | ------------------ |
+| `--account`      | `-a`     | Cuenta de AWS para consultar                                | `default`          |
+| `--type`         | `-t`     | Filtrar por tipo de recurso (por ejemplo, EC2, RDS, Lambda) | Todos los tipos    |
+| `--region`       | `-r`     | Filtrar por región de AWS                                   | Todas las regiones |
+| `--days`         | `-d`     | Consultar recursos de los últimos N días                    | Todo el tiempo     |
+| `--from`         |          | Consulta desde fecha (formato ISO: AAAA-MM-DD)              | -                  |
+| `--to`           |          | Consulta hasta la fecha (formato ISO: AAAA-MM-DD)           | -                  |
+| `--limit`        | `-l`     | Limitar el número de ejecuciones para mostrar               | `10`               |
+| `--runs`         |          | Listar todas las ejecuciones de inventario                  | `false`            |
+| `--changes`      | `-c`     | Mostrar cambios desde la última ejecución                   | `false`            |
+| `--changes-days` |          | Días para comparar cambios                                  | `7`                |
 
 ## Subcomandos
 
-### Ejecuciones de listaEnumere todas las ejecuciones de inventario anteriores:
+### Ejecuciones de lista
+
+Enumere todas las ejecuciones de inventario anteriores:
 
 ```bash
 cloudops-tools query --runs

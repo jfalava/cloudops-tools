@@ -28,14 +28,15 @@ cloudops-tools describe <type> <region> <id> [options]
 | `--debug`    | Mostrar salida de error sin formato con seguimientos de pila                | `false`        |
 | `--no-cache` | Deshabilite el almacenamiento en caché, obtenga siempre datos nuevos de AWS | `false`        |
 
-## Tipos de recursos comunes| Tipo | Descripción | Formato de identificación |
+## Tipos de recursos comunes
 
-| ---------- | ---------------------- | ----------------------- |
-| `ec2` | Instancias EC2 | `i-xxxxxxxxxxxxxxxxx` |
-| `rds` | Instancias de bases de datos RDS | Identificador de instancia de base de datos |
-| `lambda` | Funciones lambda | Nombre de función o ARN |
-| `vpc` | Redes VPC | `vpc-xxxxxxxxxxxxxxxxx` |
-| `dynamodb` | Tablas de DynamoDB | Nombre de la tabla |
+| Tipo       | Descripción                      | Formato de identificación                   |
+| ---------- | -------------------------------- | ------------------------------------------- |
+| `ec2`      | Instancias EC2                   | `i-xxxxxxxxxxxxxxxxx`                       |
+| `rds`      | Instancias de bases de datos RDS | Identificador de instancia de base de datos |
+| `lambda`   | Funciones lambda                 | Nombre de función o ARN                     |
+| `vpc`      | Redes VPC                        | `vpc-xxxxxxxxxxxxxxxxx`                     |
+| `dynamodb` | Tablas de DynamoDB               | Nombre de la tabla                          |
 
 El comando `describe` admite tipos de recursos adicionales más allá de esta lista rápida (por ejemplo, S3,
 CloudFront, Route53, IAM, KMS, Secrets Manager y más).
@@ -98,7 +99,9 @@ cloudops-tools --describe dynamodb --region us-west-2
 
 Esto escribe un archivo Markdown en `inventory-output/{account-id}/describe-{type}-{region}-{timestamp}.md`
 
-## Almacenamiento en cachéLas operaciones por lotes `--describe` se almacenan automáticamente en caché durante 5 minutos. Las llamadas de descripción repetidas dentro de esta ventana devuelven resultados almacenados en caché al instante:
+## Almacenamiento en caché
+
+Las operaciones por lotes `--describe` se almacenan automáticamente en caché durante 5 minutos. Las llamadas de descripción repetidas dentro de esta ventana devuelven resultados almacenados en caché al instante:
 
 ```bash
 # First call - fetches from AWS (5+ seconds)

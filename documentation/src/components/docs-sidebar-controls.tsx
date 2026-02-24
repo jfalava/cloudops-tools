@@ -18,7 +18,9 @@ const toggleTheme = () => {
   const isDark =
     storedTheme === "dark" ||
     (storedTheme !== "light" && document.documentElement.classList.contains("dark")) ||
-    (storedTheme === null && systemPrefersDark && !document.documentElement.classList.contains("dark"));
+    (storedTheme === null &&
+      systemPrefersDark &&
+      !document.documentElement.classList.contains("dark"));
 
   const nextTheme = isDark ? "light" : "dark";
   window.localStorage.setItem("theme", nextTheme);
@@ -34,7 +36,7 @@ export function DocsSidebarControls({ locale, path }: DocsSidebarControlsProps) 
         aria-label="Toggle theme"
         title="Toggle theme"
         onClick={toggleTheme}
-        className="inline-flex h-8 w-8 items-center justify-center rounded-md border text-sm hover:bg-accent/60"
+        className="hover:bg-accent/60 inline-flex h-8 w-8 items-center justify-center rounded-md border text-sm"
       >
         <Sun className="hidden h-4 w-4 dark:block" />
         <Moon className="h-4 w-4 dark:hidden" />

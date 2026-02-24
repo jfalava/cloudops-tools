@@ -10,9 +10,7 @@ export function baseOptions(locale: Locale = "en", docsPath?: string): BaseLayou
     },
     themeSwitch: docsPath
       ? {
-          component: (
-            <DocsSidebarControls locale={locale} path={docsPath} />
-          ),
+          component: <DocsSidebarControls locale={locale} path={docsPath} />,
         }
       : undefined,
     githubUrl: "https://github.com/jfalava/cloudops-tools",

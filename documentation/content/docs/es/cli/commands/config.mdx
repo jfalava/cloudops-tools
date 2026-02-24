@@ -28,16 +28,17 @@ cloudops-tools config [--write-defaults] [subcommand] [options]
 | `unset`    | Eliminar un valor de configuración           |
 | `path`     | Mostrar la ruta del archivo de configuración |
 
-## Claves de configuración| Clave | Tipo | Descripción |
+## Claves de configuración
 
-| ----------------- | -------- | ------------------------------------------------------ |
-| `defaultRegion` | cadena | Región de AWS predeterminada para escaneos |
-| `defaultAccount` | cadena | Cuenta o perfil de AWS predeterminado |
-| `defaultFormat` | cadena | Formato de exportación predeterminado (`csv`, `xlsx`, `json`, `both`, `all`) |
-| `defaultMode` | cadena | Modo de escaneo predeterminado (`basic`, `detailed`, `security`, `cost`) |
-| `defaultServices` | cadena[] | Servicios predeterminados para escanear |
-| `skipGlobal` | booleano | Saltar servicios globales por defecto |
-| `onlyGlobal` | booleano | Escanear solo servicios globales de forma predeterminada |
+| Clave             | Tipo     | Descripción                                                                  |
+| ----------------- | -------- | ---------------------------------------------------------------------------- |
+| `defaultRegion`   | cadena   | Región de AWS predeterminada para escaneos                                   |
+| `defaultAccount`  | cadena   | Cuenta o perfil de AWS predeterminado                                        |
+| `defaultFormat`   | cadena   | Formato de exportación predeterminado (`csv`, `xlsx`, `json`, `both`, `all`) |
+| `defaultMode`     | cadena   | Modo de escaneo predeterminado (`basic`, `detailed`, `security`, `cost`)     |
+| `defaultServices` | cadena[] | Servicios predeterminados para escanear                                      |
+| `skipGlobal`      | booleano | Saltar servicios globales por defecto                                        |
+| `onlyGlobal`      | booleano | Escanear solo servicios globales de forma predeterminada                     |
 
 ---
 
@@ -57,14 +58,15 @@ Este comando:
 cloudops-tools config --write-defaults
 ```
 
-### Valores predeterminados escritos| Clave | Valor |
+### Valores predeterminados escritos
 
+| Clave           | Valor       |
 | --------------- | ----------- |
 | `defaultRegion` | `us-east-1` |
-| `defaultFormat` | `csv` |
-| `defaultMode` | `basic` |
-| `skipGlobal` | `false` |
-| `onlyGlobal` | `false` |
+| `defaultFormat` | `csv`       |
+| `defaultMode`   | `basic`     |
+| `skipGlobal`    | `false`     |
+| `onlyGlobal`    | `false`     |
 
 ### Ejemplo
 
