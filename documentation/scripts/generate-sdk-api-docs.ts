@@ -161,14 +161,14 @@ const localeStrings: Record<LocaleCode, LocaleStrings> = {
     indexIntro: "Esta sección se genera a partir de fuentes de SDK TypeScript utilizando TypeDoc.",
     generatedAtLabel: "Generado en",
     entryPointsHeading: "Puntos de entrada",
-    moduleFrontmatterTitle: (pageTitle) => `API: ${pageTitle.toLowerCase()}`,
+    moduleFrontmatterTitle: (pageTitle) => `API - ${pageTitle}`,
     moduleFrontmatterDescription: (importPath) =>
       `Referencia de API generada automáticamente para ${importPath}`,
     moduleHeading: (pageTitle) => `API - ${pageTitle}`,
     importPathLabel: "Ruta de importación",
     generatedFromTypedoc: "Generado a partir de TypeDoc.",
     noExports: "No se encontraron símbolos exportados.",
-    tableHeaders: ["Nombre", "Amable", "Descripción", "Fuente"],
+    tableHeaders: ["Nombre", "Tipo", "Descripción", "Fuente"],
     signaturesHeading: "Firmas",
     noCallableSignatures: "No hay firmas invocables en este punto de entrada.",
     noSummary: "No hay resumen disponible.",
@@ -371,6 +371,44 @@ function readTranslatedSummariesForModulePage(filePath: string): Map<string, str
   return translations;
 }
 
+function alternateSymbolNames(symbolName: string): string[] {
+  const aliases = new Set<string>([symbolName]);
+
+  if (symbolName.endsWith("Api")) {
+    aliases.add(`${symbolName.slice(0, -3)}API`);
+  }
+  if (symbolName.endsWith("API")) {
+    aliases.add(`${symbolName.slice(0, -3)}Api`);
+  }
+
+  return [...aliases];
+}
+
+function getTranslatedSummary(
+  translations: ReadonlyMap<string, string> | undefined,
+  symbolName: string | undefined,
+): string | undefined {
+  if (!translations || !symbolName) {
+    return undefined;
+  }
+
+  for (const candidate of alternateSymbolNames(symbolName)) {
+    const exact = translations.get(candidate);
+    if (exact?.trim()) {
+      return exact.trim();
+    }
+  }
+
+  const normalizedTarget = symbolName.toLowerCase();
+  for (const [candidate, text] of translations.entries()) {
+    if (candidate.toLowerCase() === normalizedTarget && text.trim()) {
+      return text.trim();
+    }
+  }
+
+  return undefined;
+}
+
 function localizeKind(kind: string, locale: LocaleStrings): string {
   return locale.kindLabels[kind] ?? kind;
 }
@@ -400,7 +438,7 @@ function renderModuleSection(
     const kind = localizeKind(reflectionKind(symbol.kind), locale);
     const defaultSummary = flattenSummary(symbol.comment, locale.noSummary);
     const summary = escapeTableCell(
-      translatedSummaries?.get(symbol.name ?? "")?.trim() || defaultSummary,
+      getTranslatedSummary(translatedSummaries, symbol.name) ?? defaultSummary,
     );
     const source = sourceRef(symbol.sources?.[0]);
     lines.push(`| ${name} | ${kind} | ${summary} | ${source} |`);
@@ -581,7 +619,6 @@ function main() {
 
   for (const localeTarget of locales) {
     const locale = localeStrings[localeTarget.code];
-    mkdirSync(localeTarget.apiDir, { recursive: true });
 
     const localizedModules = modules.map((module) => ({
       ...module,

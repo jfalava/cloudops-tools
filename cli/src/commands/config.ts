@@ -110,7 +110,10 @@ type ConfigSetUpdateResult =
   | { readonly ok: true; readonly config: CloudOpsConfig }
   | { readonly ok: false; readonly error: Error };
 
-const toConfigSetSuccess = (config: CloudOpsConfig): ConfigSetUpdateResult => ({ ok: true, config });
+const toConfigSetSuccess = (config: CloudOpsConfig): ConfigSetUpdateResult => ({
+  ok: true,
+  config,
+});
 
 const configSetHandlers = {
   defaultRegion: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult =>
@@ -152,7 +155,10 @@ const configSetHandlers = {
     }
     return toConfigSetSuccess({ ...config, onlyGlobal: parsed.value });
   },
-} satisfies Record<ValidConfigKey, (config: CloudOpsConfig, value: string) => ConfigSetUpdateResult>;
+} satisfies Record<
+  ValidConfigKey,
+  (config: CloudOpsConfig, value: string) => ConfigSetUpdateResult
+>;
 
 const buildUpdatedConfigForSet = (
   config: CloudOpsConfig,
@@ -194,7 +200,12 @@ const configGetCommand = Command.make(
       const config = yield* _(configService.loadConfig());
 
       if (key._tag === "Some") {
-        const value = config[key.value as keyof CloudOpsConfig];
+        if (!isValidConfigKey(key.value)) {
+          yield* _(Console.log(ui.error(`${key.value} is not a valid config key`)));
+          return;
+        }
+
+        const value = config[key.value];
         if (value === undefined) {
           yield* _(Console.log(ui.info(`${key.value} is not set`)));
         } else {
@@ -218,13 +229,18 @@ const configUnsetCommand = Command.make("unset", { key: Args.text({ name: "key" 
     const configService = yield* _(ConfigService);
     const config = yield* _(configService.loadConfig());
 
+    if (!isValidConfigKey(key)) {
+      yield* _(Console.log(ui.error(`${key} is not a valid config key`)));
+      return;
+    }
+
     if (!(key in config)) {
       yield* _(Console.log(ui.info(`${key} is not set`)));
       return;
     }
 
     const updatedConfig = { ...config };
-    delete updatedConfig[key as keyof CloudOpsConfig];
+    delete updatedConfig[key];
     yield* _(configService.saveConfig(updatedConfig));
     yield* _(Console.log(ui.success(`Unset ${key}`)));
   }),

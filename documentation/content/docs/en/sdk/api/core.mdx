@@ -9,7 +9,7 @@ Import path: `@cloudops-tools/sdk`
 
 Generated from TypeDoc.
 
-Generated at: `2026-02-24T18:26:56.152Z`
+Generated at: `2026-02-24T18:42:57.391Z`
 
 ## `@cloudops-tools/sdk`
 
@@ -97,8 +97,8 @@ Generated at: `2026-02-24T18:26:56.152Z`
 | `OpenSearchDomain`               | Interface  | Represents an Amazon OpenSearch Service domain.                                                                                                         | `sdk/src/types/aws-cli.types.ts:223`             |
 | `OpenSearchServerlessCollection` | Interface  | Represents an OpenSearch Serverless collection.                                                                                                         | `sdk/src/types/aws-cli.types.ts:824`             |
 | `ProgressEvent`                  | Interface  | Progress event - fired periodically with overall progress                                                                                               | `sdk/src/lib/progress-events.ts:104`             |
-| `QueryOptions`                   | Interface  | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:5`        |
-| `QueryResult`                    | Interface  | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:13`       |
+| `QueryOptions`                   | Interface  | Filters applied when querying historical inventory snapshots from the local database.                                                                   | `sdk/src/operations/query-inventory.ts:8`        |
+| `QueryResult`                    | Interface  | One inventory query result grouped by the run timestamp it came from.                                                                                   | `sdk/src/operations/query-inventory.ts:24`       |
 | `RbinRule`                       | Interface  | Represents an Rbin retention rule.                                                                                                                      | `sdk/src/types/aws-cli.types.ts:919`             |
 | `RDSInstance`                    | Interface  | Represents an Amazon RDS database instance with engine and configuration details.                                                                       | `sdk/src/types/aws-cli.types.ts:20`              |
 | `RedshiftCluster`                | Interface  | Represents an Amazon Redshift data warehouse cluster.                                                                                                   | `sdk/src/types/aws-cli.types.ts:198`             |
@@ -181,15 +181,15 @@ Generated at: `2026-02-24T18:26:56.152Z`
 | `getConfigWithDefaults`          | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/config.ts:147`                      |
 | `getEKSVersionStatus`            | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:287`             |
 | `getElastiCacheVersionStatus`    | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:309`             |
-| `getInventoryChangesEffect`      | Function   | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:28`       |
+| `getInventoryChangesEffect`      | Function   | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:55`       |
 | `getLambdaRuntimeStatus`         | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:293`             |
 | `getRDSEngineVersionStatus`      | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version-checker.ts:299`             |
 | `getTOTPSecret`                  | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/totp.ts:34`                         |
 | `getVersion`                     | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/version.ts:6`                       |
 | `isAwsCliAvailable`              | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-cli-check.ts:26`                |
-| `listInventoryRunsEffect`        | Function   | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:38`       |
+| `listInventoryRunsEffect`        | Function   | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:72`       |
 | `makeRegionConfig`               | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-config.ts:12`                   |
-| `queryInventoryEffect`           | Function   | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:18`       |
+| `queryInventoryEffect`           | Function   | No summary available.                                                                                                                                   | `sdk/src/operations/query-inventory.ts:38`       |
 | `setupTOTP`                      | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/totp.ts:135`                        |
 | `storeTOTPSecret`                | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/totp.ts:22`                         |
 | `validateAwsProfile`             | Function   | No summary available.                                                                                                                                   | `sdk/src/lib/aws-profile.ts:49`                  |

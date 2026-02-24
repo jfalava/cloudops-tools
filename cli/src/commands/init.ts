@@ -25,8 +25,11 @@ import {
 } from "@/options";
 import { startProgressRenderer } from "@/progress";
 
-type ParsedRegionsOption = ParseOptionResult<string[]> | undefined;
 type ParsedServicesOption = ParseOptionResult<string[] | undefined>;
+type ValidatedRegionSelections = {
+  readonly parsedRegions: Option.Option<string[]>;
+  readonly parsedLimitRegions: Option.Option<string[]>;
+};
 
 const validateInitArguments = (
   skipGlobal: boolean,
@@ -81,7 +84,7 @@ const parseInitRegionSelections = (
         parseCsvValues("--region", raw, "cloudops-tools init --region us-east-1,us-west-2"),
     });
     if (parsedRegions && !parsedRegions.ok) {
-      yield* _(Effect.fail(parsedRegions.error));
+      return yield* _(Effect.fail(parsedRegions.error));
     }
 
     const parsedLimitRegions = Option.match(limitRegions, {
@@ -94,10 +97,14 @@ const parseInitRegionSelections = (
         ),
     });
     if (parsedLimitRegions && !parsedLimitRegions.ok) {
-      yield* _(Effect.fail(parsedLimitRegions.error));
+      return yield* _(Effect.fail(parsedLimitRegions.error));
     }
 
-    return { parsedRegions, parsedLimitRegions } as const;
+    return {
+      parsedRegions: parsedRegions?.ok === true ? Option.some(parsedRegions.values) : Option.none(),
+      parsedLimitRegions:
+        parsedLimitRegions?.ok === true ? Option.some(parsedLimitRegions.values) : Option.none(),
+    } satisfies ValidatedRegionSelections;
   });
 
 const parseInitServicesSelection = (services: Option.Option<string>): ParsedServicesOption =>
@@ -131,8 +138,8 @@ const runInitWithSdk = ({
   readonly onlyGlobal: boolean;
   readonly incremental: boolean;
   readonly minInterval: Option.Option<number>;
-  readonly parsedRegions: ParsedRegionsOption;
-  readonly parsedLimitRegions: ParsedRegionsOption;
+  readonly parsedRegions: Option.Option<string[]>;
+  readonly parsedLimitRegions: Option.Option<string[]>;
   readonly parsedServices: ParsedServicesOption;
 }) =>
   Effect.gen(function* (_) {
@@ -144,9 +151,6 @@ const runInitWithSdk = ({
         onSome: (value) => Effect.succeed(value),
       }),
     );
-    const regions = parsedRegions?.ok === true ? Option.some(parsedRegions.values) : Option.none();
-    const limited =
-      parsedLimitRegions?.ok === true ? Option.some(parsedLimitRegions.values) : Option.none();
     const serviceList = parsedServices.ok ? parsedServices.values : undefined;
 
     yield* _(
@@ -154,7 +158,7 @@ const runInitWithSdk = ({
         id,
         mode,
         format,
-        Option.getOrUndefined(Option.orElse(regions, () => limited)),
+        Option.getOrUndefined(Option.orElse(parsedRegions, () => parsedLimitRegions)),
         debug,
         {
           skipGlobal,

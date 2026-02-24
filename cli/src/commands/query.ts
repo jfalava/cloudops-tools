@@ -223,16 +223,6 @@ type QueryCommandArgs = {
   readonly runs: boolean;
 };
 
-type QueryDateRangeValidationResult =
-  | {
-      readonly ok: true;
-      readonly value: {
-        readonly fromValue: string | undefined;
-        readonly toValue: string | undefined;
-      };
-    }
-  | { readonly ok: false; readonly error: Error };
-
 const validateQueryNumericAndModeOptions = ({
   runs,
   changes,
@@ -286,50 +276,60 @@ const validateQueryNumericAndModeOptions = ({
     }
   });
 
-const validateQueryDateRange = (
-  from: Option.Option<string>,
-  to: Option.Option<string>,
-): QueryDateRangeValidationResult => {
-  const fromValue = Option.getOrUndefined(from);
-  const toValue = Option.getOrUndefined(to);
-  const parsedFrom = fromValue ? parseIsoDateOnlyUtc(fromValue) : null;
-  const parsedTo = toValue ? parseIsoDateOnlyUtc(toValue) : null;
+const validateQueryDateRange = (from: Option.Option<string>, to: Option.Option<string>) =>
+  Effect.gen(function* (_) {
+    const fromValue = Option.getOrUndefined(from);
+    const toValue = Option.getOrUndefined(to);
+    const parsedFrom = fromValue ? parseIsoDateOnlyUtc(fromValue) : null;
+    const parsedTo = toValue ? parseIsoDateOnlyUtc(toValue) : null;
 
-  if (fromValue && parsedFrom === null) {
-    return {
-      ok: false,
-      error: invalidQueryParams(
-        `Invalid value for --from: "${fromValue}". Expected ISO date format YYYY-MM-DD.`,
-        "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
-      ),
-    };
-  }
+    if (fromValue && parsedFrom === null) {
+      return yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid value for --from: "${fromValue}". Expected ISO date format YYYY-MM-DD.`,
+            "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+          ),
+        ),
+      );
+    }
 
-  if (toValue && parsedTo === null) {
-    return {
-      ok: false,
-      error: invalidQueryParams(
-        `Invalid value for --to: "${toValue}". Expected ISO date format YYYY-MM-DD.`,
-        "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
-      ),
-    };
-  }
+    if (toValue && parsedTo === null) {
+      return yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid value for --to: "${toValue}". Expected ISO date format YYYY-MM-DD.`,
+            "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+          ),
+        ),
+      );
+    }
 
-  if (parsedFrom && parsedTo && parsedFrom.getTime() > parsedTo.getTime()) {
-    return {
-      ok: false,
-      error: invalidQueryParams(
-        `Invalid date range: --from (${fromValue}) must be on or before --to (${toValue}).`,
-        "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
-      ),
-    };
-  }
+    if (parsedFrom && parsedTo && parsedFrom.getTime() > parsedTo.getTime()) {
+      return yield* _(
+        Effect.fail(
+          invalidQueryParams(
+            `Invalid date range: --from (${fromValue}) must be on or before --to (${toValue}).`,
+            "cloudops-tools query --from 2026-02-01 --to 2026-02-15",
+          ),
+        ),
+      );
+    }
 
-  return { ok: true, value: { fromValue, toValue } };
-};
+    return { fromValue, toValue } as const;
+  });
 
 const executeQueryCommand = (
-  { account, type, region, days, limit, changes, changesDays, runs }: QueryCommandArgs,
+  {
+    account,
+    type,
+    region,
+    days,
+    limit,
+    changes,
+    changesDays,
+    runs,
+  }: Omit<QueryCommandArgs, "from" | "to">,
   dateRange: { readonly fromValue: string | undefined; readonly toValue: string | undefined },
 ) =>
   Effect.gen(function* (_) {
@@ -378,11 +378,7 @@ export const queryCommand = Command.make(
     Effect.gen(function* (_) {
       yield* _(validateQueryNumericAndModeOptions(args));
 
-      const dateRange = validateQueryDateRange(args.from, args.to);
-      if (!dateRange.ok) {
-        return yield* _(Effect.fail(dateRange.error));
-      }
-
-      yield* _(executeQueryCommand(args, dateRange.value));
+      const dateRange = yield* _(validateQueryDateRange(args.from, args.to));
+      yield* _(executeQueryCommand(args, dateRange));
     }),
 ).pipe(Command.withDescription("Query historical inventory data from local SQLite database"));
