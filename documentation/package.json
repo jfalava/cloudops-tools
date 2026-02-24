@@ -1,13 +1,13 @@
 {
   "name": "@cloudops-tools/documentation",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "NODE_OPTIONS=--no-deprecation vite build",
+    "build": "vite build",
     "cf-typegen": "wrangler types",
     "check": "tsgo --noEmit && oxlint --fix --type-aware",
-    "deploy": "tsgo --noEmit && oxlint --type-aware && oxfmt && bun generate:sdk-api && NODE_OPTIONS=--no-deprecation vite build && wrangler deploy",
+    "deploy": "tsgo --noEmit && oxlint --type-aware && oxfmt && bun generate:sdk-api && vite build && wrangler deploy",
     "dev": "vite dev --port 3000",
     "format": "oxfmt",
     "generate:sdk-api": "bun scripts/generate-sdk-api-docs.ts",
@@ -53,7 +53,7 @@
     "oxlint-tsgolint": "catalog:build",
     "typedoc": "catalog:build",
     "typescript": "catalog:build",
-    "vite": "8.0.0-beta.13",
+    "vite": "8.0.0-beta.15",
     "vitest": "4.0.18",
     "web-vitals": "5.1.0",
     "wrangler": "4.68.0"

@@ -5,7 +5,6 @@ import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
 import { ErrorBoundary } from "@/components/error-boundary";
-import { LocaleSwitch } from "@/components/locale-switch";
 import { getDocsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
 import {
@@ -17,54 +16,54 @@ import {
 } from "@/lib/seo";
 
 const englishDocModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
-  "": () => import("../../content/docs/index.mdx"),
-  index: () => import("../../content/docs/index.mdx"),
-  cli: () => import("../../content/docs/cli/index.mdx"),
-  "cli/index": () => import("../../content/docs/cli/index.mdx"),
-  "cli/installation": () => import("../../content/docs/cli/installation.mdx"),
-  "cli/build-cli": () => import("../../content/docs/cli/build-cli.mdx"),
-  "cli/configuration": () => import("../../content/docs/cli/configuration.mdx"),
-  "cli/choose-command": () => import("../../content/docs/cli/choose-command.mdx"),
-  "cli/scan-profiles": () => import("../../content/docs/cli/scan-profiles.mdx"),
-  "cli/exit-codes": () => import("../../content/docs/cli/exit-codes.mdx"),
-  "cli/troubleshooting": () => import("../../content/docs/cli/troubleshooting.mdx"),
-  "cli/commands": () => import("../../content/docs/cli/commands/index.mdx"),
-  "cli/commands/index": () => import("../../content/docs/cli/commands/index.mdx"),
-  "cli/commands/init": () => import("../../content/docs/cli/commands/init.mdx"),
-  "cli/commands/describe": () => import("../../content/docs/cli/commands/describe.mdx"),
-  "cli/commands/query": () => import("../../content/docs/cli/commands/query.mdx"),
-  "cli/commands/use-letme": () => import("../../content/docs/cli/commands/use-letme.mdx"),
-  "cli/commands/config": () => import("../../content/docs/cli/commands/config.mdx"),
-  sdk: () => import("../../content/docs/sdk/index.mdx"),
-  "sdk/index": () => import("../../content/docs/sdk/index.mdx"),
-  "sdk/getting-started": () => import("../../content/docs/sdk/getting-started.mdx"),
-  "sdk/error-model": () => import("../../content/docs/sdk/error-model.mdx"),
-  "sdk/layers-and-runtime": () => import("../../content/docs/sdk/layers-and-runtime.mdx"),
-  "sdk/operations": () => import("../../content/docs/sdk/operations.mdx"),
-  "sdk/examples": () => import("../../content/docs/sdk/examples.mdx"),
+  "": () => import("../../content/docs/en/index.mdx"),
+  index: () => import("../../content/docs/en/index.mdx"),
+  cli: () => import("../../content/docs/en/cli/index.mdx"),
+  "cli/index": () => import("../../content/docs/en/cli/index.mdx"),
+  "cli/installation": () => import("../../content/docs/en/cli/installation.mdx"),
+  "cli/build-cli": () => import("../../content/docs/en/cli/build-cli.mdx"),
+  "cli/configuration": () => import("../../content/docs/en/cli/configuration.mdx"),
+  "cli/choose-command": () => import("../../content/docs/en/cli/choose-command.mdx"),
+  "cli/scan-profiles": () => import("../../content/docs/en/cli/scan-profiles.mdx"),
+  "cli/exit-codes": () => import("../../content/docs/en/cli/exit-codes.mdx"),
+  "cli/troubleshooting": () => import("../../content/docs/en/cli/troubleshooting.mdx"),
+  "cli/commands": () => import("../../content/docs/en/cli/commands/index.mdx"),
+  "cli/commands/index": () => import("../../content/docs/en/cli/commands/index.mdx"),
+  "cli/commands/init": () => import("../../content/docs/en/cli/commands/init.mdx"),
+  "cli/commands/describe": () => import("../../content/docs/en/cli/commands/describe.mdx"),
+  "cli/commands/query": () => import("../../content/docs/en/cli/commands/query.mdx"),
+  "cli/commands/use-letme": () => import("../../content/docs/en/cli/commands/use-letme.mdx"),
+  "cli/commands/config": () => import("../../content/docs/en/cli/commands/config.mdx"),
+  sdk: () => import("../../content/docs/en/sdk/index.mdx"),
+  "sdk/index": () => import("../../content/docs/en/sdk/index.mdx"),
+  "sdk/getting-started": () => import("../../content/docs/en/sdk/getting-started.mdx"),
+  "sdk/error-model": () => import("../../content/docs/en/sdk/error-model.mdx"),
+  "sdk/layers-and-runtime": () => import("../../content/docs/en/sdk/layers-and-runtime.mdx"),
+  "sdk/operations": () => import("../../content/docs/en/sdk/operations.mdx"),
+  "sdk/examples": () => import("../../content/docs/en/sdk/examples.mdx"),
   "sdk/services-compute-storage": () =>
-    import("../../content/docs/sdk/services-compute-storage.mdx"),
+    import("../../content/docs/en/sdk/services-compute-storage.mdx"),
   "sdk/services-data-networking": () =>
-    import("../../content/docs/sdk/services-data-networking.mdx"),
+    import("../../content/docs/en/sdk/services-data-networking.mdx"),
   "sdk/services-security-platform": () =>
-    import("../../content/docs/sdk/services-security-platform.mdx"),
-  "sdk/utilities": () => import("../../content/docs/sdk/utilities.mdx"),
-  "sdk/reference-map": () => import("../../content/docs/sdk/reference-map.mdx"),
-  "sdk/api": () => import("../../content/docs/sdk/api/index.mdx"),
-  "sdk/api/index": () => import("../../content/docs/sdk/api/index.mdx"),
-  "sdk/api/core": () => import("../../content/docs/sdk/api/core.mdx"),
-  "sdk/api/operations": () => import("../../content/docs/sdk/api/operations.mdx"),
-  "sdk/api/services": () => import("../../content/docs/sdk/api/services.mdx"),
-  "sdk/api/lib": () => import("../../content/docs/sdk/api/lib.mdx"),
-  "sdk/api/types": () => import("../../content/docs/sdk/api/types.mdx"),
-  "sdk/api/credentials": () => import("../../content/docs/sdk/api/credentials.mdx"),
+    import("../../content/docs/en/sdk/services-security-platform.mdx"),
+  "sdk/utilities": () => import("../../content/docs/en/sdk/utilities.mdx"),
+  "sdk/reference-map": () => import("../../content/docs/en/sdk/reference-map.mdx"),
+  "sdk/api": () => import("../../content/docs/en/sdk/api/index.mdx"),
+  "sdk/api/index": () => import("../../content/docs/en/sdk/api/index.mdx"),
+  "sdk/api/core": () => import("../../content/docs/en/sdk/api/core.mdx"),
+  "sdk/api/operations": () => import("../../content/docs/en/sdk/api/operations.mdx"),
+  "sdk/api/services": () => import("../../content/docs/en/sdk/api/services.mdx"),
+  "sdk/api/lib": () => import("../../content/docs/en/sdk/api/lib.mdx"),
+  "sdk/api/types": () => import("../../content/docs/en/sdk/api/types.mdx"),
+  "sdk/api/credentials": () => import("../../content/docs/en/sdk/api/credentials.mdx"),
 };
 
 const rawSpanishDocModuleLoaders = import.meta.glob<typeof import("*.mdx")>(
   "../../content/docs/es/**/*.{mdx,md}",
 );
 
-const rawEnglishDocSources = import.meta.glob("../../content/docs/**/*.{mdx,md}", {
+const rawEnglishDocSources = import.meta.glob("../../content/docs/en/**/*.{mdx,md}", {
   query: "?raw",
   import: "default",
   eager: true,
@@ -146,7 +145,11 @@ const pathToDocSlug = (path: string): string | null => {
   }
 
   const relative = normalized.slice(markerIndex + marker.length).replace(/\.(mdx|md)$/i, "");
-  const localeStripped = relative.startsWith("es/") ? relative.slice("es/".length) : relative;
+  const localeStripped = relative.startsWith("es/")
+    ? relative.slice("es/".length)
+    : relative.startsWith("en/")
+      ? relative.slice("en/".length)
+      : relative;
   if (localeStripped === "index") {
     return "";
   }
@@ -292,6 +295,7 @@ function DocsPageComponent() {
   // Get slug from params - they're always available immediately
   const params = Route.useParams();
   const slug = params["_splat"] || "";
+  const docsPath = slug ? `/docs/${slug}` : "/docs";
 
   type DocModule = Awaited<ReturnType<(typeof englishDocModules)[string]>>;
 
@@ -328,13 +332,10 @@ function DocsPageComponent() {
 
   if (isLoading) {
     return (
-      <DocsLayout tree={getDocsTree("es")} {...baseOptions("es")}>
+      <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
         <DocsPage toc={[]} full={false}>
           <DocsBody>
-            <div className="flex items-center justify-end p-4 pb-0">
-              <LocaleSwitch currentLocale="es" path={slug ? `/docs/${slug}` : "/docs"} />
-            </div>
-            <div className="p-4 pt-2">Cargando...</div>
+            <div className="p-4">Cargando...</div>
           </DocsBody>
         </DocsPage>
       </DocsLayout>
@@ -352,12 +353,9 @@ function DocsPageComponent() {
   const MDXContent = docModule.default;
 
   return (
-    <DocsLayout tree={getDocsTree("es")} {...baseOptions("es")}>
+    <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
       <DocsPage toc={[]} full={false}>
         <DocsBody>
-          <div className="mb-4 flex items-center justify-end">
-            <LocaleSwitch currentLocale="es" path={slug ? `/docs/${slug}` : "/docs"} />
-          </div>
           <ErrorBoundary
             fallback={
               <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
