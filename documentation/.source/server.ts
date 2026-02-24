@@ -22,3 +22,18 @@ export const docs = await create.docs("docs", "content/docs/en", import.meta.glo
   },
   "eager": true
 }));
+
+export const docsEs = await create.docs("docsEs", "content/docs/es", import.meta.glob(["./**/*.{json,yaml}"], {
+  "base": "./../content/docs/es",
+  "query": {
+    "collection": "docsEs"
+  },
+  "import": "default",
+  "eager": true
+}), import.meta.glob(["./**/*.{mdx,md}"], {
+  "base": "./../content/docs/es",
+  "query": {
+    "collection": "docsEs"
+  },
+  "eager": true
+}));

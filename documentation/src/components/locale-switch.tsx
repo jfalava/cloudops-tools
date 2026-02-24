@@ -1,4 +1,4 @@
-import { localizePath, type Locale } from "@/lib/i18n";
+import { localizePath, stripLocalePrefix, type Locale } from "@/lib/i18n";
 
 type LocaleSwitchProps = {
   currentLocale: Locale;
@@ -7,11 +7,13 @@ type LocaleSwitchProps = {
 };
 
 export function LocaleSwitch({ currentLocale, path, className }: LocaleSwitchProps) {
+  const basePath = stripLocalePrefix(path).path;
+
   return (
     <div className={className}>
       <div className="inline-flex items-center gap-1 rounded-md border px-1 py-1 text-xs">
-        <LocaleLink locale="en" currentLocale={currentLocale} path={path} />
-        <LocaleLink locale="es" currentLocale={currentLocale} path={path} />
+        <LocaleLink locale="en" currentLocale={currentLocale} path={basePath} />
+        <LocaleLink locale="es" currentLocale={currentLocale} path={basePath} />
       </div>
     </div>
   );

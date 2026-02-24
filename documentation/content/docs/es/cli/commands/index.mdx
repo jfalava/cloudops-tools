@@ -30,21 +30,25 @@ cloudops-tools [options]
 
 ## Opciones de escaneo raíz
 
-| Estas opciones controlan el comportamiento del análisis del comando raíz cuando utiliza el comando raíz para un análisis: | Opción | Alias ​​                                                                                       | Descripción               | Predeterminado                                                                                          |
-| ------------------------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `--account`                                                                                                               | `-a`   | Nombre de cuenta o perfil de AWS                                                               | Detectado automáticamente |
-| `--region`                                                                                                                | `-r`   | Regiones de AWS, separadas por comas                                                           | `us-east-1`               |
-| `--export-format`                                                                                                         | `-f`   | Formato de exportación (`csv`, `xlsx`, `json`, `both`, `all`)                                  | `csv`                     |
-| `--services`                                                                                                              | `-s`   | Lista de servicios separados por comas para escanear (`all` compatible)                        | Todos los servicios       |
-| `--describe`                                                                                                              |        | Describe todas las resfuentes de un tipo                                                       | -                         |
-| `--no-cache`                                                                                                              |        | Deshabilitar el almacenamiento en caché para operaciones de descripción                        | `false`                   |
-| `--use-letme`                                                                                                             |        | Utilice el perfil `letme` y `--account` para obtener la credencial MFA (requiere `setup-totp`) | `false`                   |
-| `--skip-global`                                                                                                           |        | Omitir servicios globales (S3, IAM, CloudFront, Route53, etc.)                                 | `false`                   |
-| `--only-global`                                                                                                           |        | Escanear sólo servicios globales                                                               | `false`                   |
-| `--debug`                                                                                                                 |        | Mostrar salida de error sin formato con seguimientos de pila                                   | `false`                   |
-| `--help-examples`                                                                                                         |        | Imprima ejemplos de CLI y salga                                                                | `false`                   | Para conocer el flujo de trabajo de configuración y solución de problemas de `--use-letme`, consulte la |
+Estas opciones controlan el comportamiento del análisis del comando raíz cuando utiliza el comando
+raíz para un análisis:
 
-[`use-letme` guía](/es/docs/cli/commands/use-letme).
+| Opción            | Alias | Descripción                                                                                    | Predeterminado            |
+| ----------------- | ----- | ---------------------------------------------------------------------------------------------- | ------------------------- |
+| `--account`       | `-a`  | Nombre de cuenta o perfil de AWS                                                               | Detectado automáticamente |
+| `--region`        | `-r`  | Regiones de AWS, separadas por comas                                                           | `us-east-1`               |
+| `--export-format` | `-f`  | Formato de exportación (`csv`, `xlsx`, `json`, `both`, `all`)                                  | `csv`                     |
+| `--services`      | `-s`  | Lista de servicios separados por comas para escanear (`all` compatible)                        | Todos los servicios       |
+| `--describe`      |       | Describe todos los recursos de un tipo                                                         | -                         |
+| `--no-cache`      |       | Deshabilitar el almacenamiento en caché para operaciones de descripción                        | `false`                   |
+| `--use-letme`     |       | Utilice el perfil `letme` y `--account` para obtener la credencial MFA (requiere `setup-totp`) | `false`                   |
+| `--skip-global`   |       | Omitir servicios globales (S3, IAM, CloudFront, Route53, etc.)                                 | `false`                   |
+| `--only-global`   |       | Escanear sólo servicios globales                                                               | `false`                   |
+| `--debug`         |       | Mostrar salida de error sin formato con seguimientos de pila                                   | `false`                   |
+| `--help-examples` |       | Imprima ejemplos de CLI y salga                                                                | `false`                   |
+
+Para conocer el flujo de trabajo de configuración y solución de problemas de `--use-letme`,
+consulte la [`use-letme` guía](/es/docs/cli/commands/use-letme).
 
 ## Banderas globales del marco
 

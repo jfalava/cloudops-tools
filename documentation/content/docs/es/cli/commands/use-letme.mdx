@@ -42,7 +42,14 @@ cloudops-tools init --use-letme --account <profile-name> [options]
 
 ## Cómo funciona
 
-Cuando `--use-letme` está habilitado, Herramientas de CloudOps:1. Requiere que `--account <profile-name>` especifique qué perfil letme usar 2. Carga el secreto TOTP almacenado por `setup-totp` 3. Genera un código OTP basado en el tiempo 4. Ejecuta `letme obtain <profile-name>` y canaliza la OTP automáticamente 5. Establece `AWS_PROFILE=<profile-name>` para el proceso actual 6. Continúa la ejecución normal del comando utilizando las credenciales del rol asumido.
+Cuando `--use-letme` está habilitado, Herramientas de CloudOps:
+
+1. Requiere que `--account <profile-name>` especifique qué perfil letme usar
+2. Carga el secreto TOTP almacenado por `setup-totp`
+3. Genera un código OTP basado en el tiempo
+4. Ejecuta `letme obtain <profile-name>` y canaliza la OTP automáticamente
+5. Establece `AWS_PROFILE=<profile-name>` para el proceso actual
+6. Continúa la ejecución normal del comando utilizando las credenciales del rol asumido.
 
 ## Requisitos
 
@@ -96,7 +103,9 @@ cloudops-tools --region eu-south-2 --account account-in-letme-dynamodb --use-let
 - **Error al recuperar el secreto TOTP**:
   `Unable to read stored TOTP secret: ...`
 
-## Consideraciones de seguridad- El secreto TOTP nunca se almacena en `config.json` ni en ningún archivo de texto sin formato.
+## Consideraciones de seguridad
+
+- El secreto TOTP nunca se almacena en `config.json` ni en ningún archivo de texto sin formato.
 
 - Los secretos son administrados por el almacén de credenciales seguro del sistema operativo.
 - Considere la posibilidad de utilizar AWS IAM Identity Center (SSO) para entornos de equipo como alternativa a las configuraciones TOTP individuales.

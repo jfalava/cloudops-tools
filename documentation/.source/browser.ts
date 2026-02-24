@@ -15,5 +15,12 @@ const browserCollections = {
     },
     "eager": false
   })),
+  docsEs: create.doc("docsEs", import.meta.glob(["./**/*.{mdx,md}"], {
+    "base": "./../content/docs/es",
+    "query": {
+      "collection": "docsEs"
+    },
+    "eager": false
+  })),
 };
 export default browserCollections;
