@@ -8,7 +8,7 @@ const TRANSLATIONS_ES = new Map<string, string>([
   ["Command-line instructions", "Guía de línea de comandos"],
   ["Getting Started", "Primeros pasos"],
   ["Installation", "Instalación"],
-  ["Build CLI Binary", "Compilar binario CLI"],
+  ["Build CLI Binary", "Compilar desde código fuente"],
   ["Configuration", "Configuración"],
   ["Guides", "Guías"],
   ["Choose Command", "Elegir comando"],

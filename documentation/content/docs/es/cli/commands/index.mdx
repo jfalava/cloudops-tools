@@ -1,109 +1,96 @@
 ---
-title: "Descripción general de los comandos"
-description: "Referencia completa de comandos y banderas globales para CloudOps Tools"
+title: Resumen de Comandos
+description: Referencia completa de comandos y opciones globales de CloudOps Tools
 ---
-
-# Descripción general de los comandos
-
-Esta página es la referencia de comandos para las herramientas de CloudOps.
+# Resumen de Comandos
+Esta página es la referencia principal de todos los comandos y opciones de CloudOps Tools.
 
 ## Punto de entrada
+`cloudops-tools` es el comando principal que usas en la terminal.
 
-`cloudops-tools` es el punto de entrada de la CLI.
-
-- Sin argumentos, `cloudops-tools` imprime la ayuda y sale
-- Ejecute análisis de inventario pasando las opciones de análisis del comando raíz (por ejemplo `--region`)
-- Utilice subcomandos para flujos de trabajo avanzados
+- Si lo ejecutas sin argumentos → muestra la ayuda y termina
+- Si quieres lanzar un escaneo de inventario → pasas directamente las opciones principales
+- Para flujos más avanzados → usas los subcomandos
 
 ```bash
-cloudops-tools [options]
+cloudops-tools [opciones]
 ```
 
-## Subcomandos
+## Subcomandos disponibles
+| Comando     | Descripción                                                  |
+|-------------|--------------------------------------------------------------|
+| [`init`](/docs/cli/commands/init)     | Genera un escaneo de inventario completo (con muchas opciones avanzadas) |
+| [`describe`](/docs/cli/commands/describe) | Describe en detalle un recurso AWS concreto                  |
+| [`query`](/docs/cli/commands/query)   | Consulta datos históricos del inventario en la base SQLite local |
+| [`config`](/docs/cli/commands/config) | Gestiona la configuración persistente                       |
 
-| Comando                                      | Descripción                                                                  |
-| -------------------------------------------- | ---------------------------------------------------------------------------- |
-| [`init`](/es/docs/cli/commands/init)         | Genere escaneo de inventario entre regiones con opciones avanzadas           |
-| [`describe`](/es/docs/cli/commands/describe) | Describir en profundidad un recurso de AWS específico                        |
-| [`query`](/es/docs/cli/commands/query)       | Consultar datos históricos de inventario desde la base de datos SQLite local |
-| [`config`](/es/docs/cli/commands/config)     | Administrar configuración persistente                                        |
+## Opciones principales (para escaneos desde el comando raíz)
+Estas opciones controlan el comportamiento cuando usas `cloudops-tools` directamente para lanzar un escaneo:
 
-## Opciones de escaneo raíz
+| Opción            | Alias | Descripción                                                                 | Valor por defecto    |
+|-------------------|-------|-----------------------------------------------------------------------------|----------------------|
+| `--account`       | `-a`  | Nombre del perfil o cuenta AWS                                              | Detectado automáticamente |
+| `--region`        | `-r`  | Región(es) AWS (separadas por coma)                                         | `us-east-1`          |
+| `--export-format` | `-f`  | Formato de exportación (`csv`, `xlsx`, `json`, `both`, `all`)               | `csv`                |
+| `--services`      | `-s`  | Lista de servicios a escanear (separados por coma, `all` también válido)    | Todos los servicios  |
+| `--describe`      |       | Describe todos los recursos de un tipo determinado                          | —                    |
+| `--no-cache`      |       | Desactiva la caché en operaciones de describe                               | `false`              |
+| `--use-letme`     |       | Usa `letme` + perfil de `--account` para obtener credenciales con MFA       | `false`              |
+| `--skip-global`   |       | Omite servicios globales (S3, IAM, CloudFront, Route53, etc.)               | `false`              |
+| `--only-global`   |       | Escanea **solo** servicios globales                                         | `false`              |
+| `--debug`         |       | Muestra errores completos con trazas de pila                                | `false`              |
+| `--help-examples` |       | Muestra ejemplos útiles y termina                                           | `false`              |
 
-Estas opciones controlan el comportamiento del análisis del comando raíz cuando utiliza el comando
-raíz para un análisis:
+> Para configurar y solucionar problemas con `--use-letme`, mira la [guía de use-letme](/docs/cli/commands/use-letme).
 
-| Opción            | Alias | Descripción                                                                                    | Predeterminado            |
-| ----------------- | ----- | ---------------------------------------------------------------------------------------------- | ------------------------- |
-| `--account`       | `-a`  | Nombre de cuenta o perfil de AWS                                                               | Detectado automáticamente |
-| `--region`        | `-r`  | Regiones de AWS, separadas por comas                                                           | `us-east-1`               |
-| `--export-format` | `-f`  | Formato de exportación (`csv`, `xlsx`, `json`, `both`, `all`)                                  | `csv`                     |
-| `--services`      | `-s`  | Lista de servicios separados por comas para escanear (`all` compatible)                        | Todos los servicios       |
-| `--describe`      |       | Describe todos los recursos de un tipo                                                         | -                         |
-| `--no-cache`      |       | Deshabilitar el almacenamiento en caché para operaciones de descripción                        | `false`                   |
-| `--use-letme`     |       | Utilice el perfil `letme` y `--account` para obtener la credencial MFA (requiere `setup-totp`) | `false`                   |
-| `--skip-global`   |       | Omitir servicios globales (S3, IAM, CloudFront, Route53, etc.)                                 | `false`                   |
-| `--only-global`   |       | Escanear sólo servicios globales                                                               | `false`                   |
-| `--debug`         |       | Mostrar salida de error sin formato con seguimientos de pila                                   | `false`                   |
-| `--help-examples` |       | Imprima ejemplos de CLI y salga                                                                | `false`                   |
+## Opciones globales del framework (vienen de `@effect/cli`)
+Aparecen siempre en la ayuda:
 
-Para conocer el flujo de trabajo de configuración y solución de problemas de `--use-letme`,
-consulte la [`use-letme` guía](/es/docs/cli/commands/use-letme).
-
-## Banderas globales del marco
-
-Estos son proporcionados por `@effect/cli` y aparecen en la salida de ayuda:
-
-| Opción          | Descripción                                                                                    |
-| --------------- | ---------------------------------------------------------------------------------------------- |
-| `--help`, `-h`  | Mostrar ayuda del comando                                                                      |
-| `--version`     | Mostrar versión de la aplicación                                                               |
-| `--wizard`      | Iniciar el modo asistente para la entrada de comandos                                          |
-| `--completions` | Generar script de finalización de shell (`sh`, `bash`, `fish`, `zsh`)                          |
-| `--log-level`   | Establecer el umbral de registro de tiempo de ejecución (`all`, `trace`, `debug`, `info`, ...) |
+| Opción          | Descripción                                                         |
+|-----------------|---------------------------------------------------------------------|
+| `--help`, `-h`  | Muestra la ayuda del comando                                        |
+| `--version`     | Muestra la versión instalada de la herramienta                      |
+| `--wizard`      | Inicia modo asistente (wizard) para introducir opciones paso a paso |
+| `--completions` | Genera script de autocompletado para tu shell (`sh`, `bash`, `fish`, `zsh`) |
+| `--log-level`   | Nivel de logs (`all`, `trace`, `debug`, `info`, …)                  |
 
 ## Ejemplos rápidos
-
 ```bash
-# Mostrar ayuda
+# Ver la ayuda principal
 cloudops-tools --help
 
-# Mostrar ejemplos
+# Ver ejemplos prácticos
 cloudops-tools --help-examples
 
-# Mostrar versión
+# Ver qué versión tienes instalada
 cloudops-tools --version
 
-# Inventario básico para us-east-1
+# Escaneo básico en us-east-1
 cloudops-tools --region us-east-1
 
-# Inventario para varias regiones
+# Escanear varias regiones
 cloudops-tools --region us-east-1,eu-west-1
 
-# Escanear solo servicios específicos
+# Solo ciertos servicios
 cloudops-tools --services EC2,RDS,S3 --region us-east-1
 
-# Exportar a formato Excel
+# Exportar en formato Excel
 cloudops-tools --export-format xlsx
 
-# Describir todas las instancias RDS en una región
+# Describir todas las bases RDS de una región
 cloudops-tools --describe rds --region eu-south-2
 
-# Usar `letme` con perfil MFA desde --account
+# Escanear usando letme + MFA con perfil específico
 cloudops-tools --use-letme --account engineering-prod --region us-east-1
 ```
 
-## Notas de comportamiento
+## Notas importantes de comportamiento
+- `cloudops-tools` sin argumentos → solo muestra ayuda (no lanza escaneo)
+- `--help-examples` → muestra ejemplos seleccionados y termina
+- `--version` → muestra versión y termina
+- `--wizard` → es un asistente interactivo, pero **aún necesitas credenciales AWS válidas**
 
-- Ejecutar `cloudops-tools` sin argumentos imprime la ayuda y sale (no inicia un análisis).
-- `--help-examples` imprime ejemplos seleccionados y salidas.
-- `--version` imprime la versión CLI instalada y sale.
-- `--wizard` es proporcionado por `@effect/cli`; ayuda con la entrada de comandos pero no pasa por alto AWS
-  requisitos de credencial.
-
-## Guías relacionadas
-
-- [Elija el comando correcto](/es/docs/cli/choose-command)
-
-- [Perfiles de escaneo](/es/docs/cli/scan-profiles)
-- [Solución de problemas](/es/docs/cli/troubleshooting)
+## Guías relacionadas que te pueden ayudar
+- [¿Qué comando elijo?](/docs/cli/choose-command)
+- [Perfiles de escaneo](/docs/cli/scan-profiles)
+- [Solución de problemas](/docs/cli/troubleshooting)

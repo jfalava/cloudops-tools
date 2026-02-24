@@ -1,54 +1,55 @@
 ---
-title: "Elija el comando correcto"
-description: "Decida rápidamente entre escaneos de comandos raíz, init, describe y config"
+title: Elige el Comando Correcto
+description: Decide rápido entre el comando raíz, init, describe y config
 ---
 
-# Elija el comando correcto
+# Elige el Comando Correcto
 
-Utilice esta página para elegir el camino más corto para su tarea.
+Encuentra la vía más corta según lo que quieras hacer.
 
-## Guía de decisiones
+## Guía rápida de decisión
+| Si quieres...                                             | Usa esto                                             |
+|-----------------------------------------------------------|------------------------------------------------------|
+| Hacer un escaneo explícito multi-región o con modo específico | `cloudops-tools init`                                |
+| Inspeccionar en detalle **un solo recurso** por su ID     | `cloudops-tools describe`                            |
+| Describir **todos** los recursos de un tipo en una región | `cloudops-tools --describe <tipo> --region <región>` |
+| Guardar o ver/modificar valores por defecto persistentes  | `cloudops-tools config`                              |
+| Escanear usando un perfil con MFA vía `letme` (requiere TOTP configurado) | `cloudops-tools --use-letme --account <perfil>`      |
 
-| Si necesitas...                                                             | Uso                                                  |
-| --------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Ejecute un análisis explícito entre regiones o basado en modo               | `cloudops-tools init`                                |
-| Inspeccionar en profundidad un recurso por ID                               | `cloudops-tools describe`                            |
-| Describir todos los recursos de un tipo admitido en una región              | `cloudops-tools --describe <type> --region <region>` |
-| Guardar o inspeccionar valores predeterminados persistentes                 | `cloudops-tools config`                              |
-| Ejecute escaneos usando el perfil `letme` MFA (requiere configuración TOTP) | `cloudops-tools --use-letme --account <profile>`     |
+## Flujos típicos (ejemplos listos para copiar)
 
-## Flujos típicos
-
-### Inventario rápido
-
+### Inventario rápido (una región)
 ```bash
 cloudops-tools --region us-east-1
 ```
 
-### Auditoría de seguridad
-
+### Auditoría de seguridad (varias regiones + Excel)
 ```bash
 cloudops-tools init --mode security --export-format xlsx --limit-regions us-east-1,eu-west-1
 ```
 
-### Investigación de recursos
-
+### Investigar un recurso concreto
 ```bash
 cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
 ```
 
-### Describir lote
-
+### Describir todos los recursos de un tipo en una región
 ```bash
 cloudops-tools --describe rds --region eu-south-2
 ```
 
-## Notas
+## Notas importantes
+- El **comando raíz** (`cloudops-tools`) y **`init`** se solapan en escaneos:
+  - Usa el comando raíz con flags para corridas rápidas y simples
+  - Usa `init` cuando necesites controlar bien el modo (`security`, `cost`…) o limitar regiones con precisión
 
-- El comando raíz y `init` se superponen para los escaneos; use el comando raíz con indicadores de escaneo para ejecuciones rápidas,
-  y `init` para modo explícito y control de región.
-- Ejecutar `cloudops-tools` sin argumentos imprime la ayuda y sale.
-- `describe` y `--describe` son válidos: utilice `describe` para un ID de recurso específico y
-  `--describe <type>` para obtener una instantánea de toda la región de todos los recursos de ese tipo.
-- `--help-examples` y `--version` salen temprano y no ejecutan la lógica de escaneo.
-- `--wizard` es proporcionado por `@effect/cli`; no elude los requisitos de credenciales de AWS.
+- Ejecutar `cloudops-tools` sin argumentos → muestra la ayuda y termina (no lanza escaneo)
+
+- Diferencia entre `describe` y `--describe`:
+  - `describe <tipo> <región> <id>` → un recurso específico por ID
+  - `--describe <tipo> --region <región>` → **todos** los recursos de ese tipo en la región (batch)
+
+- `--help-examples` y `--version` terminan inmediatamente (no ejecutan escaneo)
+
+- `--wizard` (modo asistente interactivo) viene del framework `@effect/cli`:
+  te ayuda a escribir el comando paso a paso, pero **aún necesitas credenciales AWS válidas**

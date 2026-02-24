@@ -1,117 +1,108 @@
 ---
-title: "describir"
-description: "Describir en profundidad un recurso de AWS específico con resultados detallados de Markdown"
+title: Describir
+description: Describe en detalle un recurso AWS específico con salida en Markdown bien formateada
 ---
-
-# describir
-
-Obtenga información detallada sobre un recurso de AWS específico, con formato Markdown.
+# `describe`
+Obtén información completa y detallada de un recurso AWS concreto, presentada de forma bonita en Markdown.
 
 ## Uso
-
 ```bash
-cloudops-tools describe <type> <region> <id> [options]
+cloudops-tools describe <tipo> <región> <id> [opciones]
 ```
 
 ## Argumentos
-
-| Argumento | Descripción                                                  | Requerido |
-| --------- | ------------------------------------------------------------ | --------- |
-| `type`    | Tipo de recurso (por ejemplo, `ec2`, `rds`, `lambda`, `vpc`) | Sí        |
-| `region`  | Región de AWS donde existe el recurso                        | Sí        |
-| `id`      | Identificador de recurso (ID de instancia, ARN, etc.)        | Sí        |
+| Argumento | Descripción                                      | ¿Obligatorio? |
+|-----------|--------------------------------------------------|---------------|
+| `tipo`    | Tipo de recurso (ej: `ec2`, `rds`, `lambda`, `vpc`) | Sí            |
+| `región`  | Región AWS donde está el recurso                 | Sí            |
+| `id`      | Identificador del recurso (ID de instancia, ARN, nombre, etc.) | Sí            |
 
 ## Opciones
+| Opción       | Descripción                                              | Valor por defecto |
+|--------------|----------------------------------------------------------|-------------------|
+| `--debug`    | Muestra errores completos con trazas de pila             | `false`           |
+| `--no-cache` | Desactiva la caché y siempre consulta datos frescos de AWS | `false`           |
 
-| Opción       | Descripción                                                                 | Predeterminado |
-| ------------ | --------------------------------------------------------------------------- | -------------- |
-| `--debug`    | Mostrar salida de error sin formato con seguimientos de pila                | `false`        |
-| `--no-cache` | Deshabilite el almacenamiento en caché, obtenga siempre datos nuevos de AWS | `false`        |
+## Tipos de recursos más comunes
+| Tipo       | Descripción                     | Formato del ID                     |
+|------------|---------------------------------|------------------------------------|
+| `ec2`      | Instancias EC2                  | `i-xxxxxxxxxxxxxxxxx`              |
+| `rds`      | Instancias de base de datos RDS | Identificador de la instancia DB   |
+| `lambda`   | Funciones Lambda                | Nombre de la función o ARN         |
+| `vpc`      | Redes VPC                       | `vpc-xxxxxxxxxxxxxxxxx`            |
+| `dynamodb` | Tablas DynamoDB                 | Nombre de la tabla                 |
 
-## Tipos de recursos comunes
+El comando `describe` soporta **muchos más tipos** de recursos (S3, CloudFront, Route53, IAM, KMS, Secrets Manager, y varios más).
 
-| Tipo       | Descripción                      | Formato de identificación                   |
-| ---------- | -------------------------------- | ------------------------------------------- |
-| `ec2`      | Instancias EC2                   | `i-xxxxxxxxxxxxxxxxx`                       |
-| `rds`      | Instancias de bases de datos RDS | Identificador de instancia de base de datos |
-| `lambda`   | Funciones lambda                 | Nombre de función o ARN                     |
-| `vpc`      | Redes VPC                        | `vpc-xxxxxxxxxxxxxxxxx`                     |
-| `dynamodb` | Tablas de DynamoDB               | Nombre de la tabla                          |
-
-El comando `describe` admite tipos de recursos adicionales más allá de esta lista rápida (por ejemplo, S3,
-CloudFront, Route53, IAM, KMS, Secrets Manager y más).
-
-## Ejemplos
-
+## Ejemplos rápidos
 ```bash
-# Describe an EC2 instance
+# Ver detalles de una instancia EC2
 cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0
 
-# Describe an RDS database
-cloudops-tools describe rds eu-west-1 my-database
+# Describir una base de datos RDS
+cloudops-tools describe rds eu-west-1 mi-base-de-datos
 
-# Describe a Lambda function
-cloudops-tools describe lambda us-west-2 my-function
+# Ver información de una función Lambda
+cloudops-tools describe lambda us-west-2 mi-funcion-cool
 
-# Describe a VPC
+# Detalles de una VPC
 cloudops-tools describe vpc us-east-1 vpc-0123456789abcdef0
 
-# Describe a DynamoDB table
-cloudops-tools describe dynamodb eu-central-1 my-table
+# Información de una tabla DynamoDB
+cloudops-tools describe dynamodb eu-central-1 mi-tabla-principal
 
-# With debug output
+# Con modo debug (útil si algo falla)
 cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug
 ```
 
-## Salida
-
-El comando genera información detallada de recursos en formato Markdown, que incluye:
-
-- Metadatos de recursos (ID, ARN, fecha de creación)
-- Detalles de configuración
-- Etiquetas
-- Recursos asociados
+## ¿Qué incluye la salida?
+El comando genera un documento Markdown muy completo con:
+- Metadatos básicos (ID, ARN, fecha de creación…)
+- Toda la configuración detallada
+- Tags asociados
+- Recursos relacionados
 - Configuración de seguridad
-- Configuración de red
+- Detalles de red (subredes, grupos de seguridad, etc.)
 
-## Describir por lotes con la bandera --describe
+## Describir varios recursos a la vez (modo batch con `--describe`)
+También puedes describir **todos** los recursos de un tipo en una región usando la bandera `--describe` en el comando principal:
 
-También puede describir todos los recursos de un tipo en una región usando el indicador `--describe` del comando principal:
-
-El lote `--describe` actualmente admite: `rds`, `ec2`, `lambda`, `vpc`, `dynamodb`.
+Tipos soportados en modo batch (por ahora): `rds`, `ec2`, `lambda`, `vpc`, `dynamodb`
 
 ```bash
-# Describe all RDS instances in eu-south-2
+# Todas las bases RDS en una región
 cloudops-tools --describe rds --region eu-south-2
 
-# Describe all EC2 instances
+# Todas las instancias EC2
 cloudops-tools --describe ec2 --region us-east-1
 
-# Describe all Lambda functions
+# Todas las funciones Lambda
 cloudops-tools --describe lambda --region eu-west-1
 
-# Describe all VPCs
+# Todas las VPCs
 cloudops-tools --describe vpc --region ap-southeast-1
 
-# Describe all DynamoDB tables
+# Todas las tablas DynamoDB
 cloudops-tools --describe dynamodb --region us-west-2
 ```
 
-Esto escribe un archivo Markdown en `inventory-output/{account-id}/describe-{type}-{region}-{timestamp}.md`
+Esto genera un archivo Markdown en:
+`inventory-output/{id-de-cuenta}/describe-{tipo}-{región}-{fecha-hora}.md`
 
-## Almacenamiento en caché
-
-Las operaciones por lotes `--describe` se almacenan automáticamente en caché durante 5 minutos. Las llamadas de descripción repetidas dentro de esta ventana devuelven resultados almacenados en caché al instante:
+## Caché inteligente
+Las consultas en modo batch se guardan en caché **durante 5 minutos**.
+Si vuelves a ejecutar el mismo comando en ese tiempo, la respuesta es instantánea:
 
 ```bash
-# First call - fetches from AWS (5+ seconds)
+# Primera vez → consulta AWS (puede tardar unos segundos)
 cloudops-tools --describe ec2 --region us-east-1
 
-# Second call within 5 minutes - returns cached data (instant)
+# Dentro de los próximos 5 minutos → instantáneo desde caché
 cloudops-tools --describe ec2 --region us-east-1
 
-# Bypass cache to get fresh data
+# Quiero datos frescos aunque estén en caché
 cloudops-tools --describe ec2 --region us-east-1 --no-cache
 ```
 
-El caché se almacena en `~/.config/cloudops-tools/inventory.db`
+La caché se guarda en:
+`~/.config/cloudops-tools/inventory.db`

@@ -1,25 +1,23 @@
 ---
-title: "Perfiles de escaneo"
-description: "Recetas de comandos reutilizables para flujos de trabajo comunes de CloudOps"
+title: Perfiles de Escaneo
+description: Recetas de comandos reutilizables para flujos comunes en CloudOps Tools
 ---
+# Perfiles de Escaneo
+Aquí tienes una colección de comandos listos para copiar y pegar. Úsalos como base y ajústalos según necesites.
 
-# Perfiles de escaneo
+- Usa `cloudops-tools` (comando raíz) + flags cuando busques rapidez y simplicidad
+- Usa `cloudops-tools init` cuando quieras controlar explícitamente el **modo** de escaneo o limitar regiones con precisión
 
-Utilice estos perfiles de copiar y pegar como puntos de partida.
-Utilice `cloudops-tools` con indicadores de escaneo para escaneos rápidos de comandos raíz y `cloudops-tools init` cuando lo necesite.
-modo de escaneo explícito o controles de selección de región. Ejecutando `cloudops-tools` sin argumentos se imprime
-ayuda y sale.
+Si ejecutas `cloudops-tools` sin argumentos, solo muestra la ayuda y termina (comportamiento normal).
 
-## Inventario Regional Rápido
-
+## 1. Inventario rápido de una sola región
 ```bash
 cloudops-tools --region us-east-1 --export-format csv
 ```
 
-Úselo cuando necesite un inventario de referencia rápido para una región.
+**Cuándo usarlo**: Necesitas un inventario básico y veloz de una región concreta.
 
-## Revisión de seguridad
-
+## 2. Revisión de seguridad (ideal para auditorías)
 ```bash
 cloudops-tools init \
   --mode security \
@@ -28,18 +26,17 @@ cloudops-tools init \
   --services EC2,RDS,Lambda,IAM,CloudFront
 ```
 
-Utilícelo al preparar artefactos de revisión de seguridad.
+**Cuándo usarlo**: Preparando un reporte o revisión de seguridad.
+Enfocado en grupos de seguridad, accesos públicos, cifrado, políticas IAM, etc.
 
-## Pase de servicios globales
-
+## 3. Escaneo solo de servicios globales
 ```bash
 cloudops-tools init --only-global --export-format json
 ```
 
-Utilícelo al auditar servicios globales (por ejemplo, IAM, CloudFront, alcance de Route53).
+**Cuándo usarlo**: Quieres auditar servicios que no dependen de región (IAM, CloudFront, Route53, S3 global, etc.).
 
-## Pase profundo solo regional
-
+## 4. Escaneo profundo solo regional (sin globales)
 ```bash
 cloudops-tools init \
   --mode detailed \
@@ -48,20 +45,29 @@ cloudops-tools init \
   --export-format both
 ```
 
-Úselo cuando desee obtener detalles regionales más ricos y desee omitir la enumeración de servicios globales.
+**Cuándo usarlo**: Buscas detalle máximo (metadatos, relaciones, configuraciones completas) en regiones específicas, sin perder tiempo en servicios globales.
 
-## Barrido orientado a costos
-
+## 5. Barrido orientado a costos
 ```bash
 cloudops-tools init --mode cost --export-format xlsx --limit-regions us-east-1,us-west-2
 ```
 
-Úselo para informes centrados en costos.
+**Cuándo usarlo**: Quieres identificar oportunidades de ahorro, revisar uso de recursos, cobertura de instancias reservadas, etc.
 
-## Lote Describir Instantánea
-
+## 6. Snapshot descriptivo masivo de un tipo de recurso
 ```bash
 cloudops-tools --describe ec2 --region us-east-1
 ```
 
-Úselo para generar una instantánea de Markdown para un tipo de recurso en una región.
+**Cuándo usarlo**: Necesitas un documento Markdown detallado con **todos** los recursos de un tipo concreto en una región (EC2, RDS, Lambda, VPC, DynamoDB, etc.).
+
+### Variaciones rápidas del snapshot
+```bash
+cloudops-tools --describe rds --region eu-west-1
+cloudops-tools --describe lambda --region ap-southeast-1
+cloudops-tools --describe vpc --region us-west-2
+```
+
+Todos estos perfiles son puntos de partida. Puedes combinarlos, añadir `--account`, `--use-letme`, `--no-cache`, `--incremental`, etc., según tu caso.
+
+¡Guárdalos en tus notas, en un alias o en un script y tendrás tus escaneos favoritos siempre a un copy-paste! 📋🚀

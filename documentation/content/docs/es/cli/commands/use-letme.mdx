@@ -1,111 +1,92 @@
 ---
-title: "--use-letme"
-description: "Utilice el flujo MFA de letme con el perfil de --account antes de ejecutar análisis"
+title: use-letme
+description: Usa el flujo MFA de letme con el perfil de --account antes de lanzar escaneos
 ---
-
-# --use-letme
-
-Utilice `--use-letme` para obtener credenciales temporales de AWS a través de `letme` antes de ejecutar los comandos de escaneo.
+# `use-letme`
+Con la bandera `--use-letme` puedes obtener credenciales AWS temporales a través de `letme` de forma automática antes de ejecutar cualquier comando de escaneo.
 
 ## Requisitos previos
+Para que `--use-letme` funcione, primero debes configurar tu secreto TOTP (el código MFA que genera tu app como Google Authenticator, Authy, etc.).
 
-Antes de usar `--use-letme`, primero debe configurar un secreto TOTP. El indicador `--use-letme` requiere autenticación TOTP para generar automáticamente códigos MFA al asumir roles a través de `letme`.
-
-### Configurar TOTP
-
-Configure su secreto TOTP usando el comando de configuración interactiva:
-
+### Configurar TOTP (solo una vez)
+Ejecuta este comando interactivo:
 ```bash
 cloudops-tools setup-totp
 ```
 
-Este comando:
+Qué hace:
+1. Te pide que pegues la clave secreta TOTP (la cadena base32 que obtuviste al configurar MFA)
+2. La guarda de forma segura usando el almacén de credenciales de tu sistema operativo
+3. Genera un código de prueba para validar que todo está bien
 
-1. Acepte su clave secreta TOTP (el secreto codificado en base32 de la configuración de su dispositivo MFA)
-2. Guárdelo de forma segura utilizando un almacenamiento secreto respaldado por el sistema operativo.
-3. Valide la configuración generando un token de prueba.
+**Dónde se guarda de forma segura:**
+- **macOS** → Keychain
+- **Windows** → Administrador de Credenciales
+- **Linux** → libsecret
 
-El secreto TOTP se almacena localmente a través de secretos Bun utilizando un almacenamiento seguro específico de la plataforma:
-
-- **macOS**: [Llavero](https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac)
-- **Windows**: [Administrador de credenciales](https://support.microsoft.com/en-us/windows/credential-manager-in-windows-1b5c916a-6a16-889f-8581-fc16e8165ac0)
-- **Linux**: [libsecret](https://github.com/GNOME/libsecret)
-
-**Nota para usuarios de WSL**: Es posible que los entornos WSL no conserven secretos durante los reinicios debido a limitaciones en los mecanismos de almacenamiento de secretos.
+**Nota para usuarios de WSL**: En WSL a veces los secretos no sobreviven reinicios por limitaciones del sistema. Si usas WSL, tenlo en cuenta.
 
 ## Uso
-
 ```bash
-cloudops-tools --use-letme --account <profile-name> [options]
-cloudops-tools init --use-letme --account <profile-name> [options]
+cloudops-tools --use-letme --account <nombre-perfil> [opciones]
+cloudops-tools init --use-letme --account <nombre-perfil> [opciones]
 ```
 
-## Cómo funciona
+## ¿Cómo funciona internamente?
+Cuando activas `--use-letme`, CloudOps Tools hace esto por ti:
+1. Necesita que indiques `--account <nombre-perfil>` (el perfil que tienes configurado en letme)
+2. Carga el secreto TOTP que guardaste con `setup-totp`
+3. Genera automáticamente el código MFA del momento
+4. Ejecuta `letme obtain <nombre-perfil>` y le pasa el código MFA
+5. Configura `AWS_PROFILE=<nombre-perfil>` para el proceso actual
+6. Continúa ejecutando el comando (init, escaneo raíz, etc.) con las credenciales temporales ya asumidas
 
-Cuando `--use-letme` está habilitado, Herramientas de CloudOps:
+## Requisitos obligatorios
+- Tener `letme` instalado y disponible en tu `PATH`
+  - Sitio oficial: [getletme.com](https://getletme.com/)
+- Haber ejecutado `cloudops-tools setup-totp` al menos una vez
 
-1. Requiere que `--account <profile-name>` especifique qué perfil letme usar
-2. Carga el secreto TOTP almacenado por `setup-totp`
-3. Genera un código OTP basado en el tiempo
-4. Ejecuta `letme obtain <profile-name>` y canaliza la OTP automáticamente
-5. Establece `AWS_PROFILE=<profile-name>` para el proceso actual
-6. Continúa la ejecución normal del comando utilizando las credenciales del rol asumido.
+## Ejemplos prácticos
 
-## Requisitos
-
-- Documentación oficial de `letme`: [getletme.com](https://getletme.com/)
-- Código fuente de `letme`: [github.com/lockedinspace/letme](https://github.com/lockedinspace/letme)
-- `letme` debe estar instalado y disponible en tu `PATH`
-- Debes ejecutar `setup-totp` al menos una vez antes de usar `--use-letme`
-
-## Ejemplos
-
-### Configurar TOTP (configuración única)
-
+### 1. Configuración inicial (solo una vez)
 ```bash
 cloudops-tools setup-totp
-# Enter your TOTP secret when prompted
+# Pega tu secreto TOTP cuando te lo pida
 ```
 
-### Escaneo de raíz con letme
-
+### 2. Escaneo raíz usando letme
 ```bash
 cloudops-tools --use-letme --account engineering-prod --region us-east-1
 ```
 
-### Iniciar escaneo con letme
-
+### 3. Escaneo con `init` + letme
 ```bash
 cloudops-tools init --use-letme --account engineering-prod --mode security --export-format xlsx
 ```
 
-### Flujo de ejemplo completo
-
+### 4. Flujo completo típico
 ```bash
-# 1. Configure TOTP once
+# Paso 1: Configura TOTP (solo la primera vez)
 cloudops-tools setup-totp
 
-# 2. Use letme with your MFA profile for any scan
-cloudops-tools --region eu-south-2 --account account-in-letme-dynamodb --use-letme
+# Paso 2: Escanea cuando quieras usando tu perfil con MFA
+cloudops-tools --region eu-south-2 --account cuenta-dynamodb-letme --use-letme
 ```
 
-## Casos de error
-
-- **Falta `--account` con `--use-letme`**:
+## Errores comunes y mensajes
+- Olvidaste `--account` →
   `Missing required --account <profile> with --use-letme`
 
-- **`letme` no instalado**:
+- No tienes `letme` instalado →
   `letme binary not found in PATH. Install letme and try again.`
 
-- **Secreto TOTP no configurado**:
-  Ejecute `setup-totp` primero antes de usar `--use-letme`
+- No configuraste TOTP →
+  Ejecuta primero `setup-totp`
 
-- **Error al recuperar el secreto TOTP**:
+- Problema al leer el secreto →
   `Unable to read stored TOTP secret: ...`
 
-## Consideraciones de seguridad
-
-- El secreto TOTP nunca se almacena en `config.json` ni en ningún archivo de texto sin formato.
-
-- Los secretos son administrados por el almacén de credenciales seguro del sistema operativo.
-- Considere la posibilidad de utilizar AWS IAM Identity Center (SSO) para entornos de equipo como alternativa a las configuraciones TOTP individuales.
+## Seguridad
+- El secreto TOTP **nunca** se guarda en `config.json` ni en texto plano
+- Usa el almacén seguro nativo de tu sistema operativo
+- En entornos de equipo, considera AWS IAM Identity Center (SSO) como alternativa más cómoda y centralizada

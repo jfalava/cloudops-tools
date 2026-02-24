@@ -11,7 +11,7 @@ El SDK está basado en efectos.
 
 - La mayoría de las API devuelven `Effect.Effect<Success, Error, Requirements>`
 - `SDKLive` proporciona credenciales, valores predeterminados de región e implementaciones de servicios
-- Ejecute su programa a través de `Effect.runPromise(...)`
+- Ejecuta tu programa a través de `Effect.runPromise(...)`
 
 ```ts
 import { Effect } from "effect";
@@ -27,7 +27,7 @@ const accountId = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)))
 
 ## Inicio rápido: 3 tareas comunes
 
-### 1) Ejecute un flujo de trabajo de inventario completo
+### 1) Ejecuta un flujo de trabajo de inventario completo
 
 ```ts
 import { Effect } from "effect";
@@ -75,7 +75,7 @@ const markdown = await Effect.runPromise(program.pipe(Effect.provide(SDKLive)));
 
 - La región por defecto es `AWS_REGION` o `us-east-1`
 - Si se establece `AWS_PROFILE`, se utilizan las credenciales del perfil.
-- De lo contrario, se utiliza la cadena de credenciales de AWS predeterminada
+- De lo contrario, se utiliza la string de credenciales de AWS predeterminada
 
 ## Manejo de errores con efecto
 

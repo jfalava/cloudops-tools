@@ -17,7 +17,7 @@ Cheques:
 aws sts get-caller-identity
 ```
 
-Si esto falla, configure las credenciales primero:
+Si esto falla, configura las credenciales primero:
 
 ```bash
 export AWS_ACCESS_KEY_ID=...
@@ -25,7 +25,7 @@ export AWS_SECRET_ACCESS_KEY=...
 export AWS_REGION=us-east-1
 ```
 
-También puede utilizar credenciales compartidas en `~/.aws/credentials`.
+También puedes usar credenciales compartidas en `~/.aws/credentials`.
 
 ## Acceso denegado/no autorizado
 
@@ -35,7 +35,7 @@ Síntoma:
 
 Acciones:
 
-- Confirme que la identidad activa puede llamar a las API de lectura para los servicios de destino.
+- Confirma que la identidad activa puede llamar a las API de lectura para los servicios de destino.
 - Reducir el alcance para aislar los servicios defectuosos:
 
 ```bash
@@ -67,8 +67,8 @@ Acciones:
 cloudops-tools init --services EC2,RDS --region us-east-1
 ```
 
-- Utilice `--skip-global` para reducir el tiempo de análisis del servicio global.
-- Utilice `--only-global` cuando solo necesite servicios globales.
+- Usa `--skip-global` para reducir el tiempo de análisis del servicio global.
+- Usa `--only-global` cuando solo necesites servicios globales.
 
 ## `letme` / --use-letme
 
@@ -80,21 +80,21 @@ Síntoma:
 
 Acciones:
 
-1. Confirme que `letme` esté instalado y en su `PATH`:
+1. Confirma que `letme` esté instalado y en tu `PATH`:
 
 ```bash
 letme --version
 ```
 
-2. Si TOTP aún no está configurado, configúrelo antes de usar `--use-letme`:
+2. Si TOTP aún no está configurado, configúralo antes de usar `--use-letme`:
 
 ```bash
 cloudops-tools setup-totp
 ```
 
-Para obtener instrucciones de configuración completas, consulte la [`use-letme` guía](/es/docs/cli/commands/use-letme).
+Para obtener instrucciones de configuración completas, consulta la [`guía de use-letme`](/es/docs/cli/commands/use-letme).
 
-3. Vuelva a ejecutar su escaneo con `--use-letme` y `--account`:
+3. Vuelve a ejecutar tu escaneo con `--use-letme` y `--account`:
 
 ```bash
 cloudops-tools --use-letme --account engineering-prod --region us-east-1
@@ -103,7 +103,7 @@ cloudops-tools --use-letme --account engineering-prod --region us-east-1
 Notas:
 
 - `--use-letme` requiere `--account <profile>` para que la CLI sepa qué perfil activar.
-- Si falta `letme`, instálelo y reinicie su shell para que se actualice `PATH`.
+- Si falta `letme`, instálalo y reinicia tu shell para que se actualice `PATH`.
 
 ## Parámetros no válidos/Errores de uso
 
@@ -126,10 +126,10 @@ cloudops-tools config set skipGlobal maybe
 # Exit: 2
 ```
 
-Si necesita el seguimiento de la pila sin formato o la salida del error de efecto para la depuración, vuelva a ejecutar el comando con
+Si necesitas el seguimiento de la pila sin formato o la salida del error de efecto para la depuración, vuelve a ejecutar el comando con
 `--debug`.
 
-Para obtener una referencia completa del código de salida (`0`, `1`, `2`) y más ejemplos, consulte
+Para obtener una referencia completa del código de salida (`0`, `1`, `2`) y más ejemplos, consulta
 [Códigos de salida](/es/docs/cli/exit-codes).
 
 ## Indicadores de ayuda y diagnóstico
@@ -142,7 +142,7 @@ cloudops-tools --version
 
 Nota: ejecutar `cloudops-tools` sin argumentos también imprime la ayuda y sale.
 
-Utilice `--debug` en los comandos de escaneo o descripción para seguimientos de pila completos:
+Usa `--debug` en los comandos de escaneo o descripción para seguimientos de pila completos:
 
 ```bash
 cloudops-tools describe ec2 us-east-1 i-1234567890abcdef0 --debug

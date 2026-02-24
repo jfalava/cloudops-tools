@@ -41,7 +41,7 @@ await Effect.runPromise(
 
 ### Escaneo incremental
 
-Habilite el modo incremental para generar solo los recursos que hayan cambiado desde el último análisis:
+Habilita el modo incremental para generar solo los recursos que hayan cambiado desde el último análisis:
 
 ```ts
 import { Effect } from "effect";
@@ -58,7 +58,7 @@ El modo incremental utiliza huellas digitales de recursos almacenadas en SQLite 
 
 ## Operaciones de consulta
 
-Consulte datos de inventario históricos de la base de datos SQLite local sin volver a escanear AWS.
+Consulta datos de inventario históricos de la base de datos SQLite local sin volver a escanear AWS.
 
 ### Consultar recursos
 
@@ -112,6 +112,6 @@ const changes = await Effect.runPromise(
 
 ## Cuándo utilizar operaciones frente a servicios
 
-- Utilice `operations` cuando desee una orquestación y manejo de salida administrados por el SDK.
-- Utilice `services` cuando desee una orquestación personalizada o una recopilación de datos específica.
-- Utilice `query operations` para analizar datos históricos sin llamadas a la API de AWS.
+- Usa `operations` cuando quieras una orquestación y manejo de salida administrados por el SDK.
+- Usa `services` cuando quieras una orquestación personalizada o una recopilación de datos específica.
+- Usa `query operations` para analizar datos históricos sin llamadas a la API de AWS.

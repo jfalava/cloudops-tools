@@ -1,70 +1,97 @@
 ---
-title: "Instalación"
-description: "Cómo instalar y configurar herramientas CloudOps"
+title: Instalación
+description: Cómo instalar y configurar CloudOps Tools
 ---
-
 # Instalación
 
 ## Requisitos previos
+- **Node.js 18 o superior** + npm
+  (o Bun si prefieres una alternativa más rápida)
+- Credenciales AWS configuradas en tu máquina. Las formas más comunes son:
+  - Archivo `~/.aws/credentials`
+  - Variables de entorno (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, etc.)
 
-- Node.js 18+ y npm (o Bun)
-- Credenciales de AWS configuradas (`~/.aws/credentials` o variables de entorno)
+## Instalación recomendada
 
-## Instalar
-
+Con **npm** (método más habitual):
 ```bash
 npm install -g @cloudops-tools/cli
 ```
 
-Con bollo:
-
+Con **Bun** (más rápido en muchas operaciones):
 ```bash
 bun add -g @cloudops-tools/cli
 ```
 
-Si Bun no instala dependencias opcionales para su plataforma, instale el paquete de plataforma
-explícitamente:
+### Caso especial: Bun no instala dependencias opcionales
+En algunos entornos Bun puede no descargar automáticamente el binario nativo para tu plataforma.
+En ese caso instala explícitamente el paquete correspondiente:
 
 ```bash
-# macOS arm64
+# macOS con chip Apple Silicon (arm64)
 bun add -g @cloudops-tools/cli-darwin-arm64
 ```
 
-## Verificar instalación
+(Otras plataformas suelen instalarse sin problema con el comando principal.)
 
+## Verificar que todo se instaló correctamente
 ```bash
 cloudops-tools --version
 ```
 
-## Cómo funciona la instalación
+Si ves la versión (por ejemplo `0.5.x` o la que tengas instalada), ¡todo listo!
+Si ejecutas simplemente `cloudops-tools` sin argumentos, verás la ayuda completa.
 
-`@cloudops-tools/cli` instala un pequeño lanzador. El binario nativo es proporcionado por plataformas específicas.
-dependencias opcionales:
+## ¿Cómo funciona la instalación por dentro?
+El paquete `@cloudops-tools/cli` instala un pequeño lanzador.
+El binario nativo real viene en dependencias opcionales específicas por plataforma:
 
-- `@cloudops-tools/cli-darwin-arm64` -`@cloudops-tools/cli-linux-x64` -`@cloudops-tools/cli-win32-x64`
+- `@cloudops-tools/cli-darwin-arm64` → macOS Apple Silicon
+- `@cloudops-tools/cli-linux-x64` → Linux x64
+- `@cloudops-tools/cli-win32-x64` → Windows x64
 
-Plataformas prediseñadas compatibles:
-
--Linux x64
-
+**Plataformas con binarios precompilados disponibles actualmente:**
+- Linux x64
 - Windows x64
-- macOS arm64
+- macOS arm64 (M1/M2/M3/M4)
 
-Si estás en una plataforma no compatible, compila desde el código fuente:
+Si estás en otra arquitectura o sistema operativo no soportado (por ejemplo Linux arm64, Windows arm64, etc.), puedes compilar desde el código fuente:
 
-- [Construir CLI binario](/es/docs/cli/build-cli)
+→ [Construir el binario del CLI desde el código fuente](/docs/cli/build-cli)
 
-## Credenciales de AWS
+## Configuración de credenciales AWS
+CloudOps Tools usa el mecanismo estándar de resolución de credenciales de AWS SDK, en este orden de prioridad:
 
-CloudOps Tools utiliza la resolución de credenciales estándar de AWS:
+1. Variables de entorno
+2. Archivo compartido de credenciales (`~/.aws/credentials`)
+3. Roles IAM (en EC2, ECS, Lambda, etc.)
 
-1. Variables de entorno (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`)
-2. Archivo de credenciales compartido (`~/.aws/credentials`)
-3. Funciones de IAM para EC2/ECS/Lambda
+### Ejemplo rápido con variables de entorno
+```bash
+export AWS_ACCESS_KEY_ID=AKIAXXXXXXXXXXXXXXXX
+export AWS_SECRET_ACCESS_KEY=tu-clave-secreta-muy-larga-aquí
+export AWS_REGION=us-east-1        # opcional, pero muy recomendado
+```
+
+O si ya tienes configurado el archivo `~/.aws/credentials` con perfiles:
+
+```ini
+[default]
+aws_access_key_id = AKIA...
+aws_secret_access_key = ...
+
+[produccion]
+aws_access_key_id = AKIA...
+aws_secret_access_key = ...
+```
+
+Luego puedes usar un perfil específico con la bandera `--account`:
 
 ```bash
-# Set environment variables
-export AWS_ACCESS_KEY_ID=your-access-key
-export AWS_SECRET_ACCESS_KEY=your-secret-key
-export AWS_REGION=us-east-1
+cloudops-tools --account produccion --region eu-west-1
 ```
+
+¡Con esto ya tienes todo listo para empezar a escanear tu infraestructura AWS!
+
+Siguiente paso recomendado:
+→ [Primeros pasos – Ejecuta tu primer escaneo](/docs/cli/getting-started)

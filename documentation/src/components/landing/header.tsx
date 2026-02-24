@@ -4,7 +4,7 @@ import { localizePath, type Locale } from "@/lib/i18n";
 
 export function Header({ locale = "en" }: { locale?: Locale }) {
   const docsHome = localizePath("/docs", locale);
-  const otherLocaleHref = locale === "es" ? "/" : "/es";
+  const otherLocaleHref = locale === "es" ? "/en" : "/es";
   const localeLabel = locale === "es" ? "English" : "Español";
 
   return (
