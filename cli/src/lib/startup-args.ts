@@ -104,7 +104,7 @@ const getStartupAction = (
   selectedCli: CliSelection,
   wantsConfig: boolean,
 ): StartupAction => {
-  const isGlobalHelpCandidate = selectedCli !== "query";
+  const isGlobalHelpCandidate = selectedCli === "main";
 
   if (flags.wantsVersion) {
     return "print-version";

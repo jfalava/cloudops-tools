@@ -41,8 +41,4 @@ writeFileSync(backupPath, originalRaw);
 
 const serialized = JSON.stringify(pkg, null, 2);
 
-if (typeof serialized !== "string") {
-  throw new Error("Failed to serialize cli/package.json");
-}
-
 writeFileSync(packageJsonPath, serialized + "\n");
