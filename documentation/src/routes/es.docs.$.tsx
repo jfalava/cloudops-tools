@@ -1,4 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import type { TOCItemType } from "fumadocs-core/toc";
 import { I18nProvider } from "fumadocs-ui/contexts/i18n";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
@@ -82,18 +83,14 @@ type DocFrontmatter = {
   description?: string;
 };
 
-type TocItem = {
-  title: string;
-  url: string;
-  depth: number;
-};
+type TocItem = TOCItemType;
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
 const isTocItem = (value: unknown): value is TocItem =>
   isRecord(value) &&
-  typeof value.title === "string" &&
+  "title" in value &&
   typeof value.url === "string" &&
   typeof value.depth === "number";
 
