@@ -42,7 +42,7 @@ html {
 }
 
 #nd-toc .border-s {
-  border-inline-start-color: color-mix(in oklab, currentColor 18%, transparent);
+  border-inline-start-color: color-mix(in oklab, currentcolor 18%, transparent);
 }
 
 #nd-toc .border-s > a[class*="ps-6"],
@@ -57,8 +57,8 @@ html {
   top: 0.35rem;
   width: 0.8rem;
   height: 1rem;
-  border-inline-start: 1px solid color-mix(in oklab, currentColor 28%, transparent);
-  border-bottom: 1px solid color-mix(in oklab, currentColor 28%, transparent);
+  border-inline-start: 1px solid color-mix(in oklab, currentcolor 28%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, currentcolor 28%, transparent);
   border-bottom-left-radius: 0.35rem;
   pointer-events: none;
 }
@@ -73,6 +73,6 @@ html {
 
 #nd-toc .border-s > a[class*="ps-6"][data-active="true"]::before,
 #nd-toc .border-s > a[class*="ps-8"][data-active="true"]::before {
-  border-inline-start-color: currentColor;
-  border-bottom-color: currentColor;
+  border-inline-start-color: currentcolor;
+  border-bottom-color: currentcolor;
 }

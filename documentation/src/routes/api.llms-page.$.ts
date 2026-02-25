@@ -20,7 +20,10 @@ export const Route = createFileRoute("/api/llms-page/$")({
         const locale = first === "es" ? "es" : first === "en" ? "en" : "en";
         const slugs = first === "es" || first === "en" ? rest : segments;
         const source = locale === "es" ? sourceEs : sourceEn;
-        const page = source.getPage(slugs);
+        const page =
+          locale === "es"
+            ? (sourceEs.getPage(slugs) ?? sourceEn.getPage(slugs))
+            : source.getPage(slugs);
         if (!page) {
           throw notFound();
         }

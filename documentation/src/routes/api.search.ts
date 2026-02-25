@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Effect } from "effect";
 import { createFromSource } from "fumadocs-core/search/server";
 import { loader } from "fumadocs-core/source";
 
+import { isLocale, type Locale } from "@/lib/i18n";
+
 import { docs, docsEs } from "../../.source/server";
-import { isLocale, type Locale } from "../lib/i18n";
 
 const sources = {
   en: loader(docs.toFumadocsSource(), {
@@ -41,11 +43,15 @@ const resolveSearchLocale = (request: Request): Locale => {
 
   const referer = request.headers.get("referer");
   if (referer !== null) {
-    try {
-      return localeFromPathname(new URL(referer).pathname);
-    } catch {
-      return "en";
-    }
+    return Effect.runSync(
+      Effect.try({
+        try: () => new URL(referer).pathname,
+        catch: () => new Error("Invalid referer URL"),
+      }).pipe(
+        Effect.map(localeFromPathname),
+        Effect.catchAll(() => Effect.succeed<Locale>("en")),
+      ),
+    );
   }
 
   return "en";
