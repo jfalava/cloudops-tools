@@ -3,9 +3,8 @@ import { Effect } from "effect";
 import { createFromSource } from "fumadocs-core/search/server";
 import { loader } from "fumadocs-core/source";
 
+import { docs, docsEs } from "@/lib/docs-source";
 import { isLocale, type Locale } from "@/lib/i18n";
-
-import { docs, docsEs } from "../../.source/server";
 
 const sources = {
   en: loader(docs.toFumadocsSource(), {
@@ -23,11 +22,9 @@ const searches = {
 
 const localeFromPathname = (pathname: string): Locale => {
   const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`;
-
-  for (const locale of ["en", "es"] as const) {
-    if (normalized === `/${locale}` || normalized.startsWith(`/${locale}/`)) {
-      return locale;
-    }
+  const candidate = normalized.split("/")[1] ?? "";
+  if (isLocale(candidate)) {
+    return candidate;
   }
 
   return "en";
