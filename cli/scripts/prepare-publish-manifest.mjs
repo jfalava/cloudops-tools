@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -35,9 +35,9 @@ if (!changed) {
   process.exit(0);
 }
 
-if (!existsSync(backupPath)) {
-  writeFileSync(backupPath, originalRaw);
-}
+// Always refresh the backup so a stale file from an interrupted prior run
+// cannot be restored over newer package.json edits during postpack.
+writeFileSync(backupPath, originalRaw);
 
 const serialized = JSON.stringify(pkg, null, 2);
 
