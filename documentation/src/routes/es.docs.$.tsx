@@ -1,4 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import { I18nProvider } from "fumadocs-ui/contexts/i18n";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
@@ -332,13 +333,29 @@ function DocsPageComponent() {
 
   if (isLoading) {
     return (
-      <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
-        <DocsPage toc={[]} full={false}>
-          <DocsBody>
-            <div className="p-4">Cargando...</div>
-          </DocsBody>
-        </DocsPage>
-      </DocsLayout>
+      <I18nProvider
+        locale="es"
+        translations={{
+          toc: "En esta página",
+          tocNoHeadings: "Sin encabezados",
+          search: "Buscar",
+          searchNoResult: "Sin resultados",
+          lastUpdate: "Última actualización",
+          nextPage: "Siguiente",
+          previousPage: "Anterior",
+          chooseLanguage: "Elegir idioma",
+          chooseTheme: "Elegir tema",
+          editOnGithub: "Editar en GitHub",
+        }}
+      >
+        <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
+          <DocsPage toc={[]} full={false}>
+            <DocsBody>
+              <div className="p-4">Cargando...</div>
+            </DocsBody>
+          </DocsPage>
+        </DocsLayout>
+      </I18nProvider>
     );
   }
 
@@ -351,25 +368,45 @@ function DocsPageComponent() {
   }
 
   const MDXContent = docModule.default;
+  const toc = (docModule as Record<string, unknown>).toc as
+    | { title: string; url: string; depth: number }[]
+    | undefined;
 
   return (
-    <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
-      <DocsPage toc={[]} full={false}>
-        <DocsBody>
-          <ErrorBoundary
-            fallback={
-              <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                <div className="font-semibold">No se pudo cargar la documentación</div>
-                <div className="mt-1 text-amber-800">
-                  Esto suele ser un desajuste de caché después de un deploy. Prueba un hard refresh.
+    <I18nProvider
+      locale="es"
+      translations={{
+        toc: "En esta página",
+        tocNoHeadings: "Sin encabezados",
+        search: "Buscar",
+        searchNoResult: "Sin resultados",
+        lastUpdate: "Última actualización",
+        nextPage: "Siguiente",
+        previousPage: "Anterior",
+        chooseLanguage: "Elegir idioma",
+        chooseTheme: "Elegir tema",
+        editOnGithub: "Editar en GitHub",
+      }}
+    >
+      <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
+        <DocsPage toc={toc ?? []} full={false}>
+          <DocsBody>
+            <ErrorBoundary
+              fallback={
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                  <div className="font-semibold">No se pudo cargar la documentación</div>
+                  <div className="mt-1 text-amber-800">
+                    Esto suele ser un desajuste de caché después de un deploy. Prueba un hard
+                    refresh.
+                  </div>
                 </div>
-              </div>
-            }
-          >
-            <MDXContent components={defaultMdxComponents} />
-          </ErrorBoundary>
-        </DocsBody>
-      </DocsPage>
-    </DocsLayout>
+              }
+            >
+              <MDXContent components={defaultMdxComponents} />
+            </ErrorBoundary>
+          </DocsBody>
+        </DocsPage>
+      </DocsLayout>
+    </I18nProvider>
   );
 }

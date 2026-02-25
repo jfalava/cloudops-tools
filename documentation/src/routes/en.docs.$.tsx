@@ -296,10 +296,13 @@ function DocsPageComponent() {
   }
 
   const MDXContent = docModule.default;
+  const toc = (docModule as Record<string, unknown>).toc as
+    | { title: string; url: string; depth: number }[]
+    | undefined;
 
   return (
     <DocsLayout tree={getDocsTree("en")} {...baseOptions("en", docsPath)}>
-      <DocsPage toc={[]} full={false}>
+      <DocsPage toc={toc ?? []} full={false}>
         <DocsBody>
           <ErrorBoundary
             fallback={
