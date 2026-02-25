@@ -22,10 +22,10 @@
         "@effect/platform-bun": "0.87.1"
       },
       "build": {
-        "@typescript/native-preview": "^7.0.0-dev.20260224.1",
+        "@typescript/native-preview": "7.0.0-dev.20260225.1",
         "oxlint": "1.50.0",
         "oxfmt": "0.35.0",
-        "oxlint-tsgolint": "^0.14.2",
+        "oxlint-tsgolint": "0.15.0",
         "typedoc": "0.28.17",
         "typescript": "5.9.3"
       },
@@ -36,16 +36,16 @@
         "otpauth": "9.5.0"
       },
       "aws-sdk": {
-        "@aws-sdk/client-cloudfront": "3.996.0",
-        "@aws-sdk/client-docdb": "3.996.0",
-        "@aws-sdk/client-elastic-beanstalk": "3.996.0",
-        "@aws-sdk/client-elasticache": "3.996.0",
-        "@aws-sdk/client-global-accelerator": "3.996.0",
-        "@aws-sdk/client-neptune": "3.996.0",
-        "@aws-sdk/client-rds": "3.996.0",
-        "@aws-sdk/client-route-53": "3.996.0",
-        "@aws-sdk/credential-providers": "3.996.0",
-        "@aws-sdk/types": "3.973.1"
+        "@aws-sdk/client-cloudfront": "3.997.0",
+        "@aws-sdk/client-docdb": "3.997.0",
+        "@aws-sdk/client-elastic-beanstalk": "3.997.0",
+        "@aws-sdk/client-elasticache": "3.997.0",
+        "@aws-sdk/client-global-accelerator": "3.997.0",
+        "@aws-sdk/client-neptune": "3.997.0",
+        "@aws-sdk/client-rds": "3.997.0",
+        "@aws-sdk/client-route-53": "3.997.0",
+        "@aws-sdk/credential-providers": "3.997.0",
+        "@aws-sdk/types": "3.973.2"
       }
     }
   },
