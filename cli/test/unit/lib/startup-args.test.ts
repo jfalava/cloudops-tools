@@ -18,6 +18,13 @@ describe("planCliInvocation", () => {
     expect(plan.selectedCli).toBe("main");
   });
 
+  test("does not short-circuit query subcommand help to global help", () => {
+    const plan = planCliInvocation(["/bin/cloudops-tools", "/app/path", "query", "--help"]);
+
+    expect(plan.action).toBe("run");
+    expect(plan.selectedCli).toBe("query");
+  });
+
   test("treats forced init as execution, not help", () => {
     const plan = planCliInvocation(["/bin/cloudops-tools", "/app/path", "--init"]);
 

@@ -83,7 +83,7 @@ const invocationPlan = planCliInvocation(process.argv);
 const { debug } = invocationPlan;
 
 if (SHOULD_SHOW_STARTUP_BANNER && STARTUP_BANNER.length > 0) {
-  process.stderr.write(`${STARTUP_BANNER}\n`);
+  process.stderr.write(String(STARTUP_BANNER));
 }
 
 if (invocationPlan.action === "print-version") {

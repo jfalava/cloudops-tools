@@ -99,14 +99,32 @@ const detectSelectedCli = (
   return { selectedCli, wantsConfig };
 };
 
-const getStartupAction = (flags: RawFlags, wantsConfig: boolean): StartupAction => {
+const getStartupAction = (
+  flags: RawFlags,
+  selectedCli: CliSelection,
+  wantsConfig: boolean,
+): StartupAction => {
+  const isGlobalHelpCandidate = selectedCli !== "query";
+
   if (flags.wantsVersion) {
     return "print-version";
   }
-  if (flags.wantsHelp && !flags.forceInit && !flags.forceSetupTotp && !wantsConfig) {
+  if (
+    flags.wantsHelp &&
+    isGlobalHelpCandidate &&
+    !flags.forceInit &&
+    !flags.forceSetupTotp &&
+    !wantsConfig
+  ) {
     return "print-help";
   }
-  if (flags.wantsHelpExamples && !flags.forceInit && !flags.forceSetupTotp && !wantsConfig) {
+  if (
+    flags.wantsHelpExamples &&
+    isGlobalHelpCandidate &&
+    !flags.forceInit &&
+    !flags.forceSetupTotp &&
+    !wantsConfig
+  ) {
     return "print-help-examples";
   }
   return "run";
@@ -132,7 +150,7 @@ export const planCliInvocation = (argv: ReadonlyArray<string>): CliInvocationPla
   const flags = parseRawFlags(argv);
   const normalizedArgv = normalizeArgv(argv, flags);
   const { selectedCli, wantsConfig } = detectSelectedCli(normalizedArgv, flags);
-  const action = getStartupAction(flags, wantsConfig);
+  const action = getStartupAction(flags, selectedCli, wantsConfig);
   const argsForSelectedCli = getArgsForSelectedCli(selectedCli, normalizedArgv);
 
   return {
