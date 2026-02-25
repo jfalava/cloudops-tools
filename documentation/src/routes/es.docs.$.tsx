@@ -375,7 +375,12 @@ function DocsPageComponent() {
         }}
       >
         <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
-          <DocsPage toc={[]} full={false}>
+          <DocsPage
+            toc={[]}
+            full={false}
+            tableOfContent={{ style: "clerk" }}
+            tableOfContentPopover={{ style: "clerk" }}
+          >
             <DocsBody>
               <div className="p-4">Cargando...</div>
             </DocsBody>
@@ -413,7 +418,12 @@ function DocsPageComponent() {
       }}
     >
       <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
-        <DocsPage toc={toc ?? []} full={false}>
+        <DocsPage
+          toc={toc ?? []}
+          full={false}
+          tableOfContent={{ style: "clerk" }}
+          tableOfContentPopover={{ style: "clerk" }}
+        >
           <DocsBody>
             <CopyMarkdownButton
               markdownPath={slug ? `/api/llms-page/es/${slug}` : "/api/llms-page/es"}

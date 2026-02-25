@@ -304,7 +304,12 @@ function DocsPageComponent() {
   if (isLoading) {
     return (
       <DocsLayout tree={getDocsTree("en")} {...baseOptions("en", docsPath)}>
-        <DocsPage toc={[]} full={false}>
+        <DocsPage
+          toc={[]}
+          full={false}
+          tableOfContent={{ style: "clerk" }}
+          tableOfContentPopover={{ style: "clerk" }}
+        >
           <DocsBody>
             <div className="p-4">Loading...</div>
           </DocsBody>
@@ -326,7 +331,12 @@ function DocsPageComponent() {
 
   return (
     <DocsLayout tree={getDocsTree("en")} {...baseOptions("en", docsPath)}>
-      <DocsPage toc={toc ?? []} full={false}>
+      <DocsPage
+        toc={toc ?? []}
+        full={false}
+        tableOfContent={{ style: "clerk" }}
+        tableOfContentPopover={{ style: "clerk" }}
+      >
         <DocsBody>
           <CopyMarkdownButton
             markdownPath={slug ? `/api/llms-page/en/${slug}` : "/api/llms-page/en"}
