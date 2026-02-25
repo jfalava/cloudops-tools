@@ -37,6 +37,7 @@ cloudops-tools config [--write-defaults] [subcomando] [opciones]
 | `defaultFormat`   | string   | Formato de exportación por defecto (`csv`, `xlsx`, `json`, `both`, `all`) |
 | `defaultMode`     | string   | Modo de escaneo por defecto (`basic`, `detailed`, `security`, `cost`)     |
 | `defaultServices` | string[] | Servicios que se escanean por defecto                                     |
+| `showBanner`      | boolean  | Muestra el banner ASCII al iniciar en terminales interactivos             |
 | `skipGlobal`      | boolean  | Omitir servicios globales por defecto                                     |
 | `onlyGlobal`      | boolean  | Escanear solo servicios globales por defecto                              |
 
@@ -65,6 +66,7 @@ cloudops-tools config --write-defaults
 | `defaultRegion` | `us-east-1` |
 | `defaultFormat` | `csv`       |
 | `defaultMode`   | `basic`     |
+| `showBanner`    | `true`      |
 | `skipGlobal`    | `false`     |
 | `onlyGlobal`    | `false`     |
 
@@ -107,6 +109,9 @@ cloudops-tools config set skipGlobal true
 
 # Elegir cuenta/perfil por defecto
 cloudops-tools config set defaultAccount produccion
+
+# Desactivar el banner de inicio (solo en terminales interactivos)
+cloudops-tools config set showBanner false
 ```
 
 ---
@@ -183,10 +188,31 @@ Todo se guarda en formato JSON. Ejemplo de cómo queda:
   "defaultFormat": "xlsx",
   "defaultMode": "security",
   "defaultServices": ["EC2", "RDS", "Lambda", "S3"],
+  "showBanner": true,
   "skipGlobal": false,
   "onlyGlobal": false
 }
 ```
+
+## Banner de inicio
+
+La CLI puede mostrar un banner ASCII (`cli/text-art.txt`) como detalle visual al arrancar.
+
+- Solo se muestra en terminales interactivos (TTY).
+- Se oculta automáticamente en usos no interactivos o con pipes/redirecciones.
+- Puedes desactivarlo de forma persistente con configuración:
+
+```bash
+cloudops-tools config set showBanner false
+```
+
+- Puedes desactivarlo solo para una ejecución con una variable de entorno:
+
+```bash
+CLOUDOPS_NO_BANNER=1 cloudops-tools <comando>
+```
+
+- `CLOUDOPS_NO_BANNER=1` tiene prioridad sobre la configuración en esa ejecución.
 
 ## Importante (precedencia)
 

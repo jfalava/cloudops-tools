@@ -1,10 +1,12 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import process from "node:process";
 
 import { ConfigServiceLive, InventoryDbServiceLive } from "@cloudops-tools/sdk";
 import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
+import textArt from "../text-art.txt" with { type: "text" };
 
 import {
   HELP_EXAMPLES,
@@ -34,6 +36,43 @@ const CLI_CONFIG = {
   version: PACKAGE_VERSION,
 } as const;
 
+const STARTUP_BANNER = textArt.trimEnd();
+const STARTUP_CONFIG_DIR = ".config/cloudops-tools";
+const STARTUP_CONFIG_FILE = "config.json";
+
+const isTruthyEnvFlag = (value: string | undefined): boolean => {
+  if (value === undefined) {
+    return false;
+  }
+
+  return ["1", "true", "yes", "on"].includes(value.trim().toLowerCase());
+};
+
+const getHomeDirForStartupConfig = (): string | undefined =>
+  process.env.HOME || process.env.USERPROFILE;
+
+const readBannerEnabledFromConfig = (): boolean => {
+  const home = getHomeDirForStartupConfig();
+  if (!home) {
+    return true;
+  }
+
+  try {
+    const configPath = join(home, STARTUP_CONFIG_DIR, STARTUP_CONFIG_FILE);
+    const raw = readFileSync(configPath, "utf8");
+    const parsed = JSON.parse(raw) as { showBanner?: unknown };
+    return typeof parsed.showBanner === "boolean" ? parsed.showBanner : true;
+  } catch {
+    return true;
+  }
+};
+
+const SHOULD_SHOW_STARTUP_BANNER =
+  process.stdout.isTTY &&
+  process.stderr.isTTY &&
+  !isTruthyEnvFlag(process.env.CLOUDOPS_NO_BANNER) &&
+  readBannerEnabledFromConfig();
+
 const cli = Command.run(mainCommand, CLI_CONFIG);
 const configCli = Command.run(configCommand, CLI_CONFIG);
 const setupTotpCli = Command.run(setupTotpCommand, CLI_CONFIG);
@@ -41,6 +80,10 @@ const queryCli = Command.run(queryCommand, CLI_CONFIG);
 
 const invocationPlan = planCliInvocation(process.argv);
 const { debug } = invocationPlan;
+
+if (SHOULD_SHOW_STARTUP_BANNER && STARTUP_BANNER.length > 0) {
+  process.stderr.write(`${STARTUP_BANNER}\n`);
+}
 
 if (invocationPlan.action === "print-version") {
   const version = resolveCliVersion(

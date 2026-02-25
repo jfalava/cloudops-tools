@@ -10,6 +10,7 @@ export interface CloudOpsConfig {
   defaultFormat?: "csv" | "xlsx" | "json" | "both" | "all";
   defaultMode?: "basic" | "detailed" | "security" | "cost";
   defaultServices?: string[];
+  showBanner?: boolean;
   skipGlobal?: boolean;
   onlyGlobal?: boolean;
 }
