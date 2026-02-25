@@ -17,9 +17,17 @@ describe("resolveCliVersion", () => {
     expect(resolveCliVersion("  ''  ", packageVersion)).toBe(packageVersion);
   });
 
+  test("uses package version when build version is an escaped quote", () => {
+    expect(resolveCliVersion('\\"', packageVersion)).toBe(packageVersion);
+  });
+
   test("strips wrapping quotes from build version", () => {
     expect(resolveCliVersion('"0.5.1"', packageVersion)).toBe("0.5.1");
     expect(resolveCliVersion("'0.5.1'", packageVersion)).toBe("0.5.1");
+  });
+
+  test("strips escaped wrapping quotes from build version", () => {
+    expect(resolveCliVersion('\\"0.5.1\\"', packageVersion)).toBe("0.5.1");
   });
 
   test("handles shell-quoted injected build version shapes", () => {
