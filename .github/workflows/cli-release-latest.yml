@@ -120,5 +120,6 @@ jobs:
           name: CLI Latest (main)
           prerelease: true
           make_latest: false
-          generate_release_notes: true
+          generate_release_notes: false
+          body: ""
           files: artifacts/**/*
