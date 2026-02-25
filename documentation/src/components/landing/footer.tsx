@@ -19,7 +19,9 @@ export function Footer() {
             <span className="-space-x-1 font-mono text-xs tracking-tight">
               Yet another AWS tool
             </span>
-            <span className="text-xs">by <span className="font-bold">JFA</span></span>
+            <span className="text-xs">
+              by <span className="font-bold">JFA</span>
+            </span>
           </div>
           <span className="mt-2 ml-px font-mono text-xs opacity-85">
             v{VERSION} | {currentYear}
