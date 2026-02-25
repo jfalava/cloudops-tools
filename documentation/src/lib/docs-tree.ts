@@ -1,5 +1,4 @@
 import type { Node, Root } from "fumadocs-core/page-tree";
-import { createElement, type ReactNode } from "react";
 import {
   BookOpen,
   Boxes,
@@ -24,6 +23,7 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
+import { createElement, type ReactNode } from "react";
 
 import { localizePath, stripLocalePrefix, type Locale } from "@/lib/i18n";
 
@@ -330,7 +330,9 @@ const sidebarIconsByPath: Record<string, () => ReactNode> = {
 };
 
 const iconForPath = (url: string | undefined): ReactNode | undefined => {
-  if (!url) return undefined;
+  if (!url) {
+    return undefined;
+  }
   return sidebarIconsByPath[normalizeTreeUrl(url)]?.();
 };
 
@@ -348,7 +350,12 @@ function decorateNodeWithIcon(node: Node): Node {
     return {
       ...node,
       icon: folderIcon ?? node.icon,
-      index: node.index ? ({ ...node.index, icon: iconForPath(node.index.url) ?? node.index.icon } as typeof node.index) : node.index,
+      index: node.index
+        ? ({
+            ...node.index,
+            icon: iconForPath(node.index.url) ?? node.index.icon,
+          } as typeof node.index)
+        : node.index,
       children: node.children.map(decorateNodeWithIcon),
     };
   }
@@ -361,6 +368,7 @@ const decorateTreeWithIcons = (tree: Root): Root => ({
   children: tree.children.map(decorateNodeWithIcon),
 });
 
-export const getDocsTree = (locale: Locale): Root => decorateTreeWithIcons(localizeTreeValue(baseDocsTree, locale) as Root);
+export const getDocsTree = (locale: Locale): Root =>
+  decorateTreeWithIcons(localizeTreeValue(baseDocsTree, locale));
 
 export const docsTree: Root = getDocsTree("en");
