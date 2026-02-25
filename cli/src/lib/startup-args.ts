@@ -99,10 +99,7 @@ const detectSelectedCli = (
   return { selectedCli, wantsConfig };
 };
 
-const getStartupAction = (
-  flags: RawFlags,
-  wantsConfig: boolean,
-): StartupAction => {
+const getStartupAction = (flags: RawFlags, wantsConfig: boolean): StartupAction => {
   if (flags.wantsVersion) {
     return "print-version";
   }
