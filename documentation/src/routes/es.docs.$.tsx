@@ -1,9 +1,12 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import type { TOCItemType } from "fumadocs-core/toc";
+import { I18nProvider } from "fumadocs-ui/contexts/i18n";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
+import { CopyMarkdownButton } from "@/components/copy-markdown-button";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { getDocsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
@@ -78,6 +81,30 @@ const rawSpanishDocSources = import.meta.glob("../../content/docs/es/**/*.{mdx,m
 type DocFrontmatter = {
   title?: string;
   description?: string;
+};
+
+type TocItem = TOCItemType;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isTocItem = (value: unknown): value is TocItem =>
+  isRecord(value) &&
+  "title" in value &&
+  typeof value.url === "string" &&
+  typeof value.depth === "number";
+
+const readToc = (value: unknown): TocItem[] | undefined => {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  const toc = value["toc"];
+  if (!Array.isArray(toc) || !toc.every(isTocItem)) {
+    return undefined;
+  }
+
+  return toc;
 };
 
 const readRawDocSource = (value: unknown): string | null => {
@@ -332,13 +359,34 @@ function DocsPageComponent() {
 
   if (isLoading) {
     return (
-      <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
-        <DocsPage toc={[]} full={false}>
-          <DocsBody>
-            <div className="p-4">Cargando...</div>
-          </DocsBody>
-        </DocsPage>
-      </DocsLayout>
+      <I18nProvider
+        locale="es"
+        translations={{
+          toc: "En esta página",
+          tocNoHeadings: "Sin encabezados",
+          search: "Buscar",
+          searchNoResult: "Sin resultados",
+          lastUpdate: "Última actualización",
+          nextPage: "Siguiente",
+          previousPage: "Anterior",
+          chooseLanguage: "Elegir idioma",
+          chooseTheme: "Elegir tema",
+          editOnGithub: "Editar en GitHub",
+        }}
+      >
+        <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
+          <DocsPage
+            toc={[]}
+            full={false}
+            tableOfContent={{ style: "clerk" }}
+            tableOfContentPopover={{ style: "clerk" }}
+          >
+            <DocsBody>
+              <div className="p-4">Cargando...</div>
+            </DocsBody>
+          </DocsPage>
+        </DocsLayout>
+      </I18nProvider>
     );
   }
 
@@ -351,25 +399,56 @@ function DocsPageComponent() {
   }
 
   const MDXContent = docModule.default;
+  const toc = readToc(docModule);
 
   return (
-    <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
-      <DocsPage toc={[]} full={false}>
-        <DocsBody>
-          <ErrorBoundary
-            fallback={
-              <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-                <div className="font-semibold">No se pudo cargar la documentación</div>
-                <div className="mt-1 text-amber-800">
-                  Esto suele ser un desajuste de caché después de un deploy. Prueba un hard refresh.
+    <I18nProvider
+      locale="es"
+      translations={{
+        toc: "En esta página",
+        tocNoHeadings: "Sin encabezados",
+        search: "Buscar",
+        searchNoResult: "Sin resultados",
+        lastUpdate: "Última actualización",
+        nextPage: "Siguiente",
+        previousPage: "Anterior",
+        chooseLanguage: "Elegir idioma",
+        chooseTheme: "Elegir tema",
+        editOnGithub: "Editar en GitHub",
+      }}
+    >
+      <DocsLayout tree={getDocsTree("es")} {...baseOptions("es", docsPath)}>
+        <DocsPage
+          toc={toc ?? []}
+          full={false}
+          tableOfContent={{ style: "clerk" }}
+          tableOfContentPopover={{ style: "clerk" }}
+        >
+          <DocsBody>
+            <CopyMarkdownButton
+              markdownPath={slug ? `/api/llms-page/es/${slug}` : "/api/llms-page/es"}
+              labels={{
+                copy: "Copiar Markdown",
+                copied: "Copiado",
+                failed: "Error al copiar",
+              }}
+            />
+            <ErrorBoundary
+              fallback={
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                  <div className="font-semibold">No se pudo cargar la documentación</div>
+                  <div className="mt-1 text-amber-800">
+                    Esto suele ser un desajuste de caché después de un deploy. Prueba un hard
+                    refresh.
+                  </div>
                 </div>
-              </div>
-            }
-          >
-            <MDXContent components={defaultMdxComponents} />
-          </ErrorBoundary>
-        </DocsBody>
-      </DocsPage>
-    </DocsLayout>
+              }
+            >
+              <MDXContent components={defaultMdxComponents} />
+            </ErrorBoundary>
+          </DocsBody>
+        </DocsPage>
+      </DocsLayout>
+    </I18nProvider>
   );
 }

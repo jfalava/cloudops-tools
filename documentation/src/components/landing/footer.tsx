@@ -17,8 +17,9 @@ export function Footer() {
           <div className="grid place-items-center">
             <span className="flex items-center font-semibold tracking-tight">CloudOps Tools</span>
             <span className="-space-x-1 font-mono text-xs tracking-tight">
-              Yet another AWS tool by <span className="font-bold">JFA</span>
+              Yet another AWS tool
             </span>
+            <span className="text-xs">by <span className="font-bold">JFA</span></span>
           </div>
           <span className="mt-2 ml-px font-mono text-xs opacity-85">
             v{VERSION} | {currentYear}

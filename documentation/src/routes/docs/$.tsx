@@ -1,9 +1,11 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
+import type { TOCItemType } from "fumadocs-core/toc";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
+import { CopyMarkdownButton } from "@/components/copy-markdown-button";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { getDocsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
@@ -62,6 +64,30 @@ const rawDocSources = import.meta.glob("../../../content/docs/en/**/*.{mdx,md}",
 type DocFrontmatter = {
   title?: string;
   description?: string;
+};
+
+type TocItem = TOCItemType;
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isTocItem = (value: unknown): value is TocItem =>
+  isRecord(value) &&
+  "title" in value &&
+  typeof value.url === "string" &&
+  typeof value.depth === "number";
+
+const readToc = (value: unknown): TocItem[] | undefined => {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  const toc = value["toc"];
+  if (!Array.isArray(toc) || !toc.every(isTocItem)) {
+    return undefined;
+  }
+
+  return toc;
 };
 
 const readRawDocSource = (value: unknown): string | null => {
@@ -278,7 +304,12 @@ function DocsPageComponent() {
   if (isLoading) {
     return (
       <DocsLayout tree={getDocsTree("en")} {...baseOptions("en", docsPath)}>
-        <DocsPage toc={[]} full={false}>
+        <DocsPage
+          toc={[]}
+          full={false}
+          tableOfContent={{ style: "clerk" }}
+          tableOfContentPopover={{ style: "clerk" }}
+        >
           <DocsBody>
             <div className="p-4">Loading...</div>
           </DocsBody>
@@ -296,11 +327,20 @@ function DocsPageComponent() {
   }
 
   const MDXContent = docModule.default;
+  const toc = readToc(docModule);
 
   return (
     <DocsLayout tree={getDocsTree("en")} {...baseOptions("en", docsPath)}>
-      <DocsPage toc={[]} full={false}>
+      <DocsPage
+        toc={toc ?? []}
+        full={false}
+        tableOfContent={{ style: "clerk" }}
+        tableOfContentPopover={{ style: "clerk" }}
+      >
         <DocsBody>
+          <CopyMarkdownButton
+            markdownPath={slug ? `/api/llms-page/en/${slug}` : "/api/llms-page/en"}
+          />
           <ErrorBoundary
             fallback={
               <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">

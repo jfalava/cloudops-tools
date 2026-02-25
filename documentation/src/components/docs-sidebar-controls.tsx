@@ -36,7 +36,7 @@ export function DocsSidebarControls({ locale, path }: DocsSidebarControlsProps) 
         aria-label="Toggle theme"
         title="Toggle theme"
         onClick={toggleTheme}
-        className="hover:bg-accent/60 inline-flex h-8 w-8 items-center justify-center rounded-md border text-sm"
+        className="hover:bg-accent/60 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border text-sm"
       >
         <Sun className="hidden h-4 w-4 dark:block" />
         <Moon className="h-4 w-4 dark:hidden" />

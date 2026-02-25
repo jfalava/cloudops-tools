@@ -34,3 +34,45 @@ code {
 html {
   scrollbar-gutter: stable;
 }
+
+/* Fumadocs right-rail TOC: add nested elbow-style indentation without changing the component variant */
+#nd-toc a[href^="#"] {
+  position: relative;
+  display: block;
+}
+
+#nd-toc .border-s {
+  border-inline-start-color: color-mix(in oklab, currentcolor 18%, transparent);
+}
+
+#nd-toc .border-s > a[class*="ps-6"],
+#nd-toc .border-s > a[class*="ps-8"] {
+  position: relative;
+}
+
+#nd-toc .border-s > a[class*="ps-6"]::before,
+#nd-toc .border-s > a[class*="ps-8"]::before {
+  content: "";
+  position: absolute;
+  top: 0.35rem;
+  width: 0.8rem;
+  height: 1rem;
+  border-inline-start: 1px solid color-mix(in oklab, currentcolor 28%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, currentcolor 28%, transparent);
+  border-bottom-left-radius: 0.35rem;
+  pointer-events: none;
+}
+
+#nd-toc .border-s > a[class*="ps-6"]::before {
+  inset-inline-start: 0;
+}
+
+#nd-toc .border-s > a[class*="ps-8"]::before {
+  inset-inline-start: 0.65rem;
+}
+
+#nd-toc .border-s > a[class*="ps-6"][data-active="true"]::before,
+#nd-toc .border-s > a[class*="ps-8"][data-active="true"]::before {
+  border-inline-start-color: currentcolor;
+  border-bottom-color: currentcolor;
+}

@@ -1,6 +1,31 @@
-import type { Root } from "fumadocs-core/page-tree";
+import type { Node, Root } from "fumadocs-core/page-tree";
+import { createElement, type ReactNode } from "react";
+import {
+  BookOpen,
+  Boxes,
+  Braces,
+  Bug,
+  CircleHelp,
+  Compass,
+  Database,
+  FileCode2,
+  FileTerminal,
+  FlaskConical,
+  HardDrive,
+  KeyRound,
+  Layers3,
+  Network,
+  Rocket,
+  Search,
+  Settings,
+  Shield,
+  ShieldAlert,
+  Terminal,
+  Wrench,
+  Zap,
+} from "lucide-react";
 
-import { localizePath, type Locale } from "@/lib/i18n";
+import { localizePath, stripLocalePrefix, type Locale } from "@/lib/i18n";
 
 const TRANSLATIONS_ES = new Map<string, string>([
   ["Documentation", "Documentación"],
@@ -265,6 +290,77 @@ function localizeTreeValue(value: unknown, locale: Locale): unknown {
   return value;
 }
 
-export const getDocsTree = (locale: Locale): Root => localizeTreeValue(baseDocsTree, locale);
+const normalizeTreeUrl = (url: string): string => stripLocalePrefix(url).path;
+
+const makeIcon = (Icon: typeof Terminal): ReactNode => createElement(Icon, { size: 16 });
+
+const sidebarIconsByPath: Record<string, () => ReactNode> = {
+  "/docs/cli": () => makeIcon(Terminal),
+  "/docs/cli/installation": () => makeIcon(BookOpen),
+  "/docs/cli/build-cli": () => makeIcon(Wrench),
+  "/docs/cli/configuration": () => makeIcon(Settings),
+  "/docs/cli/choose-command": () => makeIcon(Compass),
+  "/docs/cli/scan-profiles": () => makeIcon(Search),
+  "/docs/cli/exit-codes": () => makeIcon(Bug),
+  "/docs/cli/troubleshooting": () => makeIcon(CircleHelp),
+  "/docs/cli/commands": () => makeIcon(FileTerminal),
+  "/docs/cli/commands/init": () => makeIcon(Zap),
+  "/docs/cli/commands/describe": () => makeIcon(FileCode2),
+  "/docs/cli/commands/query": () => makeIcon(Search),
+  "/docs/cli/commands/use-letme": () => makeIcon(Shield),
+  "/docs/cli/commands/config": () => makeIcon(Settings),
+  "/docs/sdk": () => makeIcon(Braces),
+  "/docs/sdk/getting-started": () => makeIcon(Rocket),
+  "/docs/sdk/error-model": () => makeIcon(ShieldAlert),
+  "/docs/sdk/layers-and-runtime": () => makeIcon(Layers3),
+  "/docs/sdk/operations": () => makeIcon(Boxes),
+  "/docs/sdk/examples": () => makeIcon(FlaskConical),
+  "/docs/sdk/services-compute-storage": () => makeIcon(HardDrive),
+  "/docs/sdk/services-data-networking": () => makeIcon(Network),
+  "/docs/sdk/services-security-platform": () => makeIcon(Shield),
+  "/docs/sdk/utilities": () => makeIcon(Wrench),
+  "/docs/sdk/reference-map": () => makeIcon(Compass),
+  "/docs/sdk/api": () => makeIcon(Database),
+  "/docs/sdk/api/core": () => makeIcon(Layers3),
+  "/docs/sdk/api/operations": () => makeIcon(Boxes),
+  "/docs/sdk/api/services": () => makeIcon(Network),
+  "/docs/sdk/api/lib": () => makeIcon(Wrench),
+  "/docs/sdk/api/types": () => makeIcon(Braces),
+  "/docs/sdk/api/credentials": () => makeIcon(KeyRound),
+};
+
+const iconForPath = (url: string | undefined): ReactNode | undefined => {
+  if (!url) return undefined;
+  return sidebarIconsByPath[normalizeTreeUrl(url)]?.();
+};
+
+function decorateNodeWithIcon(node: Node): Node {
+  if (node.type === "page") {
+    return {
+      ...node,
+      icon: iconForPath(node.url) ?? node.icon,
+    };
+  }
+
+  if (node.type === "folder") {
+    const folderIcon = iconForPath(node.index?.url);
+
+    return {
+      ...node,
+      icon: folderIcon ?? node.icon,
+      index: node.index ? ({ ...node.index, icon: iconForPath(node.index.url) ?? node.index.icon } as typeof node.index) : node.index,
+      children: node.children.map(decorateNodeWithIcon),
+    };
+  }
+
+  return node;
+}
+
+const decorateTreeWithIcons = (tree: Root): Root => ({
+  ...tree,
+  children: tree.children.map(decorateNodeWithIcon),
+});
+
+export const getDocsTree = (locale: Locale): Root => decorateTreeWithIcons(localizeTreeValue(baseDocsTree, locale) as Root);
 
 export const docsTree: Root = getDocsTree("en");
