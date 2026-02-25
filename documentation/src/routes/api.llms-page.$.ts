@@ -21,7 +21,9 @@ export const Route = createFileRoute("/api/llms-page/$")({
         const slugs = first === "es" || first === "en" ? rest : segments;
         const source = locale === "es" ? sourceEs : sourceEn;
         const page = source.getPage(slugs);
-        if (!page) {throw notFound();}
+        if (!page) {
+          throw notFound();
+        }
 
         const processed = await page.data.getText("processed");
 

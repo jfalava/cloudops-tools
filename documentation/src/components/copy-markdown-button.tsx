@@ -12,10 +12,7 @@ type CopyMarkdownButtonProps = {
 
 type CopyState = "idle" | "copying" | "copied" | "failed";
 
-export function CopyMarkdownButton({
-  markdownPath,
-  labels,
-}: CopyMarkdownButtonProps): JSX.Element {
+export function CopyMarkdownButton({ markdownPath, labels }: CopyMarkdownButtonProps): JSX.Element {
   const [copyState, setCopyState] = useState<CopyState>("idle");
   const resetTimerRef = useRef<number | null>(null);
 

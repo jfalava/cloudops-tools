@@ -82,6 +82,34 @@ type DocFrontmatter = {
   description?: string;
 };
 
+type TocItem = {
+  title: string;
+  url: string;
+  depth: number;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const isTocItem = (value: unknown): value is TocItem =>
+  isRecord(value) &&
+  typeof value.title === "string" &&
+  typeof value.url === "string" &&
+  typeof value.depth === "number";
+
+const readToc = (value: unknown): TocItem[] | undefined => {
+  if (!isRecord(value)) {
+    return undefined;
+  }
+
+  const toc = value["toc"];
+  if (!Array.isArray(toc) || !toc.every(isTocItem)) {
+    return undefined;
+  }
+
+  return toc;
+};
+
 const readRawDocSource = (value: unknown): string | null => {
   if (typeof value === "string") {
     return value;
@@ -369,9 +397,7 @@ function DocsPageComponent() {
   }
 
   const MDXContent = docModule.default;
-  const toc = (docModule as Record<string, unknown>).toc as
-    | { title: string; url: string; depth: number }[]
-    | undefined;
+  const toc = readToc(docModule);
 
   return (
     <I18nProvider
