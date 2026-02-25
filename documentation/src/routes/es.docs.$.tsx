@@ -2,11 +2,11 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import type { TOCItemType } from "fumadocs-core/toc";
 import { I18nProvider } from "fumadocs-ui/contexts/i18n";
 import { DocsLayout } from "fumadocs-ui/layouts/docs";
-import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
 import { CopyMarkdownButton } from "@/components/copy-markdown-button";
+import { mdxComponents } from "@/components/docs-mdx-tabs";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { getDocsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
@@ -444,7 +444,7 @@ function DocsPageComponent() {
                 </div>
               }
             >
-              <MDXContent components={defaultMdxComponents} />
+              <MDXContent components={mdxComponents} />
             </ErrorBoundary>
           </DocsBody>
         </DocsPage>

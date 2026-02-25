@@ -7,16 +7,44 @@ description: How to install and set up CloudOps Tools
 
 ## Prerequisites
 
-- Node.js 18+ and npm (or Bun)
+- Node.js 18+ and a package manager (`npm`, `pnpm`, modern `Yarn`/Corepack, or `Bun`)
 - AWS credentials configured (`~/.aws/credentials` or environment variables)
 
 ## Install
+
+<Tabs items={["npm", "pnpm", "Yarn", "Bun"]}>
+  <Tab value="npm">
 
 ```bash
 npm install -g @cloudops-tools/cli
 ```
 
-With Bun:
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add -g @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Yarn">
+
+For modern Yarn (Berry/Corepack), prefer `yarn dlx` for one-off runs:
+
+```bash
+yarn dlx @cloudops-tools/cli --help
+```
+
+If you need a global install, prefer `npm` or `pnpm`.
+
+Alternative for Yarn Classic (`1.x`):
+
+```bash
+yarn global add @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Bun">
 
 ```bash
 bun add -g @cloudops-tools/cli
@@ -25,10 +53,117 @@ bun add -g @cloudops-tools/cli
 If Bun does not install optional dependencies for your platform, install the platform package
 explicitly:
 
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
 ```bash
-# macOS arm64
 bun add -g @cloudops-tools/cli-darwin-arm64
 ```
+
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+bun add -g @cloudops-tools/cli-linux-x64
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+bun add -g @cloudops-tools/cli-win32-x64
+```
+
+  </Tab>
+</Tabs>
+
+  </Tab>
+</Tabs>
+
+## Run Without Installing
+
+You can also run the CLI directly without a global install.
+
+<Tabs items={["npm", "pnpm", "Yarn", "Bun"]}>
+  <Tab value="npm">
+
+```bash
+npx -y @cloudops-tools/cli --help
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+`pnpm dlx` may also skip optional dependencies in transient runs, so include the platform package explicitly:
+
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
+```bash
+pnpm dlx --package @cloudops-tools/cli --package @cloudops-tools/cli-darwin-arm64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+pnpm dlx --package @cloudops-tools/cli --package @cloudops-tools/cli-linux-x64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+pnpm dlx --package @cloudops-tools/cli --package @cloudops-tools/cli-win32-x64 cloudops-tools --help
+```
+
+  </Tab>
+</Tabs>
+
+  </Tab>
+  <Tab value="Yarn">
+
+```bash
+yarn dlx @cloudops-tools/cli --help
+```
+
+If you run this inside a Yarn workspace/monorepo checkout, `yarn dlx` may try to resolve local
+`workspace:*` dependencies and fail. Run it from outside the repo (for example, a temp directory),
+or use `npx` / a global install instead.
+
+If your environment reports a missing platform package, use `npx` or a global install instead.
+
+  </Tab>
+  <Tab value="Bun">
+
+`bunx` may skip optional dependencies in transient runs, so include the platform package explicitly:
+
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
+```bash
+bunx --package @cloudops-tools/cli --package @cloudops-tools/cli-darwin-arm64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+bunx --package @cloudops-tools/cli --package @cloudops-tools/cli-linux-x64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+bunx --package @cloudops-tools/cli --package @cloudops-tools/cli-win32-x64 cloudops-tools --help
+```
+
+  </Tab>
+</Tabs>
+
+  </Tab>
+</Tabs>
 
 ## Verify Installation
 
@@ -45,6 +180,10 @@ optional dependencies:
 - `@cloudops-tools/cli-linux-x64`
 - `@cloudops-tools/cli-win32-x64`
 
+We do this to avoid shipping all platform binaries to every user in a single npm package. It keeps
+normal installs smaller, but some transient runners (`bunx`, `pnpm dlx`) may require the platform
+package to be passed explicitly.
+
 Supported prebuilt platforms:
 
 - Linux x64
@@ -53,7 +192,7 @@ Supported prebuilt platforms:
 
 If you are on an unsupported platform, build from source instead:
 
-- [Build CLI Binary](/docs/cli/build-cli)
+- [Build CLI Binary](/en/docs/cli/build-cli)
 
 ## AWS Credentials
 
