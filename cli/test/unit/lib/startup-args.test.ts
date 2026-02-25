@@ -25,4 +25,17 @@ describe("planCliInvocation", () => {
     expect(plan.selectedCli).toBe("main");
     expect(plan.normalizedArgv).toEqual(["/bin/cloudops-tools", "/app/path", "init"]);
   });
+
+  test("does not route to query when 'query' appears in a later argument", () => {
+    const plan = planCliInvocation([
+      "/bin/cloudops-tools",
+      "/app/path",
+      "init",
+      "--describe",
+      "query",
+    ]);
+
+    expect(plan.selectedCli).toBe("main");
+    expect(plan.action).toBe("run");
+  });
 });

@@ -83,9 +83,10 @@ const detectSelectedCli = (
   flags: RawFlags,
 ): SelectedState => {
   const normalizedArgsForDetection = normalizedArgv.slice(2);
-  const wantsSetupTotp = flags.forceSetupTotp || normalizedArgsForDetection.includes("setup-totp");
-  const wantsConfig = flags.forceConfig || normalizedArgsForDetection.includes("config");
-  const wantsQuery = normalizedArgsForDetection.includes("query");
+  const firstPositionalToken = normalizedArgsForDetection.find((arg) => !arg.startsWith("-"));
+  const wantsSetupTotp = flags.forceSetupTotp || firstPositionalToken === "setup-totp";
+  const wantsConfig = flags.forceConfig || firstPositionalToken === "config";
+  const wantsQuery = firstPositionalToken === "query";
 
   const selectedCli: CliSelection = wantsSetupTotp
     ? "setup-totp"
