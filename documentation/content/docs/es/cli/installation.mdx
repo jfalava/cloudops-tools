@@ -7,21 +7,47 @@ description: Cómo instalar y configurar CloudOps Tools
 
 ## Requisitos previos
 
-- **Node.js 18 o superior** + npm
-  (o Bun si prefieres una alternativa más rápida)
+- **Node.js 18 o superior** y un gestor de paquetes (`npm`, `pnpm`, `Yarn` moderno/Corepack o `Bun`)
 - Credenciales AWS configuradas en tu máquina. Las formas más comunes son:
   - Archivo `~/.aws/credentials`
   - Variables de entorno (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, etc.)
 
 ## Instalación recomendada
 
-Con **npm** (método más habitual):
+<Tabs items={["npm", "pnpm", "Yarn", "Bun"]}>
+  <Tab value="npm">
 
 ```bash
 npm install -g @cloudops-tools/cli
 ```
 
-Con **Bun** (más rápido en muchas operaciones):
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add -g @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Yarn">
+
+Si usas Yarn moderno (Berry/Corepack), la opción recomendada es `yarn dlx` para ejecuciones
+puntuales:
+
+```bash
+yarn dlx @cloudops-tools/cli --help
+```
+
+Si necesitas una instalación global, es mejor usar `npm` o `pnpm`.
+
+Alternativa para Yarn Classic (`1.x`):
+
+```bash
+yarn global add @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Bun">
 
 ```bash
 bun add -g @cloudops-tools/cli
@@ -32,12 +58,122 @@ bun add -g @cloudops-tools/cli
 En algunos entornos Bun puede no descargar automáticamente el binario nativo para tu plataforma.
 En ese caso instala explícitamente el paquete correspondiente:
 
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
 ```bash
-# macOS con chip Apple Silicon (arm64)
 bun add -g @cloudops-tools/cli-darwin-arm64
 ```
 
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+bun add -g @cloudops-tools/cli-linux-x64
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+bun add -g @cloudops-tools/cli-win32-x64
+```
+
+  </Tab>
+</Tabs>
+
 (Otras plataformas suelen instalarse sin problema con el comando principal.)
+
+  </Tab>
+</Tabs>
+
+## Ejecutar sin instalar (npx / dlx)
+
+También puedes ejecutar el CLI directamente sin instalación global.
+
+<Tabs items={["npm", "pnpm", "Yarn", "Bun"]}>
+  <Tab value="npm">
+
+```bash
+npx -y @cloudops-tools/cli --help
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+`pnpm dlx` también puede omitir dependencias opcionales en ejecuciones temporales, así que conviene
+incluir el paquete de plataforma explícitamente:
+
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
+```bash
+pnpm dlx --package @cloudops-tools/cli --package @cloudops-tools/cli-darwin-arm64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+pnpm dlx --package @cloudops-tools/cli --package @cloudops-tools/cli-linux-x64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+pnpm dlx --package @cloudops-tools/cli --package @cloudops-tools/cli-win32-x64 cloudops-tools --help
+```
+
+  </Tab>
+</Tabs>
+
+  </Tab>
+  <Tab value="Yarn">
+
+```bash
+yarn dlx @cloudops-tools/cli --help
+```
+
+Si ejecutas esto dentro de un workspace/monorepo de Yarn, `yarn dlx` puede intentar resolver
+dependencias locales con `workspace:*` y fallar. Ejecútalo fuera del repo (por ejemplo, en un
+directorio temporal) o usa `npx` / una instalación global.
+
+Si tu entorno muestra un error de paquete de plataforma faltante, usa `npx` o una instalación
+global.
+
+  </Tab>
+  <Tab value="Bun">
+
+`bunx` puede omitir dependencias opcionales en ejecuciones temporales, así que conviene incluir el
+paquete de plataforma explícitamente:
+
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
+```bash
+bunx --package @cloudops-tools/cli --package @cloudops-tools/cli-darwin-arm64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+bunx --package @cloudops-tools/cli --package @cloudops-tools/cli-linux-x64 cloudops-tools --help
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+bunx --package @cloudops-tools/cli --package @cloudops-tools/cli-win32-x64 cloudops-tools --help
+```
+
+  </Tab>
+</Tabs>
+
+  </Tab>
+</Tabs>
 
 ## Verificar que todo se instaló correctamente
 
@@ -56,6 +192,10 @@ El binario nativo real viene en dependencias opcionales específicas por platafo
 - `@cloudops-tools/cli-darwin-arm64` → macOS Apple Silicon
 - `@cloudops-tools/cli-linux-x64` → Linux x64
 - `@cloudops-tools/cli-win32-x64` → Windows x64
+
+Lo hacemos así para no enviar todos los binarios de todas las plataformas en un único paquete npm.
+Esto reduce el tamaño de la instalación normal, pero algunos ejecutores temporales (`bunx`,
+`pnpm dlx`) pueden requerir indicar explícitamente el paquete de plataforma.
 
 **Plataformas con binarios precompilados disponibles actualmente:**
 
