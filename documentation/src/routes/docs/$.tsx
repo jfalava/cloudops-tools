@@ -4,6 +4,7 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import { DocsPage, DocsBody } from "fumadocs-ui/page";
 import { useEffect, useState } from "react";
 
+import { CopyMarkdownButton } from "@/components/copy-markdown-button";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { getDocsTree } from "@/lib/docs-tree";
 import { baseOptions } from "@/lib/layout.shared";
@@ -304,6 +305,7 @@ function DocsPageComponent() {
     <DocsLayout tree={getDocsTree("en")} {...baseOptions("en", docsPath)}>
       <DocsPage toc={toc ?? []} full={false}>
         <DocsBody>
+          <CopyMarkdownButton markdownPath={slug ? `/api/llms-page/en/${slug}` : "/api/llms-page/en"} />
           <ErrorBoundary
             fallback={
               <div className="rounded-md border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
