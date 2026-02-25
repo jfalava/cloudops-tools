@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type { InferPageType } from "fumadocs-core/source";
-import { loader } from "fumadocs-core/source";
+import { loader, type InferPageType } from "fumadocs-core/source";
 
 import { docs, docsEs } from "../../.source/server";
 

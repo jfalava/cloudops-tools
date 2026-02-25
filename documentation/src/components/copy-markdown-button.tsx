@@ -1,6 +1,5 @@
 import { Check, Copy, Loader2 } from "lucide-react";
-import type { JSX } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 
 type CopyMarkdownButtonProps = {
   markdownPath: string;
