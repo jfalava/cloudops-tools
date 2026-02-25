@@ -6,7 +6,6 @@ import { ConfigServiceLive, InventoryDbServiceLive } from "@cloudops-tools/sdk";
 import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
-import textArt from "../text-art.txt" with { type: "text" };
 
 import {
   HELP_EXAMPLES,
@@ -18,6 +17,8 @@ import {
 import { planCliInvocation } from "@/lib/startup-args";
 import { formatCliUserInputError, isCliUserInputError } from "@/lib/user-input-error";
 import { resolveCliVersion } from "@/lib/version";
+
+import textArt from "../text-art.txt" with { type: "text" };
 
 declare const BUILD_VERSION: string | undefined;
 
@@ -82,7 +83,7 @@ const invocationPlan = planCliInvocation(process.argv);
 const { debug } = invocationPlan;
 
 if (SHOULD_SHOW_STARTUP_BANNER && STARTUP_BANNER.length > 0) {
-  process.stderr.write(`${STARTUP_BANNER}\n`);
+  process.stderr.write(String(STARTUP_BANNER));
 }
 
 if (invocationPlan.action === "print-version") {

@@ -150,6 +150,67 @@ jobs:
         working-directory: cli
         run: npm pack --dry-run
 
+      - name: Validate packed manifest optionalDependencies
+        working-directory: cli
+        shell: bash
+        run: |
+          PACK_JSON="$(npm pack --json)"
+          export PACK_JSON
+
+          TARBALL="$(node <<'NODE'
+          const parsed = JSON.parse(process.env.PACK_JSON ?? "null");
+
+          if (!Array.isArray(parsed) || parsed.length === 0) {
+            throw new Error("npm pack --json did not return any package metadata");
+          }
+
+          const filename = parsed[0]?.filename;
+
+          if (typeof filename !== "string") {
+            throw new Error("npm pack --json did not include a tarball filename");
+          }
+
+          process.stdout.write(filename);
+          NODE
+          )"
+          export TARBALL
+
+          node <<'NODE'
+          const { execFileSync } = require("node:child_process");
+
+          const tarball = process.env.TARBALL;
+
+          if (typeof tarball !== "string" || tarball.length === 0) {
+            throw new Error("Missing tarball filename");
+          }
+
+          const pkgRaw = execFileSync("tar", ["-xOf", tarball, "package/package.json"], {
+            encoding: "utf8",
+          });
+          const pkg = JSON.parse(pkgRaw);
+          const optionalDependencies =
+            typeof pkg.optionalDependencies === "object" && pkg.optionalDependencies !== null
+              ? pkg.optionalDependencies
+              : {};
+
+          const invalid = Object.entries(optionalDependencies).filter(
+            ([name, spec]) =>
+              name.startsWith("@cloudops-tools/cli-") &&
+              typeof spec === "string" &&
+              spec.startsWith("workspace:"),
+          );
+
+          if (invalid.length > 0) {
+            console.error("Packed CLI manifest contains workspace protocol optionalDependencies:");
+
+            for (const [name, spec] of invalid) {
+              console.error(`- ${name}: ${spec}`);
+            }
+
+            process.exit(1);
+          }
+          NODE
+
       - name: Check if main CLI version already published
         id: check_main
         shell: bash

@@ -1,6 +1,6 @@
 {
   "name": "@cloudops-tools/cli",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jfalava/cloudops-tools.git",
@@ -22,6 +22,8 @@
     "check": "tsgo --noEmit && oxlint --fix --type-aware",
     "format": "oxfmt",
     "lint": "oxlint --type-aware",
+    "postpack": "node ./scripts/restore-publish-manifest.mjs",
+    "prepack": "node ./scripts/prepare-publish-manifest.mjs",
     "test": "bun test ./test/unit/lib",
     "test:coverage": "bun test --coverage",
     "typecheck": "tsgo --noEmit"
