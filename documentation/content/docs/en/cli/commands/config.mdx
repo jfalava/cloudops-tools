@@ -37,6 +37,7 @@ cloudops-tools config [--write-defaults] [subcommand] [options]
 | `defaultFormat`   | string   | Default export format (`csv`, `xlsx`, `json`, `both`, `all`) |
 | `defaultMode`     | string   | Default scan mode (`basic`, `detailed`, `security`, `cost`)  |
 | `defaultServices` | string[] | Default services to scan                                     |
+| `showBanner`      | boolean  | Show startup ASCII banner in interactive terminals           |
 | `skipGlobal`      | boolean  | Skip global services by default                              |
 | `onlyGlobal`      | boolean  | Scan only global services by default                         |
 
@@ -65,6 +66,7 @@ cloudops-tools config --write-defaults
 | `defaultRegion` | `us-east-1` |
 | `defaultFormat` | `csv`       |
 | `defaultMode`   | `basic`     |
+| `showBanner`    | `true`      |
 | `skipGlobal`    | `false`     |
 | `onlyGlobal`    | `false`     |
 
@@ -107,6 +109,9 @@ cloudops-tools config set skipGlobal true
 
 # Set default account/profile
 cloudops-tools config set defaultAccount production
+
+# Disable startup banner (interactive terminals only)
+cloudops-tools config set showBanner false
 ```
 
 ---
@@ -189,10 +194,31 @@ Configuration is stored as JSON. Example configuration:
   "defaultFormat": "xlsx",
   "defaultMode": "security",
   "defaultServices": ["EC2", "RDS", "Lambda", "S3"],
+  "showBanner": true,
   "skipGlobal": false,
   "onlyGlobal": false
 }
 ```
+
+## Startup Banner
+
+The CLI can show an ASCII banner (`cli/text-art.txt`) as visual eye candy at startup.
+
+- It is shown only in interactive terminals (TTY).
+- It is suppressed automatically for non-interactive/piped usage.
+- You can disable it persistently with config:
+
+```bash
+cloudops-tools config set showBanner false
+```
+
+- You can disable it for a single invocation with an environment variable:
+
+```bash
+CLOUDOPS_NO_BANNER=1 cloudops-tools <command>
+```
+
+- `CLOUDOPS_NO_BANNER=1` overrides the config setting for that invocation.
 
 ## Precedence
 

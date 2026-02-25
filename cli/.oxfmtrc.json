@@ -30,6 +30,7 @@
     "cloudflare-env.d.ts",
     "worker-configuration.d.ts",
     ".wrangler/**",
-    "node_modules/**"
+    "node_modules/**",
+    "text-art.txt"
   ]
 }

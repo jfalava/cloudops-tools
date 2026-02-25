@@ -23,6 +23,7 @@ const VALID_CONFIG_KEYS = [
   "defaultFormat",
   "defaultMode",
   "defaultServices",
+  "showBanner",
   "skipGlobal",
   "onlyGlobal",
 ] as const;
@@ -34,6 +35,7 @@ const BASE_CONFIG_DEFAULTS: CloudOpsConfig = {
   defaultRegion: "us-east-1",
   defaultFormat: "csv",
   defaultMode: "basic",
+  showBanner: true,
   skipGlobal: false,
   onlyGlobal: false,
 };
@@ -46,7 +48,7 @@ const isValidConfigKey = (key: string): key is ValidConfigKey =>
   VALID_CONFIG_KEYS.includes(key as ValidConfigKey);
 
 const parseBooleanConfigValue = (
-  key: "skipGlobal" | "onlyGlobal",
+  key: "showBanner" | "skipGlobal" | "onlyGlobal",
   value: string,
 ): ConfigParseResult<boolean> => {
   const normalized = value.trim().toLowerCase();
@@ -140,6 +142,13 @@ const configSetHandlers = {
       return parsed;
     }
     return toConfigSetSuccess({ ...config, defaultServices: parsed.value });
+  },
+  showBanner: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult => {
+    const parsed = parseBooleanConfigValue("showBanner", value);
+    if (!parsed.ok) {
+      return parsed;
+    }
+    return toConfigSetSuccess({ ...config, showBanner: parsed.value });
   },
   skipGlobal: (config: CloudOpsConfig, value: string): ConfigSetUpdateResult => {
     const parsed = parseBooleanConfigValue("skipGlobal", value);
@@ -283,7 +292,7 @@ export const configCommand = Command.make(
         yield* _(
           Console.log(
             ui.info(
-              "Defaults written: defaultRegion, defaultFormat, defaultMode, skipGlobal, onlyGlobal",
+              "Defaults written: defaultRegion, defaultFormat, defaultMode, showBanner, skipGlobal, onlyGlobal",
             ),
           ),
         );
@@ -300,7 +309,7 @@ export const configCommand = Command.make(
         yield* _(Console.log("Use 'cloudops-tools config set <key> <value>' to set values."));
         yield* _(
           Console.log(
-            "Valid keys: defaultRegion, defaultAccount, defaultFormat, defaultMode, defaultServices, skipGlobal, onlyGlobal",
+            "Valid keys: defaultRegion, defaultAccount, defaultFormat, defaultMode, defaultServices, showBanner, skipGlobal, onlyGlobal",
           ),
         );
       } else {

@@ -1,11 +1,12 @@
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import process from "node:process";
 
 import { ConfigServiceLive, InventoryDbServiceLive } from "@cloudops-tools/sdk";
 import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
-import { argv } from "bun";
 import { Effect, Layer } from "effect";
+import textArt from "../text-art.txt" with { type: "text" };
 
 import {
   HELP_EXAMPLES,
@@ -14,6 +15,7 @@ import {
   setupTotpCommand,
   queryCommand,
 } from "@/commands";
+import { planCliInvocation } from "@/lib/startup-args";
 import { formatCliUserInputError, isCliUserInputError } from "@/lib/user-input-error";
 import { resolveCliVersion } from "@/lib/version";
 
@@ -34,32 +36,56 @@ const CLI_CONFIG = {
   version: PACKAGE_VERSION,
 } as const;
 
+const STARTUP_BANNER = textArt.trimEnd();
+const STARTUP_CONFIG_DIR = ".config/cloudops-tools";
+const STARTUP_CONFIG_FILE = "config.json";
+
+const isTruthyEnvFlag = (value: string | undefined): boolean => {
+  if (value === undefined) {
+    return false;
+  }
+
+  return ["1", "true", "yes", "on"].includes(value.trim().toLowerCase());
+};
+
+const getHomeDirForStartupConfig = (): string | undefined =>
+  process.env.HOME || process.env.USERPROFILE;
+
+const readBannerEnabledFromConfig = (): boolean => {
+  const home = getHomeDirForStartupConfig();
+  if (!home) {
+    return true;
+  }
+
+  try {
+    const configPath = join(home, STARTUP_CONFIG_DIR, STARTUP_CONFIG_FILE);
+    const raw = readFileSync(configPath, "utf8");
+    const parsed = JSON.parse(raw) as { showBanner?: unknown };
+    return typeof parsed.showBanner === "boolean" ? parsed.showBanner : true;
+  } catch {
+    return true;
+  }
+};
+
+const SHOULD_SHOW_STARTUP_BANNER =
+  process.stdout.isTTY &&
+  process.stderr.isTTY &&
+  !isTruthyEnvFlag(process.env.CLOUDOPS_NO_BANNER) &&
+  readBannerEnabledFromConfig();
+
 const cli = Command.run(mainCommand, CLI_CONFIG);
 const configCli = Command.run(configCommand, CLI_CONFIG);
 const setupTotpCli = Command.run(setupTotpCommand, CLI_CONFIG);
 const queryCli = Command.run(queryCommand, CLI_CONFIG);
 
-const args = argv.slice(2);
-const forceInit = args.includes("--init");
-const forceConfig = args.includes("--config");
-const forceSetupTotp = args.includes("--setup-totp");
-const debug = args.includes("--debug");
-const wantsHelp = args.length === 0 || args.includes("--help") || args.includes("-h");
-const wantsVersion = args.includes("--version");
-const wantsHelpExamples = args.includes("--help-examples");
-const normalizedArgs = forceSetupTotp
-  ? [...argv.slice(0, 2), "setup-totp", ...args.filter((arg) => arg !== "--setup-totp")]
-  : forceInit
-    ? [...argv.slice(0, 2), "init", ...args.filter((arg) => arg !== "--init")]
-    : forceConfig
-      ? [...argv.slice(0, 2), "config", ...args.filter((arg) => arg !== "--config")]
-      : argv;
-const normalizedArgsForDetection = normalizedArgs.slice(2);
-const wantsSetupTotp = forceSetupTotp || normalizedArgsForDetection.includes("setup-totp");
-const wantsConfig = forceConfig || normalizedArgsForDetection.includes("config");
-const wantsQuery = normalizedArgsForDetection.includes("query");
+const invocationPlan = planCliInvocation(process.argv);
+const { debug } = invocationPlan;
 
-if (wantsVersion) {
+if (SHOULD_SHOW_STARTUP_BANNER && STARTUP_BANNER.length > 0) {
+  process.stderr.write(`${STARTUP_BANNER}\n`);
+}
+
+if (invocationPlan.action === "print-version") {
   const version = resolveCliVersion(
     typeof BUILD_VERSION !== "undefined" ? BUILD_VERSION : undefined,
     PACKAGE_VERSION,
@@ -68,42 +94,16 @@ if (wantsVersion) {
   process.exit(0);
 }
 
-if (wantsHelp && !forceInit && !forceSetupTotp && !wantsConfig) {
+if (invocationPlan.action === "print-help") {
   const help = Command.getHelp(mainCommand, CliConfig.defaultConfig);
   process.stdout.write(HelpDoc.toAnsiText(help) + "\n");
   process.exit(0);
 }
 
-if (wantsHelpExamples && !forceInit && !forceSetupTotp && !wantsConfig) {
+if (invocationPlan.action === "print-help-examples") {
   process.stdout.write(String(HELP_EXAMPLES.trim()) + "\n");
   process.exit(0);
 }
-
-const stripFirstToken = (input: ReadonlyArray<string>, token: string): ReadonlyArray<string> => {
-  // Keep argv shape intact while removing only the first subcommand token after argv[0..1].
-  let removed = false;
-  return input.filter((arg, index) => {
-    if (index < 2) {
-      return true;
-    }
-    if (!removed && arg === token) {
-      removed = true;
-      return false;
-    }
-    return true;
-  });
-};
-
-const stripTokens = (
-  input: ReadonlyArray<string>,
-  tokens: ReadonlyArray<string>,
-): ReadonlyArray<string> => {
-  // Remove all matching framework/global flags after argv[0..1].
-  if (tokens.length === 0) {
-    return input;
-  }
-  return input.filter((arg, index) => (index < 2 ? true : !tokens.includes(arg)));
-};
 
 const formatError = (error: unknown): string => {
   if (error instanceof Error) {
@@ -136,21 +136,15 @@ const withErrorHandling = <R>(effect: Effect.Effect<void, unknown, R>) =>
         }),
       );
 
-const selectedCli = wantsSetupTotp
-  ? setupTotpCli
-  : wantsConfig
-    ? configCli
-    : wantsQuery
-      ? queryCli
-      : cli;
-const argsForSelectedCli = wantsSetupTotp
-  ? stripTokens(stripFirstToken(normalizedArgs, "setup-totp"), ["--debug"])
-  : wantsConfig
-    ? stripTokens(stripFirstToken(normalizedArgs, "config"), ["--debug"])
-    : wantsQuery
-      ? stripTokens(stripFirstToken(normalizedArgs, "query"), ["--debug"])
-      : normalizedArgs;
-const baseEffect = selectedCli(argsForSelectedCli);
+const selectedCli =
+  invocationPlan.selectedCli === "setup-totp"
+    ? setupTotpCli
+    : invocationPlan.selectedCli === "config"
+      ? configCli
+      : invocationPlan.selectedCli === "query"
+        ? queryCli
+        : cli;
+const baseEffect = selectedCli(invocationPlan.argsForSelectedCli);
 
 const baseLayer = Layer.merge(ConfigServiceLive, InventoryDbServiceLive);
 
