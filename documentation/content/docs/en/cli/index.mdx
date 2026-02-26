@@ -18,15 +18,76 @@ CloudOps Tools helps you:
 
 ## 1. Install
 
+<Tabs items={["npm", "pnpm", "Yarn", "Bun"]}>
+  <Tab value="npm">
+
 ```bash
 npm install -g @cloudops-tools/cli
 ```
 
-If you prefer Bun:
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add -g @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Yarn">
+
+For modern Yarn (Berry/Corepack), prefer `yarn dlx` for one-off runs:
+
+```bash
+yarn dlx @cloudops-tools/cli --help
+```
+
+If you need a global install, prefer `npm` or `pnpm`.
+
+Alternative for Yarn Classic (`1.x`):
+
+```bash
+yarn global add @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Bun">
 
 ```bash
 bun add -g @cloudops-tools/cli
 ```
+
+If Bun does not install optional dependencies for your platform, install the platform package
+explicitly:
+
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
+```bash
+bun add -g @cloudops-tools/cli-darwin-arm64
+```
+
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+bun add -g @cloudops-tools/cli-linux-x64
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+bun add -g @cloudops-tools/cli-win32-x64
+```
+
+  </Tab>
+</Tabs>
+
+  </Tab>
+</Tabs>
+
+If you prefer running it without a global install, see the full
+[Installation Guide](/en/docs/cli/installation).
 
 ## 2. Verify Installation
 

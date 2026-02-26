@@ -16,17 +16,77 @@ Sigue esta guía rápida para instalar CloudOps Tools y lanzar tu primer inventa
 
 ## 1. Instalar el CLI
 
-Con npm (la forma más común):
+<Tabs items={["npm", "pnpm", "Yarn", "Bun"]}>
+  <Tab value="npm">
 
 ```bash
 npm install -g @cloudops-tools/cli
 ```
 
-O si prefieres Bun (más rápido en muchos casos):
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add -g @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Yarn">
+
+Si usas Yarn moderno (Berry/Corepack), la opción recomendada es `yarn dlx` para ejecuciones
+puntuales:
+
+```bash
+yarn dlx @cloudops-tools/cli --help
+```
+
+Si necesitas una instalación global, es mejor usar `npm` o `pnpm`.
+
+Alternativa para Yarn Classic (`1.x`):
+
+```bash
+yarn global add @cloudops-tools/cli
+```
+
+  </Tab>
+  <Tab value="Bun">
 
 ```bash
 bun add -g @cloudops-tools/cli
 ```
+
+En algunos entornos Bun puede no descargar automáticamente el binario nativo para tu plataforma.
+En ese caso instala explícitamente el paquete correspondiente:
+
+<Tabs items={["macOS arm64", "Linux x64", "Windows x64"]}>
+  <Tab value="macOS arm64">
+
+```bash
+bun add -g @cloudops-tools/cli-darwin-arm64
+```
+
+  </Tab>
+  <Tab value="Linux x64">
+
+```bash
+bun add -g @cloudops-tools/cli-linux-x64
+```
+
+  </Tab>
+  <Tab value="Windows x64">
+
+```bash
+bun add -g @cloudops-tools/cli-win32-x64
+```
+
+  </Tab>
+</Tabs>
+
+  </Tab>
+</Tabs>
+
+Si prefieres ejecutarlo sin instalación global, revisa la
+[Guía de instalación detallada](/es/docs/cli/installation).
 
 ## 2. Verificar que se instaló correctamente
 
