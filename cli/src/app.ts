@@ -3,7 +3,7 @@ import { join } from "node:path";
 import process from "node:process";
 
 import { ConfigServiceLive, InventoryDbServiceLive } from "@cloudops-tools/sdk";
-import { Command, CliConfig, HelpDoc, ValidationError } from "@effect/cli";
+import { Command, CliConfig, HelpDoc, Span, ValidationError } from "@effect/cli";
 import { BunRuntime, BunContext } from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
 
@@ -82,8 +82,109 @@ const queryCli = Command.run(queryCommand, CLI_CONFIG);
 const invocationPlan = planCliInvocation(process.argv);
 const { debug } = invocationPlan;
 
+const flattenHelpBlocks = (doc: HelpDoc.HelpDoc): ReadonlyArray<HelpDoc.HelpDoc> =>
+  doc._tag === "Sequence" ? [...flattenHelpBlocks(doc.left), ...flattenHelpBlocks(doc.right)] : [doc];
+
+const spanToPlainText = (span: Span.Span): string => {
+  switch (span._tag) {
+    case "Text":
+    case "URI":
+      return span.value;
+    case "Highlight":
+    case "Strong":
+    case "Weak":
+      return spanToPlainText(span.value);
+    case "Sequence":
+      return spanToPlainText(span.left) + spanToPlainText(span.right);
+  }
+};
+
+const extractCompactCommandPath = (usageText: string): string => {
+  const cleanedUsage = usageText
+    .replace(/\[[^\]]*\]/g, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\([^)]*\)/g, " ");
+
+  const commandTokens = cleanedUsage
+    .trim()
+    .split(/\s+/)
+    .filter((token) => /^[a-z0-9][a-z0-9-]*$/i.test(token));
+  return commandTokens.join(" ");
+};
+
+const compactCommandsSection = (doc: HelpDoc.HelpDoc): HelpDoc.HelpDoc => {
+  const blocks = flattenHelpBlocks(doc);
+  const transformed: Array<HelpDoc.HelpDoc> = [];
+
+  for (let index = 0; index < blocks.length; index += 1) {
+    const block = blocks[index];
+    if (!block) {
+      continue;
+    }
+    const nextBlock = blocks[index + 1];
+
+    const isCommandsHeader =
+      block._tag === "Header" && block.level === 1 && spanToPlainText(block.value) === "COMMANDS";
+
+    if (!isCommandsHeader || !nextBlock || nextBlock._tag !== "Enumeration") {
+      transformed.push(block);
+      continue;
+    }
+
+    const commandRows = nextBlock.elements
+      .map((entry) => {
+        if (entry._tag !== "Paragraph") {
+          return undefined;
+        }
+
+        const line = spanToPlainText(entry.value).trim();
+        if (line.length === 0) {
+          return undefined;
+        }
+
+        const [usagePart = "", descriptionPart = ""] = line.split(/\s{2,}/, 2);
+        const commandPath = extractCompactCommandPath(usagePart);
+
+        if (commandPath.length === 0) {
+          return undefined;
+        }
+
+        return {
+          command: commandPath,
+          description: descriptionPart.trim(),
+        };
+      })
+      .filter((row): row is { command: string; description: string } => row !== undefined);
+
+    if (commandRows.length === 0) {
+      transformed.push(block, nextBlock);
+      index += 1;
+      continue;
+    }
+
+    const commandColumnWidth = Math.min(
+      20,
+      commandRows.reduce((max, row) => Math.max(max, row.command.length), 0),
+    );
+
+    const compactRows = commandRows.map((row) => {
+      if (row.description.length === 0) {
+        return HelpDoc.p(row.command);
+      }
+      return HelpDoc.p(`${row.command.padEnd(commandColumnWidth)}  ${row.description}`);
+    });
+
+    transformed.push(block, HelpDoc.enumeration(compactRows as [HelpDoc.HelpDoc, ...HelpDoc.HelpDoc[]]));
+    index += 1;
+  }
+
+  return HelpDoc.blocks(transformed);
+};
+
 if (SHOULD_SHOW_STARTUP_BANNER && STARTUP_BANNER.length > 0) {
-  process.stderr.write(String(STARTUP_BANNER));
+  process.stderr.write(
+    invocationPlan.action === "print-version" ? String(STARTUP_BANNER) : `${String(STARTUP_BANNER)}\n`,
+  );
 }
 
 if (invocationPlan.action === "print-version") {
@@ -91,12 +192,12 @@ if (invocationPlan.action === "print-version") {
     typeof BUILD_VERSION !== "undefined" ? BUILD_VERSION : undefined,
     PACKAGE_VERSION,
   );
-  process.stdout.write(version + "\n");
+  process.stdout.write(` version: ${version}\n`);
   process.exit(0);
 }
 
 if (invocationPlan.action === "print-help") {
-  const help = Command.getHelp(mainCommand, CliConfig.defaultConfig);
+  const help = compactCommandsSection(Command.getHelp(mainCommand, CliConfig.defaultConfig));
   process.stdout.write(HelpDoc.toAnsiText(help) + "\n");
   process.exit(0);
 }
