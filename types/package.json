@@ -1,25 +1,57 @@
 {
   "name": "@cloudops-tools/types",
-  "version": "0.4.0",
+  "version": "0.4.1",
+  "description": "Shared TypeScript contracts for CloudOps Tools SDK and clients",
+  "license": "GPL-2.0-only",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jfalava/cloudops-tools.git",
     "directory": "types"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
   "type": "module",
-  "main": "./src/index.ts",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./aws": "./src/aws.ts",
-    "./inventory": "./src/inventory.ts",
-    "./progress": "./src/progress.ts",
-    "./query": "./src/query.ts",
-    "./config": "./src/config.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./aws": {
+      "types": "./dist/aws.d.ts",
+      "default": "./dist/aws.js"
+    },
+    "./inventory": {
+      "types": "./dist/inventory.d.ts",
+      "default": "./dist/inventory.js"
+    },
+    "./progress": {
+      "types": "./dist/progress.d.ts",
+      "default": "./dist/progress.js"
+    },
+    "./query": {
+      "types": "./dist/query.d.ts",
+      "default": "./dist/query.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "default": "./dist/config.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
     "check": "tsgo --noEmit && oxlint --fix --type-aware",
     "format": "oxfmt",
     "lint": "oxlint --type-aware",
+    "prepack": "bun run build",
     "typecheck": "tsgo --noEmit"
   },
   "devDependencies": {

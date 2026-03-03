@@ -35,7 +35,7 @@ import type {
   VpcPeeringConnection,
   VpnConnection,
   VpnGateway,
-} from "./aws";
+} from "./aws.js";
 
 export type InventoryMode = "basic" | "detailed" | "security" | "cost";
 

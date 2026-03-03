@@ -64,7 +64,8 @@ jobs:
       - name: Verify package checks
         run: |
           bun install --frozen-lockfile
-          bun run --filter @cloudops-tools/types check
+          bun run --filter @cloudops-tools/types typecheck
+          bun run --filter @cloudops-tools/types lint
 
       - name: Preview package contents
         working-directory: types

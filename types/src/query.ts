@@ -1,4 +1,4 @@
-import type { ResourceRecord } from "./inventory";
+import type { ResourceRecord } from "./inventory.js";
 
 /**
  * Filters applied when querying historical inventory snapshots from the local database.

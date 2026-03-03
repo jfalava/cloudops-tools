@@ -1,4 +1,4 @@
-import type { InventoryMode } from "./inventory";
+import type { InventoryMode } from "./inventory.js";
 
 export type InventoryFormat = "csv" | "xlsx" | "json" | "both" | "all";
 
