@@ -1,6 +1,6 @@
 {
   "name": "@cloudops-tools/monorepo",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "workspaces": {
     "packages": [
       "cli",
@@ -69,13 +69,17 @@
     "documentation:lint": "bun run --filter @cloudops-tools/documentation lint",
     "documentation:typecheck": "bun run --filter @cloudops-tools/documentation typecheck",
     "format": "oxfmt",
-    "format:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/types --filter @cloudops-tools/documentation format",
-    "lint:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/types --filter @cloudops-tools/documentation lint",
+    "format:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/types --filter @cloudops-tools/documentation --filter @cloudops-tools/types format",
+    "lint:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/types --filter @cloudops-tools/documentation --filter @cloudops-tools/types lint",
     "sdk:check": "bun run --filter @cloudops-tools/sdk check",
     "sdk:format": "bun run --filter @cloudops-tools/sdk format",
     "sdk:lint": "bun run --filter @cloudops-tools/sdk lint",
     "sdk:typecheck": "bun run --filter @cloudops-tools/sdk typecheck",
-    "typecheck:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/types --filter @cloudops-tools/documentation typecheck"
+    "typecheck:global": "bun run --filter @cloudops-tools/cli --filter @cloudops-tools/sdk --filter @cloudops-tools/types --filter @cloudops-tools/documentation typecheck",
+    "types:check": "bun run --filter @cloudops-tools/types check",
+    "types:format": "bun run --filter @cloudops-tools/types format",
+    "types:lint": "bun run --filter @cloudops-tools/types lint",
+    "types:typecheck": "bun run --filter @cloudops-tools/types typecheck"
   },
   "devDependencies": {
     "oxfmt": "^0.36.0"

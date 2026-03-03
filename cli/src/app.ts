@@ -83,7 +83,9 @@ const invocationPlan = planCliInvocation(process.argv);
 const { debug } = invocationPlan;
 
 const flattenHelpBlocks = (doc: HelpDoc.HelpDoc): ReadonlyArray<HelpDoc.HelpDoc> =>
-  doc._tag === "Sequence" ? [...flattenHelpBlocks(doc.left), ...flattenHelpBlocks(doc.right)] : [doc];
+  doc._tag === "Sequence"
+    ? [...flattenHelpBlocks(doc.left), ...flattenHelpBlocks(doc.right)]
+    : [doc];
 
 const spanToPlainText = (span: Span.Span): string => {
   switch (span._tag) {
@@ -174,7 +176,10 @@ const compactCommandsSection = (doc: HelpDoc.HelpDoc): HelpDoc.HelpDoc => {
       return HelpDoc.p(`${row.command.padEnd(commandColumnWidth)}  ${row.description}`);
     });
 
-    transformed.push(block, HelpDoc.enumeration(compactRows as [HelpDoc.HelpDoc, ...HelpDoc.HelpDoc[]]));
+    transformed.push(
+      block,
+      HelpDoc.enumeration(compactRows as [HelpDoc.HelpDoc, ...HelpDoc.HelpDoc[]]),
+    );
     index += 1;
   }
 
@@ -183,7 +188,9 @@ const compactCommandsSection = (doc: HelpDoc.HelpDoc): HelpDoc.HelpDoc => {
 
 if (SHOULD_SHOW_STARTUP_BANNER && STARTUP_BANNER.length > 0) {
   process.stderr.write(
-    invocationPlan.action === "print-version" ? String(STARTUP_BANNER) : `${String(STARTUP_BANNER)}\n`,
+    invocationPlan.action === "print-version"
+      ? String(STARTUP_BANNER)
+      : `${String(STARTUP_BANNER)}\n`,
   );
 }
 

@@ -10,6 +10,7 @@
   },
   "files": [
     "dist",
+    "src",
     "LICENSE",
     "README.md"
   ],
@@ -19,27 +20,33 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./src/index.ts",
+      "bun": "./src/index.ts",
       "default": "./dist/index.js"
     },
     "./aws": {
-      "types": "./dist/aws.d.ts",
+      "types": "./src/aws.ts",
+      "bun": "./src/aws.ts",
       "default": "./dist/aws.js"
     },
     "./inventory": {
-      "types": "./dist/inventory.d.ts",
+      "types": "./src/inventory.ts",
+      "bun": "./src/inventory.ts",
       "default": "./dist/inventory.js"
     },
     "./progress": {
-      "types": "./dist/progress.d.ts",
+      "types": "./src/progress.ts",
+      "bun": "./src/progress.ts",
       "default": "./dist/progress.js"
     },
     "./query": {
-      "types": "./dist/query.d.ts",
+      "types": "./src/query.ts",
+      "bun": "./src/query.ts",
       "default": "./dist/query.js"
     },
     "./config": {
-      "types": "./dist/config.d.ts",
+      "types": "./src/config.ts",
+      "bun": "./src/config.ts",
       "default": "./dist/config.js"
     }
   },
