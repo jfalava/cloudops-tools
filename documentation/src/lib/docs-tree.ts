@@ -36,8 +36,10 @@ const TRANSLATIONS_ES = new Map<string, string>([
   ["Build CLI Binary", "Compilar desde código fuente"],
   ["Configuration", "Configuración"],
   ["Guides", "Guías"],
+  ["Automation and workflow examples", "Ejemplos de automatización y workflows"],
   ["Choose Command", "Elegir comando"],
   ["Scan Profiles", "Perfiles de escaneo"],
+  ["GitHub Actions Demo", "Demo de GitHub Actions"],
   ["Exit Codes", "Códigos de salida"],
   ["Troubleshooting", "Solución de problemas"],
   ["Commands", "Comandos"],
@@ -251,6 +253,24 @@ const baseDocsTree: Root = {
         },
       ],
     },
+    {
+      type: "folder",
+      name: "Guides",
+      description: "Automation and workflow examples",
+      root: true,
+      index: {
+        type: "page",
+        name: "GitHub Actions Demo",
+        url: "/docs/guides",
+      },
+      children: [
+        {
+          type: "page",
+          name: "GitHub Actions Demo",
+          url: "/docs/guides/github-actions-demo",
+        },
+      ],
+    },
   ],
 };
 
@@ -327,6 +347,8 @@ const sidebarIconsByPath: Record<string, () => ReactNode> = {
   "/docs/sdk/api/lib": () => makeIcon(Wrench),
   "/docs/sdk/api/types": () => makeIcon(Braces),
   "/docs/sdk/api/credentials": () => makeIcon(KeyRound),
+  "/docs/guides": () => makeIcon(BookOpen),
+  "/docs/guides/github-actions-demo": () => makeIcon(BookOpen),
 };
 
 const iconForPath = (url: string | undefined): ReactNode | undefined => {

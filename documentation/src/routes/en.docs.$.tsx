@@ -30,6 +30,10 @@ const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "cli/commands/query": () => import("../../content/docs/en/cli/commands/query.mdx"),
   "cli/commands/use-letme": () => import("../../content/docs/en/cli/commands/use-letme.mdx"),
   "cli/commands/config": () => import("../../content/docs/en/cli/commands/config.mdx"),
+  guides: () => import("../../content/docs/en/guides/github-actions-demo.mdx"),
+  "guides/index": () => import("../../content/docs/en/guides/github-actions-demo.mdx"),
+  "guides/github-actions-demo": () =>
+    import("../../content/docs/en/guides/github-actions-demo.mdx"),
   sdk: () => import("../../content/docs/en/sdk/index.mdx"),
   "sdk/index": () => import("../../content/docs/en/sdk/index.mdx"),
   "sdk/getting-started": () => import("../../content/docs/en/sdk/getting-started.mdx"),
