@@ -34,6 +34,8 @@ const docModules: Record<string, () => Promise<typeof import("*.mdx")>> = {
   "guides/index": () => import("../../../content/docs/en/guides/github-actions-demo.mdx"),
   "guides/github-actions-demo": () =>
     import("../../../content/docs/en/guides/github-actions-demo.mdx"),
+  "guides/persistent-totp-secret-on-wsl": () =>
+    import("../../../content/docs/en/guides/persistent-totp-secret-on-wsl.mdx"),
   sdk: () => import("../../../content/docs/en/sdk/index.mdx"),
   "sdk/index": () => import("../../../content/docs/en/sdk/index.mdx"),
   "sdk/getting-started": () => import("../../../content/docs/en/sdk/getting-started.mdx"),

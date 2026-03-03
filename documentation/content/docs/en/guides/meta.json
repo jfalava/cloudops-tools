@@ -1,4 +1,4 @@
 {
   "title": "Guides",
-  "pages": ["github-actions-demo"]
+  "pages": ["github-actions-demo", "persistent-totp-secret-on-wsl"]
 }
