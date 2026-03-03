@@ -1,0 +1,424 @@
+---
+title: GitHub Actions Demo
+description: Complete GitHub Actions workflows for CloudOps Tools with downloadable artifacts, optional SES email delivery, and IAM role policy examples
+---
+
+# GitHub Actions Demo
+
+This guide provides complete workflow examples for running `@cloudops-tools/cli` from GitHub Actions using `npx`.
+It includes artifact download, optional email delivery with attachment via SES, and IAM role policy templates.
+
+## Use Case
+
+Use these workflows when you want repeatable inventory/security scans from GitHub Actions without installing the CLI globally.
+
+## Example 1: Complete Demo Workflow (Manual Inputs)
+
+### Workflow File
+
+#### `.github/workflows/cloudops-demo.yml`
+
+```yaml
+name: CloudOps Tools Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      aws_access_key_id:
+        description: AWS access key ID
+        required: true
+        type: string
+      aws_secret_access_key:
+        description: AWS secret access key
+        required: true
+        type: string
+      aws_region:
+        description: AWS region
+        required: false
+        default: us-east-1
+        type: string
+      landing_zones_token:
+        description: Optional landing zones token
+        required: false
+        type: string
+      notify_email:
+        description: Optional recipient email
+        required: false
+        type: string
+      ses_from_email:
+        description: Optional verified SES sender email
+        required: false
+        type: string
+      send_email:
+        description: Send email with artifact attached
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  run-demo:
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+      AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
+      AWS_REGION: ${{ inputs.aws_region }}
+      LANDING_ZONES_TOKEN: ${{ inputs.landing_zones_token }}
+      NOTIFY_EMAIL: ${{ inputs.notify_email }}
+      SES_FROM_EMAIL: ${{ inputs.ses_from_email }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Verify CLI availability from npm
+        run: npx -y @cloudops-tools/cli --version
+
+      - name: Run scan
+        run: |
+          npx -y @cloudops-tools/cli init \
+            --mode security \
+            --services EC2,RDS,Lambda,IAM,CloudFront \
+            --limit-regions "${AWS_REGION}" \
+            --export-format json
+
+      - name: Build report zip
+        run: |
+          zip -r "cloudops-inventory-${GITHUB_RUN_ID}.zip" inventory-output
+
+      - name: Upload report artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudops-inventory-${{ github.run_id }}
+          path: cloudops-inventory-${{ github.run_id }}.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Send report email with attachment (SES)
+        if: ${{ inputs.send_email && inputs.notify_email != '' && inputs.ses_from_email != '' }}
+        env:
+          REPORT_ZIP: cloudops-inventory-${{ github.run_id }}.zip
+        run: |
+          python -m pip install --upgrade boto3
+          python <<'PY'
+          import os
+          from email import encoders
+          from email.mime.base import MIMEBase
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+
+          import boto3
+
+          report_zip = os.environ["REPORT_ZIP"]
+          recipient = os.environ["NOTIFY_EMAIL"]
+          sender = os.environ["SES_FROM_EMAIL"]
+          run_id = os.environ.get("GITHUB_RUN_ID", "unknown")
+          repo = os.environ.get("GITHUB_REPOSITORY", "cloudops-tools")
+
+          message = MIMEMultipart()
+          message["Subject"] = f"[CloudOps Tools] Inventory Report (run {run_id})"
+          message["From"] = sender
+          message["To"] = recipient
+          message.attach(
+            MIMEText(
+              f"Attached is the CloudOps inventory report for {repo} run {run_id}.",
+              "plain",
+            )
+          )
+
+          part = MIMEBase("application", "zip")
+          with open(report_zip, "rb") as f:
+            part.set_payload(f.read())
+          encoders.encode_base64(part)
+          part.add_header("Content-Disposition", f'attachment; filename="{report_zip}"')
+          message.attach(part)
+
+          ses = boto3.client("ses", region_name=os.environ.get("AWS_REGION", "us-east-1"))
+          ses.send_raw_email(
+            Source=sender,
+            Destinations=[recipient],
+            RawMessage={"Data": message.as_string()},
+          )
+          PY
+```
+
+### Run and Download
+
+1. Go to **Actions** in your repository.
+2. Open **CloudOps Tools Demo**.
+3. Click **Run workflow** and provide inputs.
+4. Open the completed run and download `cloudops-inventory-<run_id>.zip` from **Artifacts**.
+
+### SES Prerequisites
+
+#### Required Setup
+
+- Verify the sender identity used in `ses_from_email`.
+- If SES is in sandbox, verify recipient emails too.
+- Grant `ses:SendRawEmail` to the credentials used by the workflow.
+
+## Example 2: Complete Production-Ready Workflow (Secrets + Variables + OIDC Role)
+
+This version avoids passing AWS keys as manual inputs.
+It uses GitHub OIDC to assume an AWS role, repository variables for non-sensitive settings, and repository secrets for sensitive values.
+
+### Configure Repository Variables and Secrets
+
+#### Variables (`Settings -> Secrets and variables -> Actions -> Variables`)
+
+- `AWS_REGION` (example: `us-east-1`)
+- `CLOUDOPS_SCAN_MODE` (example: `security`)
+- `CLOUDOPS_SCAN_SERVICES` (example: `EC2,RDS,Lambda,IAM,CloudFront`)
+- `CLOUDOPS_EXPORT_FORMAT` (example: `json`)
+- `CLOUDOPS_SEND_EMAIL` (`true` or `false`)
+
+#### Secrets (`Settings -> Secrets and variables -> Actions -> Secrets`)
+
+- `AWS_ROLE_TO_ASSUME` (example: `arn:aws:iam::123456789012:role/GitHubCloudOpsRole`)
+- `LANDING_ZONES_TOKEN` (optional)
+- `CLOUDOPS_NOTIFY_EMAIL` (optional)
+- `CLOUDOPS_SES_FROM_EMAIL` (optional)
+
+### Workflow File
+
+#### `.github/workflows/cloudops-production.yml`
+
+```yaml
+name: CloudOps Tools Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      send_email:
+        description: Send report email for this manual run
+        required: false
+        default: true
+        type: boolean
+  schedule:
+    - cron: "0 6 * * 1-5"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cloudops-tools-production
+  cancel-in-progress: false
+
+jobs:
+  run-scan:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      SCAN_MODE: ${{ vars.CLOUDOPS_SCAN_MODE }}
+      SCAN_SERVICES: ${{ vars.CLOUDOPS_SCAN_SERVICES }}
+      EXPORT_FORMAT: ${{ vars.CLOUDOPS_EXPORT_FORMAT }}
+      LANDING_ZONES_TOKEN: ${{ secrets.LANDING_ZONES_TOKEN }}
+      NOTIFY_EMAIL: ${{ secrets.CLOUDOPS_NOTIFY_EMAIL }}
+      SES_FROM_EMAIL: ${{ secrets.CLOUDOPS_SES_FROM_EMAIL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Configure AWS credentials via OIDC role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-cloudops-${{ github.run_id }}
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Verify CLI availability from npm
+        run: npx -y @cloudops-tools/cli --version
+
+      - name: Run scan
+        run: |
+          CMD=(npx -y @cloudops-tools/cli init \
+            --mode "${SCAN_MODE}" \
+            --limit-regions "${AWS_REGION}" \
+            --export-format "${EXPORT_FORMAT}")
+
+          if [[ -n "${SCAN_SERVICES}" ]]; then
+            CMD+=(--services "${SCAN_SERVICES}")
+          fi
+
+          "${CMD[@]}"
+
+      - name: Build report zip
+        run: |
+          zip -r "cloudops-inventory-${GITHUB_RUN_ID}.zip" inventory-output
+
+      - name: Upload report artifact
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudops-inventory-${{ github.run_id }}
+          path: cloudops-inventory-${{ github.run_id }}.zip
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Send report email with attachment (SES)
+        if: ${{ secrets.CLOUDOPS_NOTIFY_EMAIL != '' && secrets.CLOUDOPS_SES_FROM_EMAIL != '' && (github.event_name != 'workflow_dispatch' || inputs.send_email) }}
+        env:
+          REPORT_ZIP: cloudops-inventory-${{ github.run_id }}.zip
+        run: |
+          python -m pip install --upgrade boto3
+          python <<'PY'
+          import os
+          from email import encoders
+          from email.mime.base import MIMEBase
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+
+          import boto3
+
+          report_zip = os.environ["REPORT_ZIP"]
+          recipient = os.environ["NOTIFY_EMAIL"]
+          sender = os.environ["SES_FROM_EMAIL"]
+          run_id = os.environ.get("GITHUB_RUN_ID", "unknown")
+          repo = os.environ.get("GITHUB_REPOSITORY", "cloudops-tools")
+
+          message = MIMEMultipart()
+          message["Subject"] = f"[CloudOps Tools] Inventory Report (run {run_id})"
+          message["From"] = sender
+          message["To"] = recipient
+          message.attach(
+            MIMEText(
+              f"Attached is the CloudOps inventory report for {repo} run {run_id}.",
+              "plain",
+            )
+          )
+
+          part = MIMEBase("application", "zip")
+          with open(report_zip, "rb") as f:
+            part.set_payload(f.read())
+          encoders.encode_base64(part)
+          part.add_header("Content-Disposition", f'attachment; filename="{report_zip}"')
+          message.attach(part)
+
+          ses = boto3.client("ses", region_name=os.environ.get("AWS_REGION", "us-east-1"))
+          ses.send_raw_email(
+            Source=sender,
+            Destinations=[recipient],
+            RawMessage={"Data": message.as_string()},
+          )
+          PY
+```
+
+### Operational Notes
+
+#### Why This Is Production-Ready
+
+- No long-lived AWS access key or secret key in dispatch inputs.
+- Uses short-lived credentials through OIDC role assumption.
+- Keeps configuration in repository variables and secrets.
+- Always publishes a downloadable artifact for auditing.
+
+## Annex: Minimum IAM for the Workflow Role
+
+These policies are the minimum starting point for the production workflow shown above when scanning with:
+`--services EC2,RDS,Lambda,IAM,CloudFront` and optional SES email delivery.
+
+If you broaden scan services or use different modes, expand the policy accordingly.
+
+### Trust Policy for GitHub OIDC Role
+
+#### `trust-policy.json`
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::<AWS_ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+        },
+        "StringLike": {
+          "token.actions.githubusercontent.com:sub": "repo:<GITHUB_ORG>/<GITHUB_REPO>:ref:refs/heads/main"
+        }
+      }
+    }
+  ]
+}
+```
+
+### Permissions Policy for the Role
+
+#### `permissions-policy.json`
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "IdentityCheck",
+      "Effect": "Allow",
+      "Action": ["sts:GetCallerIdentity"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadOnlyEc2RdsLambdaIamCloudFront",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:Describe*",
+        "rds:Describe*",
+        "rds:ListTagsForResource",
+        "lambda:ListFunctions",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:ListTags",
+        "iam:Get*",
+        "iam:List*",
+        "cloudfront:GetDistribution",
+        "cloudfront:GetDistributionConfig",
+        "cloudfront:ListDistributions",
+        "cloudfront:ListTagsForResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SendSesEmail",
+      "Effect": "Allow",
+      "Action": ["ses:SendRawEmail"],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+### Security Notes
+
+#### Recommended Hardening
+
+- Restrict the OIDC `sub` condition to your exact repo and protected branch.
+- Restrict SES sender identity in IAM condition keys if possible.
+- Keep `CLOUDOPS_SCAN_SERVICES` narrow to reduce required IAM scope.
+
+## Troubleshooting
+
+- If `npx` fails to resolve the package, keep `actions/setup-node` and verify outbound network access.
+- If AWS auth fails in production workflow, confirm OIDC trust policy and `AWS_ROLE_TO_ASSUME`.
+- If artifact upload fails, check that `inventory-output` was produced by the CLI run.
+- If SES email fails, check verified identities and sandbox status.
