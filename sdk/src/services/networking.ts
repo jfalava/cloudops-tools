@@ -1,11 +1,3 @@
-import * as DirectConnect from "distilled-aws/direct-connect";
-import * as EC2 from "distilled-aws/ec2";
-import * as ELBv2 from "distilled-aws/elastic-load-balancing-v2";
-import * as VPCLattice from "distilled-aws/vpc-lattice";
-import { Context, Effect, Stream, Layer } from "effect";
-
-import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
-import { describeGlobalAccelerators as patchedGlobalAccelerators } from "../patches";
 import type {
   VPC,
   Subnet,
@@ -25,7 +17,15 @@ import type {
   GlobalAccelerator as GlobalAcceleratorType,
   DirectConnectConnection,
   VpcLatticeService,
-} from "../types/aws-cli.types";
+} from "@cloudops-tools/types/aws";
+import * as DirectConnect from "distilled-aws/direct-connect";
+import * as EC2 from "distilled-aws/ec2";
+import * as ELBv2 from "distilled-aws/elastic-load-balancing-v2";
+import * as VPCLattice from "distilled-aws/vpc-lattice";
+import { Context, Effect, Stream, Layer } from "effect";
+
+import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
+import { describeGlobalAccelerators as patchedGlobalAccelerators } from "../patches";
 
 type UnknownRecord = Record<string, unknown>;
 type AwsTag = { Key?: string; Value?: string };

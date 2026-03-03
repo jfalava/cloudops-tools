@@ -1,3 +1,12 @@
+import type {
+  IAMUser,
+  IAMRole,
+  KMSKey,
+  SecretsManagerSecret,
+  WAFWebACL,
+  GuardDutyDetector,
+  CognitoUserPool,
+} from "@cloudops-tools/types/aws";
 import * as Cognito from "distilled-aws/cognito-identity-provider";
 import * as GuardDuty from "distilled-aws/guardduty";
 import * as IAM from "distilled-aws/iam";
@@ -14,15 +23,6 @@ import {
   normalizeArray,
   tagListToRecord,
 } from "../lib/aws-payload";
-import type {
-  IAMUser,
-  IAMRole,
-  KMSKey,
-  SecretsManagerSecret,
-  WAFWebACL,
-  GuardDutyDetector,
-  CognitoUserPool,
-} from "../types/aws-cli.types";
 
 type WafAclBase = Omit<WAFWebACL, "tags">;
 

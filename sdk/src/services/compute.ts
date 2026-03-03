@@ -1,3 +1,17 @@
+import type {
+  EC2Instance,
+  LambdaFunction,
+  ECSCluster,
+  EKSCluster,
+  AutoScalingGroup,
+  AppRunnerService,
+  BatchComputeEnvironment,
+  EMRCluster,
+  EMRServerlessApplication,
+  LightsailInstance,
+  ElasticBeanstalkEnvironment,
+  SageMakerDomain,
+} from "@cloudops-tools/types/aws";
 import * as AppRunner from "distilled-aws/apprunner";
 import * as AutoScaling from "distilled-aws/auto-scaling";
 import * as Batch from "distilled-aws/batch";
@@ -13,20 +27,6 @@ import { Context, Effect, Stream, Layer } from "effect";
 
 import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
 import { describeElasticBeanstalkEnvironments as patchedDescribeElasticBeanstalk } from "../patches";
-import type {
-  EC2Instance,
-  LambdaFunction,
-  ECSCluster,
-  EKSCluster,
-  AutoScalingGroup,
-  AppRunnerService,
-  BatchComputeEnvironment,
-  EMRCluster,
-  EMRServerlessApplication,
-  LightsailInstance,
-  ElasticBeanstalkEnvironment,
-  SageMakerDomain,
-} from "../types/aws-cli.types";
 
 type UnknownRecord = Record<string, unknown>;
 

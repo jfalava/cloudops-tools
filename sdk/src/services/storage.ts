@@ -1,3 +1,14 @@
+import type {
+  S3Bucket,
+  EBSVolume,
+  EFSFileSystem,
+  BackupVault,
+  FsxFileSystem,
+  GlacierVault,
+  StorageGateway,
+  BackupGateway,
+  RbinRule,
+} from "@cloudops-tools/types/aws";
 import * as Backup from "distilled-aws/backup";
 import * as BackupGatewaySvc from "distilled-aws/backup-gateway";
 import * as EC2 from "distilled-aws/ec2";
@@ -19,17 +30,6 @@ import {
   isObjectRecord,
   tagListToRecord,
 } from "../lib/aws-payload";
-import type {
-  S3Bucket,
-  EBSVolume,
-  EFSFileSystem,
-  BackupVault,
-  FsxFileSystem,
-  GlacierVault,
-  StorageGateway,
-  BackupGateway,
-  RbinRule,
-} from "../types/aws-cli.types";
 
 function toIsoString(value: unknown): string | undefined {
   return asDate(value)?.toISOString();

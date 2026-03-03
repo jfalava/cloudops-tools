@@ -1,10 +1,10 @@
+import type { ECRRepository, GlueJob } from "@cloudops-tools/types/aws";
 import * as ECR from "distilled-aws/ecr";
 import * as Glue from "distilled-aws/glue";
 import { Context, Effect, Stream, Layer } from "effect";
 
 import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
 import { asDate, asString, isObjectRecord } from "../lib/aws-payload";
-import type { ECRRepository, GlueJob } from "../types/aws-cli.types";
 
 export class DeveloperToolsService extends Context.Tag("@sdk/services/DeveloperToolsService")<
   DeveloperToolsService,

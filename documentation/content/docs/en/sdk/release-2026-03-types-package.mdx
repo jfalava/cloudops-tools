@@ -1,0 +1,51 @@
+---
+title: "Release 2026-03: Shared Types Package"
+description: "Canonical import path for shared contracts is now @cloudops-tools/types"
+---
+
+# Release 2026-03: Shared Types Package
+
+Date: 2026-03-03
+
+## Summary
+
+Shared SDK contracts now live in a dedicated package: `@cloudops-tools/types`.
+
+This package is now the canonical source for:
+
+- AWS resource contracts
+- Inventory contracts (`InventoryMode`, `WebInventoryData`, service-name unions)
+- Progress event contracts (`InventoryProgressEvent`, `ProgressEventType`, etc.)
+- Query contracts (`QueryOptions`, `QueryResult`)
+- Config contracts (`CloudOpsConfig`)
+
+## Import Path Policy
+
+- Canonical: `@cloudops-tools/types` (and subpaths like `@cloudops-tools/types/aws`)
+- Compatibility-only: `@cloudops-tools/sdk/types`
+
+`@cloudops-tools/sdk/types` remains available for backward compatibility, but new code should import from `@cloudops-tools/types`.
+
+## Migration Examples
+
+```ts
+// Before
+import type { EC2Instance } from "@cloudops-tools/sdk/types";
+
+// After
+import type { EC2Instance } from "@cloudops-tools/types/aws";
+```
+
+```ts
+// Before
+import type { QueryOptions } from "@cloudops-tools/sdk/operations";
+
+// After (contract-first)
+import type { QueryOptions } from "@cloudops-tools/types/query";
+```
+
+## Notes
+
+- Runtime behavior is unchanged.
+- Existing SDK consumers remain compatible.
+- API docs now include a dedicated `@cloudops-tools/types` module page.

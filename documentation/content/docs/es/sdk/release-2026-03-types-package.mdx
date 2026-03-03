@@ -1,0 +1,51 @@
+---
+title: "Lanzamiento 2026-03: Paquete de tipos compartidos"
+description: "La ruta canónica de importación para contratos compartidos ahora es @cloudops-tools/types"
+---
+
+# Lanzamiento 2026-03: Paquete de tipos compartidos
+
+Fecha: 2026-03-03
+
+## Resumen
+
+Los contratos compartidos del SDK ahora viven en un paquete dedicado: `@cloudops-tools/types`.
+
+Este paquete es ahora la fuente canónica para:
+
+- Contratos de recursos AWS
+- Contratos de inventario (`InventoryMode`, `WebInventoryData`, uniones de servicios)
+- Contratos de eventos de progreso (`InventoryProgressEvent`, `ProgressEventType`, etc.)
+- Contratos de consulta (`QueryOptions`, `QueryResult`)
+- Contratos de configuración (`CloudOpsConfig`)
+
+## Política de rutas de importación
+
+- Canónica: `@cloudops-tools/types` (y subrutas como `@cloudops-tools/types/aws`)
+- Solo compatibilidad: `@cloudops-tools/sdk/types`
+
+`@cloudops-tools/sdk/types` sigue disponible por compatibilidad hacia atrás, pero el código nuevo debe importar desde `@cloudops-tools/types`.
+
+## Ejemplos de migración
+
+```ts
+// Antes
+import type { EC2Instance } from "@cloudops-tools/sdk/types";
+
+// Después
+import type { EC2Instance } from "@cloudops-tools/types/aws";
+```
+
+```ts
+// Antes
+import type { QueryOptions } from "@cloudops-tools/sdk/operations";
+
+// Después (contrato primero)
+import type { QueryOptions } from "@cloudops-tools/types/query";
+```
+
+## Notas
+
+- El comportamiento en runtime no cambia.
+- Los consumidores actuales del SDK siguen siendo compatibles.
+- La documentación API ahora incluye una página dedicada para `@cloudops-tools/types`.
