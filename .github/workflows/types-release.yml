@@ -1,0 +1,42 @@
+name: Release Types
+
+on:
+  push:
+    tags:
+      - "types-v*"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-tag:
+    name: Validate tag matches Types version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate tag and types/package.json version match
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          VERSION="$(node -p "require('./types/package.json').version")"
+          EXPECTED="types-v${VERSION}"
+
+          if [[ "$TAG" != "$EXPECTED" ]]; then
+            echo "Tag '$TAG' does not match expected Types tag '$EXPECTED'."
+            exit 1
+          fi
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: validate-tag
+    permissions:
+      contents: write
+    steps:
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
