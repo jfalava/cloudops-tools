@@ -3,114 +3,34 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
+import type {
+  DescribeCacheEntry,
+  IncrementalResult,
+  InventoryResource,
+  InventoryRun,
+  ResourceChange,
+  ResourceRecord,
+  ScanDedupResult,
+} from "@cloudops-tools/types/inventory";
+import type { QueryOptions, QueryResult } from "@cloudops-tools/types/query";
 import { Context, Effect, Layer } from "effect";
 
-export interface InventoryRun {
-  readonly id: number;
-  readonly accountId: string;
-  readonly timestamp: string;
-  readonly runAt: string;
-  readonly mode: string;
-  readonly totalResources: number;
-}
-
-export interface ResourceRecord {
-  readonly id: number;
-  readonly runId: number;
-  readonly type: string;
-  readonly name: string;
-  readonly region: string;
-  readonly arn: string;
-  readonly state: string | null;
-  readonly tags: string | null;
-  readonly createdDate: string | null;
-  readonly publicAccess: string | null;
-  readonly size: string | null;
-  readonly encrypted: string | null;
-  readonly vpcId: string | null;
-  readonly lastActivity: string | null;
-  readonly versionStatus: string | null;
-}
-
-export interface ResourceChange {
-  readonly type: string;
-  readonly name: string;
-  readonly region: string;
-  readonly change: "added" | "removed" | "modified";
-  readonly oldValue: string | null;
-  readonly newValue: string | null;
-}
-
-export interface IncrementalResult {
-  readonly newResources: Array<{
-    readonly type: string;
-    readonly name: string;
-    readonly region: string;
-    readonly arn: string;
-    readonly state?: string;
-    readonly tags?: string;
-    readonly createdDate?: string;
-    readonly publicAccess?: string;
-    readonly size?: string;
-    readonly encrypted?: string;
-    readonly vpcId?: string;
-    readonly lastActivity?: string;
-    readonly versionStatus?: string;
-  }>;
-  readonly changedResources: Array<{
-    readonly type: string;
-    readonly name: string;
-    readonly region: string;
-    readonly arn: string;
-    readonly state?: string;
-    readonly tags?: string;
-    readonly createdDate?: string;
-    readonly publicAccess?: string;
-    readonly size?: string;
-    readonly encrypted?: string;
-    readonly vpcId?: string;
-    readonly lastActivity?: string;
-    readonly versionStatus?: string;
-  }>;
-  readonly unchangedCount: number;
-  readonly removedCount: number;
-}
-
-export interface DescribeCacheEntry {
-  readonly id: number;
-  readonly resourceType: string;
-  readonly region: string;
-  readonly data: string;
-  readonly cachedAt: string;
-  readonly ttlSeconds: number;
-}
-
-export interface ScanDedupResult {
-  readonly shouldSkip: boolean;
-  readonly lastRunAt: string | null;
-  readonly minutesSinceLastRun: number | null;
-}
+export type {
+  DescribeCacheEntry,
+  IncrementalResult,
+  InventoryResource,
+  InventoryRun,
+  ResourceChange,
+  ResourceRecord,
+  ScanDedupResult,
+} from "@cloudops-tools/types/inventory";
 
 export interface InventoryDbService {
   readonly initialize: () => Effect.Effect<void, unknown>;
   readonly saveRun: (
     accountId: string,
     mode: string,
-    resources: Array<{
-      readonly type: string;
-      readonly name: string;
-      readonly region: string;
-      readonly arn: string;
-      readonly state?: string;
-      readonly tags?: string;
-      readonly createdDate?: string;
-      readonly publicAccess?: string;
-      readonly size?: string;
-      readonly encrypted?: string;
-      readonly vpcId?: string;
-      readonly lastActivity?: string;
-      readonly versionStatus?: string;
-    }>,
+    resources: InventoryResource[],
   ) => Effect.Effect<number, unknown>;
   readonly getRuns: (accountId: string, limit?: number) => Effect.Effect<InventoryRun[], unknown>;
   readonly getResources: (
@@ -122,56 +42,19 @@ export interface InventoryDbService {
   ) => Effect.Effect<ResourceRecord[], unknown>;
   readonly queryResources: (
     accountId: string,
-    options: {
-      readonly type?: string;
-      readonly region?: string;
-      readonly days?: number;
-      readonly from?: string;
-      readonly to?: string;
-    },
-  ) => Effect.Effect<
-    Array<{ readonly runAt: string; readonly resources: ResourceRecord[] }>,
-    unknown
-  >;
+    options: QueryOptions,
+  ) => Effect.Effect<QueryResult[], unknown>;
   readonly getChanges: (
     accountId: string,
     days?: number,
   ) => Effect.Effect<ResourceChange[], unknown>;
   readonly getIncrementalChanges: (
     accountId: string,
-    resources: Array<{
-      readonly type: string;
-      readonly name: string;
-      readonly region: string;
-      readonly arn: string;
-      readonly state?: string;
-      readonly tags?: string;
-      readonly createdDate?: string;
-      readonly publicAccess?: string;
-      readonly size?: string;
-      readonly encrypted?: string;
-      readonly vpcId?: string;
-      readonly lastActivity?: string;
-      readonly versionStatus?: string;
-    }>,
+    resources: InventoryResource[],
   ) => Effect.Effect<IncrementalResult, unknown>;
   readonly updateFingerprints: (
     accountId: string,
-    resources: Array<{
-      readonly type: string;
-      readonly name: string;
-      readonly region: string;
-      readonly arn: string;
-      readonly state?: string;
-      readonly tags?: string;
-      readonly createdDate?: string;
-      readonly publicAccess?: string;
-      readonly size?: string;
-      readonly encrypted?: string;
-      readonly vpcId?: string;
-      readonly lastActivity?: string;
-      readonly versionStatus?: string;
-    }>,
+    resources: InventoryResource[],
   ) => Effect.Effect<void, unknown>;
   readonly getDescribeCache: (
     resourceType: string,

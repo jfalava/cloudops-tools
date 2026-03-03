@@ -1,5 +1,14 @@
 import { mkdir } from "node:fs/promises";
 
+import {
+  ALL_GLOBAL_SERVICES,
+  ALL_REGIONAL_SERVICES,
+  type ConsolidatedResource,
+  type GlobalService,
+  type InventoryMode,
+  type RegionalService,
+  type ServiceName,
+} from "@cloudops-tools/types/inventory";
 import { Cause, Effect, Exit, Ref as EffectRef } from "effect";
 
 import { InventoryDbService } from "../lib/inventory-db";
@@ -36,23 +45,8 @@ import {
   AppIntegrationService,
 } from "../services";
 
-export type InventoryMode = "basic" | "detailed" | "security" | "cost";
-
-export interface ConsolidatedResource {
-  type: string;
-  name: string;
-  region: string;
-  arn: string;
-  state?: string;
-  tags?: string;
-  createdDate?: string;
-  publicAccess?: string;
-  size?: string;
-  encrypted?: string;
-  vpcId?: string;
-  lastActivity?: string;
-  versionStatus?: string;
-}
+export { ALL_REGIONAL_SERVICES, ALL_GLOBAL_SERVICES };
+export type { InventoryMode, ConsolidatedResource, RegionalService, GlobalService, ServiceName };
 
 function tagsToString(tags?: Record<string, string>): string | undefined {
   if (!tags || Object.keys(tags).length === 0) {
@@ -115,71 +109,6 @@ const resourceToCSVRow = (resource: ConsolidatedResource, mode: InventoryMode): 
       ].join(",");
   }
 };
-
-/**
- * Orchestrates the comprehensive cross-region inventory scan.
- */
-export const ALL_REGIONAL_SERVICES = [
-  "EC2",
-  "RDS",
-  "Lambda",
-  "VPC",
-  "Subnet",
-  "SecurityGroup",
-  "LoadBalancer",
-  "ECS",
-  "EKS",
-  "EBS",
-  "EFS",
-  "FSx",
-  "ElastiCache",
-  "DAX",
-  "DocDB",
-  "Neptune",
-  "MemoryDB",
-  "Timestream",
-  "Keyspaces",
-  "RedshiftServerless",
-  "OpenSearchServerless",
-  "SQS",
-  "SNS",
-  "ECR",
-  "CloudWatch",
-  "SSM",
-  "KMS",
-  "SecretsManager",
-  "AppRunner",
-  "Batch",
-  "EMR",
-  "EMRServerless",
-  "Lightsail",
-  "ElasticBeanstalk",
-  "SageMaker",
-  "APIGateway",
-  "APIGatewayV2",
-  "VpcLattice",
-  "StorageGateway",
-  "BackupGateway",
-  "BackupVault",
-  "Glacier",
-  "Rbin",
-] as const;
-
-export const ALL_GLOBAL_SERVICES = [
-  "S3",
-  "IAMUser",
-  "IAMRole",
-  "CloudFront",
-  "Route53",
-  "Route53Domains",
-  "GlobalAccelerator",
-  "DirectConnect",
-  "SCP",
-] as const;
-
-export type RegionalService = (typeof ALL_REGIONAL_SERVICES)[number];
-export type GlobalService = (typeof ALL_GLOBAL_SERVICES)[number];
-export type ServiceName = RegionalService | GlobalService;
 
 export const generateInitInventoryEffect = (
   accountId: string,

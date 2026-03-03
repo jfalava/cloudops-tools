@@ -1,0 +1,34 @@
+{
+  "name": "@cloudops-tools/types",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfalava/cloudops-tools.git",
+    "directory": "types"
+  },
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./aws": "./src/aws.ts",
+    "./inventory": "./src/inventory.ts",
+    "./progress": "./src/progress.ts",
+    "./query": "./src/query.ts",
+    "./config": "./src/config.ts"
+  },
+  "scripts": {
+    "check": "tsgo --noEmit && oxlint --fix --type-aware",
+    "format": "oxfmt",
+    "lint": "oxlint --type-aware",
+    "typecheck": "tsgo --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:types",
+    "@types/node": "catalog:types",
+    "@typescript/native-preview": "catalog:build",
+    "oxfmt": "catalog:build",
+    "oxlint": "catalog:build",
+    "oxlint-tsgolint": "catalog:build",
+    "typescript": "catalog:build"
+  }
+}

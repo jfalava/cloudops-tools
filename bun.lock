@@ -112,6 +112,7 @@
         "@aws-sdk/client-route-53": "catalog:aws-sdk",
         "@aws-sdk/credential-providers": "catalog:aws-sdk",
         "@aws-sdk/types": "catalog:aws-sdk",
+        "@cloudops-tools/types": "workspace:*",
         "@effect/platform": "catalog:effect",
         "distilled-aws": "0.0.21",
         "effect": "catalog:effect",
@@ -125,6 +126,19 @@
         "@types/json2md": "catalog:types",
         "@types/node": "catalog:types",
         "@types/progress": "catalog:types",
+        "@typescript/native-preview": "catalog:build",
+        "oxfmt": "catalog:build",
+        "oxlint": "catalog:build",
+        "oxlint-tsgolint": "catalog:build",
+        "typescript": "catalog:build",
+      },
+    },
+    "types": {
+      "name": "@cloudops-tools/types",
+      "version": "0.1.0",
+      "devDependencies": {
+        "@types/bun": "catalog:types",
+        "@types/node": "catalog:types",
         "@typescript/native-preview": "catalog:build",
         "oxfmt": "catalog:build",
         "oxlint": "catalog:build",
@@ -339,6 +353,8 @@
     "@cloudops-tools/documentation": ["@cloudops-tools/documentation@workspace:documentation"],
 
     "@cloudops-tools/sdk": ["@cloudops-tools/sdk@workspace:sdk"],
+
+    "@cloudops-tools/types": ["@cloudops-tools/types@workspace:types"],
 
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 

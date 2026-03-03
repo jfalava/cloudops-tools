@@ -6,120 +6,16 @@
  */
 
 import type {
-  EC2Instance,
-  RDSInstance,
-  S3Bucket,
-  VPC,
-  Subnet,
-  SecurityGroup,
-  LoadBalancer,
-  LambdaFunction,
-  DynamoDBTable,
-  ECSCluster,
-  EKSCluster,
-  CloudFrontDistribution,
-  Route53HostedZone,
-  IAMUser,
-  IAMRole,
-  RedshiftCluster,
-  GlueJob,
-  OpenSearchDomain,
-  KMSKey,
-  CloudWatchAlarm,
-  SecretsManagerSecret,
-  ECRRepository,
-  InternetGateway,
-  NatGateway,
-  ElasticIP,
-  VpnGateway,
-  VpnConnection,
-  TransitGateway,
-  VpcEndpoint,
-  VpcPeeringConnection,
-  NetworkAcl,
-  RouteTable,
-  NetworkInterface,
-  ControlTowerGuardrail,
-  ServiceControlPolicy,
-  ConfigRule,
-} from "../types/aws-cli.types";
+  WebInventoryData,
+  WriteInventoryWithJsonInput,
+} from "@cloudops-tools/types/inventory";
 
-/**
- * Metadata about the inventory collection process
- */
-export interface InventoryMetadata {
-  /** AWS account name or ID */
-  account: string;
-  /** AWS region(s) inventoried */
-  region: string;
-  /** Timestamp in YYYYMMDD format */
-  timestamp: string;
-  /** ISO 8601 timestamp of when the inventory was generated */
-  generatedAt: string;
-  /** Version of the inventory tool */
-  version?: string;
-}
-
-/**
- * Summary statistics about the inventory
- */
-export interface InventorySummary {
-  /** Total number of resources across all services */
-  totalResources: number;
-  /** Number of services that have resources */
-  serviceCount: number;
-  /** Breakdown of resource count by service */
-  resourcesByService: Record<string, number>;
-}
-
-/**
- * Complete inventory data structure optimized for web consumption
- */
-export interface WebInventoryData {
-  /** Metadata about the inventory */
-  metadata: InventoryMetadata;
-  /** All resources organized by service type */
-  services: {
-    EC2?: EC2Instance[];
-    RDS?: RDSInstance[];
-    S3?: S3Bucket[];
-    VPC?: VPC[];
-    Subnet?: Subnet[];
-    SecurityGroup?: SecurityGroup[];
-    LoadBalancer?: LoadBalancer[];
-    Lambda?: LambdaFunction[];
-    DynamoDB?: DynamoDBTable[];
-    ECS?: ECSCluster[];
-    EKS?: EKSCluster[];
-    CloudFront?: CloudFrontDistribution[];
-    Route53?: Route53HostedZone[];
-    IAMUser?: IAMUser[];
-    IAMRole?: IAMRole[];
-    Redshift?: RedshiftCluster[];
-    Glue?: GlueJob[];
-    OpenSearch?: OpenSearchDomain[];
-    KMS?: KMSKey[];
-    CloudWatch?: CloudWatchAlarm[];
-    SecretsManager?: SecretsManagerSecret[];
-    ECR?: ECRRepository[];
-    InternetGateway?: InternetGateway[];
-    NatGateway?: NatGateway[];
-    ElasticIP?: ElasticIP[];
-    VpnGateway?: VpnGateway[];
-    VpnConnection?: VpnConnection[];
-    TransitGateway?: TransitGateway[];
-    VpcEndpoint?: VpcEndpoint[];
-    VpcPeering?: VpcPeeringConnection[];
-    NetworkAcl?: NetworkAcl[];
-    RouteTable?: RouteTable[];
-    NetworkInterface?: NetworkInterface[];
-    ControlTower?: ControlTowerGuardrail[];
-    SCP?: ServiceControlPolicy[];
-    ConfigRules?: ConfigRule[];
-  };
-  /** Summary statistics */
-  summary: InventorySummary;
-}
+export type {
+  InventoryMetadata,
+  InventorySummary,
+  WebInventoryData,
+  WriteInventoryWithJsonInput,
+} from "@cloudops-tools/types/inventory";
 
 /**
  * Creates a web-friendly JSON structure from inventory data.
@@ -231,15 +127,6 @@ export async function writeJsonInventoryFile(
  * );
  * ```
  */
-export type WriteInventoryWithJsonInput = {
-  account: string;
-  region: string;
-  timestamp: string;
-  basePath: string;
-  format: string;
-  services: WebInventoryData["services"];
-};
-
 export async function writeInventoryWithJson(input: WriteInventoryWithJsonInput): Promise<void> {
   const shouldWriteJson = input.format === "json" || input.format === "all";
 
