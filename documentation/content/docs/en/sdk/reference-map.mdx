@@ -17,7 +17,7 @@ Generated API page: [API Reference](/docs/sdk/api).
 | `@cloudops-tools/sdk/operations`  | `generateInitInventoryEffect`, inventory mode/service types                                                                                                                                                                                      | High-level orchestration                             |
 | `@cloudops-tools/sdk/services`    | `ComputeService`, `StorageService`, `DatabaseService`, `NetworkingService`, `SecurityService`, `ManagementService`, `GovernanceService`, `DeveloperToolsService`, `AnalyticsService`, `AppIntegrationService`, `ReportingService`, `UtilService` | Targeted service collection and custom orchestration |
 | `@cloudops-tools/sdk/lib`         | Config helpers, output helpers, progress events, version checks                                                                                                                                                                                  | Shared utility helpers                               |
-| `@cloudops-tools/sdk/types`       | Shared AWS resource types and error types                                                                                                                                                                                                        | Shared app/domain typing                             |
+| `@cloudops-tools/types`           | Shared AWS resource types plus inventory/query/progress/config contracts                                                                                                                                                                         | Shared app/domain typing                             |
 | `@cloudops-tools/sdk/credentials` | Credential provider helper                                                                                                                                                                                                                       | Explicit credential-provider integration             |
 
 ## Practical Selection Rules
@@ -25,6 +25,8 @@ Generated API page: [API Reference](/docs/sdk/api).
 - Choose `operations` when you need end-to-end inventory generation with output handling.
 - Choose `services` when you need custom orchestration and selective calls.
 - Choose `lib` when integrating progress/output/config helpers into your own runtime.
+- Choose `@cloudops-tools/types` for new shared-contract imports; treat `@cloudops-tools/sdk/types`
+  as compatibility-only.
 
 ## Source Cross-Reference
 

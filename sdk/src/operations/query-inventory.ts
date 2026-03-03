@@ -1,32 +1,8 @@
+import type { QueryOptions, QueryResult } from "@cloudops-tools/types/query";
 import { Effect } from "effect";
 
-import { InventoryDbService, type ResourceRecord, type ResourceChange } from "../lib/inventory-db";
-
-/**
- * Filters applied when querying historical inventory snapshots from the local database.
- */
-export interface QueryOptions {
-  /** Resource type filter (for example, EC2, RDS, Lambda). */
-  readonly type?: string;
-  /** AWS region filter. */
-  readonly region?: string;
-  /** Relative lookback window in days. */
-  readonly days?: number;
-  /** Inclusive ISO date lower bound (`YYYY-MM-DD`). */
-  readonly from?: string;
-  /** Inclusive ISO date upper bound (`YYYY-MM-DD`). */
-  readonly to?: string;
-}
-
-/**
- * One inventory query result grouped by the run timestamp it came from.
- */
-export interface QueryResult {
-  /** Inventory run timestamp (`runAt`) for the returned resource batch. */
-  readonly runAt: string;
-  /** Resources captured in that run after applying query filters. */
-  readonly resources: ResourceRecord[];
-}
+import { InventoryDbService, type InventoryRun, type ResourceChange } from "../lib/inventory-db";
+export type { QueryOptions, QueryResult } from "@cloudops-tools/types/query";
 
 /**
  * Query historical inventory resources for an account from the local SQLite inventory database.
@@ -72,18 +48,7 @@ export const getInventoryChangesEffect = (
 export const listInventoryRunsEffect = (
   accountId: string,
   limit: number = 30,
-): Effect.Effect<
-  Array<{
-    readonly id: number;
-    readonly accountId: string;
-    readonly timestamp: string;
-    readonly runAt: string;
-    readonly mode: string;
-    readonly totalResources: number;
-  }>,
-  unknown,
-  InventoryDbService
-> =>
+): Effect.Effect<InventoryRun[], unknown, InventoryDbService> =>
   Effect.gen(function* (_) {
     const db = yield* _(InventoryDbService);
     yield* _(db.initialize());

@@ -1,0 +1,73 @@
+{
+  "name": "@cloudops-tools/types",
+  "version": "0.4.1",
+  "description": "Shared TypeScript contracts for CloudOps Tools SDK and clients",
+  "license": "GPL-2.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfalava/cloudops-tools.git",
+    "directory": "types"
+  },
+  "files": [
+    "dist",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "bun": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./aws": {
+      "types": "./src/aws.ts",
+      "bun": "./src/aws.ts",
+      "default": "./dist/aws.js"
+    },
+    "./inventory": {
+      "types": "./src/inventory.ts",
+      "bun": "./src/inventory.ts",
+      "default": "./dist/inventory.js"
+    },
+    "./progress": {
+      "types": "./src/progress.ts",
+      "bun": "./src/progress.ts",
+      "default": "./dist/progress.js"
+    },
+    "./query": {
+      "types": "./src/query.ts",
+      "bun": "./src/query.ts",
+      "default": "./dist/query.js"
+    },
+    "./config": {
+      "types": "./src/config.ts",
+      "bun": "./src/config.ts",
+      "default": "./dist/config.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "check": "tsgo --noEmit && oxlint --fix --type-aware",
+    "format": "oxfmt",
+    "lint": "oxlint --type-aware",
+    "prepack": "bun run build",
+    "typecheck": "tsgo --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:types",
+    "@types/node": "catalog:types",
+    "@typescript/native-preview": "catalog:build",
+    "oxfmt": "catalog:build",
+    "oxlint": "catalog:build",
+    "oxlint-tsgolint": "catalog:build",
+    "typescript": "catalog:build"
+  }
+}

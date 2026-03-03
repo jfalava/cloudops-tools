@@ -2,18 +2,10 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
+import type { CloudOpsConfig } from "@cloudops-tools/types/config";
 import { Context, Effect, Layer, Option } from "effect";
 
-export interface CloudOpsConfig {
-  defaultRegion?: string;
-  defaultAccount?: string;
-  defaultFormat?: "csv" | "xlsx" | "json" | "both" | "all";
-  defaultMode?: "basic" | "detailed" | "security" | "cost";
-  defaultServices?: string[];
-  showBanner?: boolean;
-  skipGlobal?: boolean;
-  onlyGlobal?: boolean;
-}
+export type { CloudOpsConfig } from "@cloudops-tools/types/config";
 
 const CONFIG_DIR = ".config/cloudops-tools";
 const CONFIG_FILE = "config.json";

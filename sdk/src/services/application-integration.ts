@@ -1,10 +1,10 @@
+import type { SQSQueue, SNSTopic } from "@cloudops-tools/types/aws";
 import * as SNS from "distilled-aws/sns";
 import * as SQS from "distilled-aws/sqs";
 import { Context, Effect, Stream, Layer } from "effect";
 
 import { makeRegionConfig, AwsConfigLive } from "../lib/aws-config";
 import { asString, isObjectRecord } from "../lib/aws-payload";
-import type { SQSQueue, SNSTopic } from "../types/aws-cli.types";
 
 export class AppIntegrationService extends Context.Tag("@sdk/services/AppIntegrationService")<
   AppIntegrationService,

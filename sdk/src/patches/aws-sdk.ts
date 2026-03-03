@@ -22,9 +22,6 @@ import {
 } from "@aws-sdk/client-neptune";
 import { RDSClient, DescribeDBInstancesCommand, type DBInstance } from "@aws-sdk/client-rds";
 import { Route53Client, ListHostedZonesCommand } from "@aws-sdk/client-route-53";
-import { Effect } from "effect";
-
-import { getCredentialsProvider } from "../credentials/credentials";
 import type {
   RDSInstance,
   ElastiCacheCluster,
@@ -34,7 +31,10 @@ import type {
   CloudFrontDistribution,
   Route53HostedZone,
   GlobalAccelerator,
-} from "../types/aws-cli.types";
+} from "@cloudops-tools/types/aws";
+import { Effect } from "effect";
+
+import { getCredentialsProvider } from "../credentials/credentials";
 
 /**
  * Patch layer: use AWS SDK v3 directly for AWS Query services that currently

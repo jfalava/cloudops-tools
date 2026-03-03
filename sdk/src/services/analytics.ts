@@ -1,3 +1,4 @@
+import type { KinesisStream, AthenaWorkgroup, EMRCluster } from "@cloudops-tools/types/aws";
 import * as Athena from "distilled-aws/athena";
 import * as EMR from "distilled-aws/emr";
 import * as Kinesis from "distilled-aws/kinesis";
@@ -12,7 +13,6 @@ import {
   normalizeArray,
   tagListToRecord,
 } from "../lib/aws-payload";
-import type { KinesisStream, AthenaWorkgroup, EMRCluster } from "../types/aws-cli.types";
 
 function toIsoString(value: unknown): string | undefined {
   return asDate(value)?.toISOString();

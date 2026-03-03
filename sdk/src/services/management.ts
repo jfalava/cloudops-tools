@@ -1,3 +1,16 @@
+import type {
+  CloudWatchAlarm,
+  CloudFrontDistribution,
+  Route53HostedZone,
+  CloudFormationStack,
+  APIGateway as APIGatewayType,
+  APIGatewayV2Api,
+  StepFunction,
+  EventBridgeRule,
+  CloudTrail as CloudTrailType,
+  SSMParameter,
+  Route53Domain,
+} from "@cloudops-tools/types/aws";
 import * as APIGateway from "distilled-aws/api-gateway";
 import * as APIGatewayV2 from "distilled-aws/apigatewayv2";
 import * as CloudFormation from "distilled-aws/cloudformation";
@@ -14,19 +27,6 @@ import {
   describeCloudFrontDistributions as patchedCloudFront,
   describeRoute53HostedZones as patchedRoute53,
 } from "../patches";
-import type {
-  CloudWatchAlarm,
-  CloudFrontDistribution,
-  Route53HostedZone,
-  CloudFormationStack,
-  APIGateway as APIGatewayType,
-  APIGatewayV2Api,
-  StepFunction,
-  EventBridgeRule,
-  CloudTrail as CloudTrailType,
-  SSMParameter,
-  Route53Domain,
-} from "../types/aws-cli.types";
 
 type UnknownRecord = Record<string, unknown>;
 

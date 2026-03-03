@@ -1,3 +1,18 @@
+import type {
+  RDSInstance,
+  DynamoDBTable,
+  RedshiftCluster,
+  OpenSearchDomain,
+  ElastiCacheCluster,
+  DAXCluster,
+  DocDBCluster,
+  NeptuneCluster,
+  MemoryDBCluster,
+  TimestreamDatabase,
+  KeyspacesKeyspace,
+  RedshiftServerlessNamespace,
+  OpenSearchServerlessCollection,
+} from "@cloudops-tools/types/aws";
 import * as DAX from "distilled-aws/dax";
 import * as DynamoDB from "distilled-aws/dynamodb";
 import * as Keyspaces from "distilled-aws/keyspaces";
@@ -17,21 +32,6 @@ import {
   describeDocDBClusters,
   describeNeptuneClusters,
 } from "../patches";
-import type {
-  RDSInstance,
-  DynamoDBTable,
-  RedshiftCluster,
-  OpenSearchDomain,
-  ElastiCacheCluster,
-  DAXCluster,
-  DocDBCluster,
-  NeptuneCluster,
-  MemoryDBCluster,
-  TimestreamDatabase,
-  KeyspacesKeyspace,
-  RedshiftServerlessNamespace,
-  OpenSearchServerlessCollection,
-} from "../types/aws-cli.types";
 
 type UnknownRecord = Record<string, unknown>;
 

@@ -1,6 +1,6 @@
 {
   "name": "@cloudops-tools/sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jfalava/cloudops-tools.git",
@@ -37,6 +37,7 @@
     "@aws-sdk/client-route-53": "catalog:aws-sdk",
     "@aws-sdk/credential-providers": "catalog:aws-sdk",
     "@aws-sdk/types": "catalog:aws-sdk",
+    "@cloudops-tools/types": "workspace:*",
     "@effect/platform": "catalog:effect",
     "distilled-aws": "0.0.21",
     "effect": "catalog:effect",
