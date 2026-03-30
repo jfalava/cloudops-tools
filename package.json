@@ -11,24 +11,24 @@
     ],
     "catalogs": {
       "types": {
-        "@types/bun": "1.3.10",
-        "@types/node": "25.3.3",
+        "@types/bun": "1.3.11",
+        "@types/node": "25.5.0",
         "@types/progress": "2.0.7",
         "@types/json2md": "1.5.4"
       },
       "effect": {
-        "@effect/cli": "0.73.2",
-        "effect": "3.19.19",
-        "@effect/platform": "0.94.5",
-        "@effect/platform-bun": "0.87.1"
+        "@effect/cli": "0.75.0",
+        "effect": "3.21.0",
+        "@effect/platform": "0.96.0",
+        "@effect/platform-bun": "0.89.0"
       },
       "build": {
-        "@typescript/native-preview": "7.0.0-dev.20260303.1",
-        "oxlint": "1.51.0",
-        "oxfmt": "0.36.0",
-        "oxlint-tsgolint": "0.16.0",
-        "typedoc": "0.28.17",
-        "typescript": "5.9.3"
+        "@typescript/native-preview": "7.0.0-dev.20260330.1",
+        "oxlint": "1.57.0",
+        "oxfmt": "0.42.0",
+        "oxlint-tsgolint": "0.18.1",
+        "typedoc": "0.28.18",
+        "typescript": "6.0.2"
       },
       "utilities": {
         "zod": "4.3.6",
@@ -37,16 +37,16 @@
         "otpauth": "9.5.0"
       },
       "aws-sdk": {
-        "@aws-sdk/client-cloudfront": "3.1001.0",
-        "@aws-sdk/client-docdb": "3.1001.0",
-        "@aws-sdk/client-elastic-beanstalk": "3.1001.0",
-        "@aws-sdk/client-elasticache": "3.1001.0",
-        "@aws-sdk/client-global-accelerator": "3.1001.0",
-        "@aws-sdk/client-neptune": "3.1001.0",
-        "@aws-sdk/client-rds": "3.1001.0",
-        "@aws-sdk/client-route-53": "3.1001.0",
-        "@aws-sdk/credential-providers": "3.1001.0",
-        "@aws-sdk/types": "3.973.4"
+        "@aws-sdk/client-cloudfront": "3.1020.0",
+        "@aws-sdk/client-docdb": "3.1020.0",
+        "@aws-sdk/client-elastic-beanstalk": "3.1020.0",
+        "@aws-sdk/client-elasticache": "3.1020.0",
+        "@aws-sdk/client-global-accelerator": "3.1020.0",
+        "@aws-sdk/client-neptune": "3.1020.0",
+        "@aws-sdk/client-rds": "3.1020.0",
+        "@aws-sdk/client-route-53": "3.1020.0",
+        "@aws-sdk/credential-providers": "3.1020.0",
+        "@aws-sdk/types": "3.973.6"
       }
     }
   },
@@ -82,6 +82,6 @@
     "types:typecheck": "bun run --filter @cloudops-tools/types typecheck"
   },
   "devDependencies": {
-    "oxfmt": "^0.36.0"
+    "oxfmt": "^0.42.0"
   }
 }
