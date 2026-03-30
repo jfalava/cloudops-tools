@@ -82,6 +82,6 @@
     "types:typecheck": "bun run --filter @cloudops-tools/types typecheck"
   },
   "devDependencies": {
-    "oxfmt": "^0.36.0"
+    "oxfmt": "^0.42.0"
   }
 }
