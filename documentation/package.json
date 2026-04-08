@@ -54,7 +54,7 @@
     "oxlint-tsgolint": "catalog:build",
     "typedoc": "catalog:build",
     "typescript": "catalog:build",
-    "vite": "8.0.3",
+    "vite": "8.0.5",
     "vitest": "4.1.2",
     "web-vitals": "5.2.0",
     "wrangler": "4.78.0"
